@@ -1,0 +1,18 @@
+# Credentials & secrets (jangan commit file asli)
+account.txt
+account.json
+cloudflare_api.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
