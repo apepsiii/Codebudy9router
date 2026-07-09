@@ -1,0 +1,10 @@
+# Daftar akun Google untuk registrasi Cloudflare baru
+# Format: email:password (satu akun per baris)
+# Baris diawali # diabaikan
+#
+# Pastikan akun Google valid dan bisa login.
+# Akun baru kadang diminta verifikasi nomor HP saat OAuth pertama.
+
+akunbaru1@gmail.com:password123
+akunbaru2@gmail.com:password456
+akunbaru3@gmail.com:password789

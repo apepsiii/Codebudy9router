@@ -5,6 +5,7 @@ Bot otomatis untuk membuat Cloudflare Workers AI API Key massal menggunakan Play
 ## Fitur
 
 - Auto-login Google → Cloudflare → buat API Key
+- **Mode registrasi: sign-up akun Cloudflare baru via Google** (`--register`)
 - Bypass Cloudflare Turnstile/captcha dengan stealth mode
 - Multi-worker paralel (configurable)
 - Headless mode (default) atau visible browser
@@ -27,7 +28,7 @@ rich
 
 ## Persiapan
 
-### 1. Buat `account.txt`
+### 1. Buat `account.txt` (mode login) atau `registerakun.txt` (mode register)
 
 Format: `email:password` (satu akun per baris)
 
@@ -37,7 +38,16 @@ akun2@gmail.com:password456
 akun3@gmail.com:password789
 ```
 
-> Akun harus sudah terdaftar di Cloudflare dan bisa login via Google.
+> **Mode login** (`account.txt`): akun harus sudah terdaftar di Cloudflare dan bisa login via Google.
+> **Mode register** (`registerakun.txt`): akun Google bisa baru (belum terdaftar di Cloudflare).
+
+File terpisah untuk memudahkan:
+| File | Mode | Digunakan saat |
+|------|------|----------------|
+| `account.txt` | Login | `python main.py` (default) |
+| `registerakun.txt` | Register | `python main.py --register` |
+
+> Gunakan flag `-a` untuk override file akun manual, contoh: `python main.py --register -a akun_lain.txt`
 
 ### 2. (Opsional) Siapkan 9router
 
@@ -76,16 +86,17 @@ Options:
   --inject-from-file  Inject dari file cloudflare_api.txt ke 9router
   --router-url        URL 9router (default: http://localhost:20128)
   --router-password   Password 9router (opsional, auto-login)
+  --register          Mode registrasi: sign-up akun Cloudflare baru via Google
 ```
 
 ### Contoh Lengkap
 
 ```bash
 # 10 akun, 4 workers, visible browser
-python main.py 10 4 --visible
+python main.py 10 5 --visible
 
 # Semua akun, 4 workers, inject ke 9router
-python main.py all 4 --inject-9router --router-password MyPassword123
+python main.py all 4 --inject-9router --router-password PutihAbu123!
 
 # 5 akun, 2 workers, file akun custom
 python main.py 5 2 -a my_accounts.txt
@@ -96,6 +107,45 @@ python main.py 20 6 -o hasil.txt --inject-9router --router-url http://192.168.1.
 # Inject dari file ke 9router (tanpa buat API key baru)
 python main.py --inject-from-file cloudflare_api.txt --router-password PutihAbu123!
 ```
+
+### Mode Registrasi
+
+Mode `--register` untuk membuat akun Cloudflare **baru** via Google sign-up (bukan login akun yang sudah ada).
+
+File akun default: `registerakun.txt` (bukan `account.txt`).
+
+```bash
+# Registrasi 10 akun baru, 4 workers, headless (baca dari registerakun.txt)
+python main.py 10 4 --register
+
+# Registrasi dengan browser visible (debug)
+python main.py 10 2 --register --visible
+
+# Registrasi + inject ke 9router
+python main.py all 4 --register --inject-9router --router-password PutihAbu123!
+
+# Override file akun manual
+python main.py 10 4 --register -a akun_register_lain.txt
+```
+
+**Flow registrasi:**
+1. Navigasi ke `dash.cloudflare.com/sign-up` (bukan `/login`)
+2. Klik "Sign up with Google"
+3. Login Google (email + password)
+4. Klik "I understand" → "Allow" untuk consent Google OAuth
+5. Redirect ke Cloudflare dashboard (akun baru otomatis dibuat)
+6. Buat API Key via API (sama seperti mode login)
+
+> **Catatan:** Akun Google baru kadang diminta verifikasi nomor HP saat OAuth pertama.
+> Script akan pause dan menunggu solve manual (timeout 180s).
+
+**Error handling register mode:**
+- Akun **berhasil** → dicatat di `account.json` (skip saat re-run)
+- Akun **gagal** → ditulis ke `account.txt` untuk diproses manual via mode login
+  ```bash
+  # Setelah register, proses akun yang gagal secara manual
+  python main.py
+  ```
 
 ## Output
 
@@ -229,8 +279,10 @@ python main.py --inject-from-file cloudflare_api.txt 8 --router-password MyPassw
 |---------|--------|
 | Turnstile timeout | Coba `--visible` untuk debug, atau kurangi workers |
 | Login Google gagal | Pastikan akun valid dan tidak kena 2FA |
+| Verifikasi HP (mode register) | Akun Google baru sering diminta nomor HP — solve manual di browser |
+| Akun gagal saat register | Otomatis dipindahkan ke `account.txt`, proses manual: `python main.py` |
 | Gagal inject 9router | Cek9router jalan di `--router-url`, cek password |
-| `account.txt tidak ditemukan` | Buat file `account.txt` di folder yang sama dengan `main.py` |
+| `account.txt tidak ditemukan` | Buat file `account.txt` (mode login) atau `registerakun.txt` (mode register) di folder yang sama dengan `main.py` |
 | Browser tidak muncul | Hapus `--visible` (default headless) |
 | Inject dari file gagal | Pastikan format file benar: `account_id:apikey` (satu per baris) |
 | Duplikat di 9router | Normal — bot skip akun yang sudah ada, tidak perlu hapus manual |
@@ -241,7 +293,8 @@ python main.py --inject-from-file cloudflare_api.txt 8 --router-password MyPassw
 FlowCf/
 ├── main.py              # Bot utama (Playwright + stealth)
 ├── dashboard.py         # TUI dashboard (Rich)
-├── account.txt          # Input akun (email:password)
+├── account.txt          # Input akun login (email:password)
+├── registerakun.txt     # Input akun register (email:password)
 ├── cloudflare_api.txt   # Output API key (account_id:apikey)
 ├── account.json         # Log akun sudah diproses
 ├── requirements.txt     # Dependencies

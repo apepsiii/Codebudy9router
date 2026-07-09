@@ -767,6 +767,48 @@ async def handle_google_login(page, email, password):
     else:
         step("[dim]>[/]", "Tidak ada halaman interstitial, lanjut...")
 
+    # Handle phone verification (akun Google baru sering diminta verifikasi HP)
+    await asyncio.sleep(1)
+    current_url = page.url
+    if "challenge" in current_url or "signin/v2" in current_url:
+        await wait_for_page_ready(page, desc="Google challenge/verification", timeout=30000)
+        body_text = ""
+        try:
+            body_text = await page.evaluate("document.body ? document.body.innerText : ''")
+        except Exception:
+            body_text = ""
+        phone_keywords = [
+            "phone number", "nomor telepon", "verify your phone",
+            "add a recovery phone", "verifikasi nomor", "telepon",
+            "text message", "sms", "verification code",
+        ]
+        if any(kw in body_text.lower() for kw in phone_keywords):
+            step("!", "Halaman verifikasi nomor HP terdeteksi!")
+            fast_print(
+                "  [bold yellow]![/]  Akun Google meminta verifikasi nomor HP.\n"
+                "  [bold yellow]![/]  Solve MANUAL di browser (masukkan nomor + kode SMS).\n"
+                "  [bold yellow]![/]  Script otomatis melanjutkan setelah selesai (timeout 180s).\n",
+                style="bold bright_yellow",
+            )
+            start_pv = time.time()
+            while (time.time() - start_pv) < 180:
+                await asyncio.sleep(3)
+                try:
+                    cur = page.url
+                except Exception:
+                    break
+                if "challenge" not in cur and "signin/v2" not in cur:
+                    step("[green]>[/]", "Verifikasi HP selesai, lanjut...")
+                    break
+                elapsed_pv = int(time.time() - start_pv)
+                if elapsed_pv > 0 and elapsed_pv % 15 == 0:
+                    fast_print(
+                        f"  [yellow]...[/]  Menunggu verifikasi HP... ({elapsed_pv}s)",
+                        style="bright_yellow",
+                    )
+            else:
+                step("!", "Timeout verifikasi HP, mencoba melanjutkan...")
+
     # Handle Google Workspace Terms of Service speedbump
     # URL: accounts.google.com/*/speedbump/workspacetermsofservice
     await asyncio.sleep(1)
@@ -948,11 +990,11 @@ async def create_token_via_api(cookies, account_id, email):
 
 
 # ── Main Processing ─────────────────────────────────────
-async def process_account(context, email, password, index, total, dashboard_state=None, worker_id=1):
-    """Proses satu akun: login → buat token → copy credentials"""
+async def process_account(context, email, password, index, total, dashboard_state=None, worker_id=1, register_mode=False):
+    """Proses satu akun: login/register → buat token → copy credentials"""
 
-
-    fast_print(f"  [bold bright_cyan]>[/]  Akun {index}/{total} — {email} [Worker {worker_id}]", style="bold bright_cyan")
+    mode_label = "REGISTER" if register_mode else "LOGIN"
+    fast_print(f"  [bold bright_cyan]>[/]  Akun {index}/{total} — {email} [Worker {worker_id}] [{mode_label}]", style="bold bright_cyan")
 
 
     def _update(stage: Stage, status: Status = Status.PROCESSING):
@@ -963,19 +1005,37 @@ async def process_account(context, email, password, index, total, dashboard_stat
 
 
     page = await context.new_page()
-    result = {"email": email, "account_id": "ERROR", "api_key": "ERROR"}
+    result = {"email": email, "password": password, "account_id": "ERROR", "api_key": "ERROR"}
 
 
     try:
-        # 1. Cloudflare Login
+        # 1. Cloudflare Login / Sign-up
         _update(Stage.OAUTH_REDIRECT, Status.CONNECTING)
-        await goto_robust(page, "https://dash.cloudflare.com/login", desc="Cloudflare Login")
+        if register_mode:
+            cf_url = "https://dash.cloudflare.com/sign-up"
+            cf_desc = "Cloudflare Sign-up"
+            step("> ", "Mode REGISTER: navigasi ke halaman sign-up...")
+        else:
+            cf_url = "https://dash.cloudflare.com/login"
+            cf_desc = "Cloudflare Login"
+        await goto_robust(page, cf_url, desc=cf_desc)
 
 
 # 2. Klik Google
         _update(Stage.OAUTH_REDIRECT, Status.PROCESSING)
-        step("> ", "Klik Google login...")
-        google_btn = page.locator('button:has-text("Continue with Google"), button:has-text("Google")').first
+        if register_mode:
+            step("> ", "Klik Google sign-up...")
+        else:
+            step("> ", "Klik Google login...")
+        # Selector mencakup tombol "Continue with Google" (login) dan "Sign up with Google" (sign-up)
+        google_btn = page.locator(
+            'button:has-text("Continue with Google"), '
+            'button:has-text("Sign up with Google"), '
+            'a:has-text("Continue with Google"), '
+            'a:has-text("Sign up with Google"), '
+            'button:has-text("Google"), '
+            'a:has-text("Google")'
+        ).first
         try:
             await google_btn.click(force=True, timeout=10000)
         except Exception:
@@ -1086,6 +1146,8 @@ async def process_account(context, email, password, index, total, dashboard_stat
 
     except Exception as e:
         fail(f"AKUN #{index} GAGAL: {e} [Worker {worker_id}]")
+        result["success"] = False
+        result["error"] = str(e)
         if dashboard_state:
             dashboard_state.finish_account(
                 index, success=False, error_message=str(e),
@@ -1196,7 +1258,7 @@ async def wait_for_page_ready(page, desc="halaman", timeout=60000):
 
 
 # ── Worker Function ──────────────────────────────────────
-async def worker_task(account_index, email, password, state, browser, stealth, worker_id):
+async def worker_task(account_index, email, password, state, browser, stealth, worker_id, register_mode=False):
     """Worker function: processes one account at a time."""
     ctx = await browser.new_context(
         permissions=["clipboard-read", "clipboard-write"],
@@ -1214,7 +1276,7 @@ async def worker_task(account_index, email, password, state, browser, stealth, w
 
     r = await process_account(
         ctx, email, password, account_index, state.total_accounts,
-        dashboard_state=state, worker_id=worker_id,
+        dashboard_state=state, worker_id=worker_id, register_mode=register_mode,
     )
     await ctx.close()
     return r
@@ -1238,6 +1300,11 @@ Examples:
   # Inject dari file ke 9router (tanpa buat API key baru)
   python main.py --inject-from-file cloudflare_api.txt --router-password MyPassword123
   python main.py --inject-from-file cloudflare_api.txt 4 --router-password MyPassword123
+
+  # Mode registrasi: buat akun Cloudflare baru via Google
+  python main.py 10 4 --register
+  python main.py 10 4 --register --visible
+  python main.py all 4 --register --inject-9router --router-password MyPassword123
         """,
     )
     parser.add_argument(
@@ -1297,6 +1364,11 @@ Examples:
         metavar="FILE",
         help="Inject dari file cloudflare_api.txt ke 9router (format: account_id:apikey)",
     )
+    parser.add_argument(
+        "--register",
+        action="store_true",
+        help="Mode registrasi: sign-up akun Cloudflare baru via Google (bukan login)",
+    )
     return parser.parse_args()
 
 
@@ -1306,9 +1378,31 @@ async def main():
 
     NUM_WORKERS = args.workers
     DELAY_BETWEEN_ACCOUNTS = args.delay
-    accounts_file = args.accounts or os.path.join(WORKSPACE, "account.txt")
+    # Mode register pakai registerakun.txt sebagai default; mode login pakai account.txt
+    default_accounts_file = "registerakun.txt" if args.register else "account.txt"
+    accounts_file = args.accounts or os.path.join(WORKSPACE, default_accounts_file)
     output_file = args.output or os.path.join(WORKSPACE, "cloudflare_api.txt")
     log_file = os.path.join(WORKSPACE, "account.json")
+    log_example = os.path.join(WORKSPACE, "account.json.example")
+
+    # Auto-init account.json dari template example jika belum ada
+    if not os.path.exists(log_file):
+        if os.path.exists(log_example):
+            import shutil
+            try:
+                shutil.copy2(log_example, log_file)
+                info(f"account.json dibuat dari template: {log_example}")
+            except Exception as e:
+                fail(f"Gagal menyalin account.json.example: {e}")
+        else:
+            # Fallback: buat file kosong jika example juga tidak ada
+            try:
+                with open(log_file, "w", encoding="utf-8") as f:
+                    json.dump({}, f)
+                info("account.json dibuat (kosong)")
+            except Exception as e:
+                fail(f"Gagal membuat account.json: {e}")
+
     headless = not args.visible  # default headless, --visible to show browser
 
     # Mode inject dari file (tidak perlu buat API key baru)
@@ -1368,9 +1462,15 @@ async def main():
     # Deteksi IP publik
     public_ip = get_public_ip()
 
+    # Tampilkan mode
+    if args.register:
+        info("MODE: REGISTER (sign-up akun Cloudflare baru via Google)")
+    else:
+        info("MODE: LOGIN (akun Cloudflare yang sudah terdaftar)")
+
     # Baca akun
     if not os.path.exists(accounts_file):
-        fail(f"account.txt tidak ditemukan: {accounts_file}")
+        fail(f"File akun tidak ditemukan: {accounts_file}")
         return
 
     accounts = read_accounts(accounts_file)
@@ -1461,7 +1561,7 @@ async def main():
                 for idx, email, pwd in batch:
                     wid = (idx - 1) % NUM_WORKERS + 1
                     state.start_account(idx, email, wid)
-                    task = asyncio.create_task(worker_task(idx, email, pwd, state, fresh_browser, stealth, wid))
+                    task = asyncio.create_task(worker_task(idx, email, pwd, state, fresh_browser, stealth, wid, register_mode=args.register))
                     batch_tasks.append(task)
 
                 batch_results = await asyncio.gather(*batch_tasks, return_exceptions=True)
@@ -1497,20 +1597,37 @@ async def main():
                                 fast_print(f"  [bold red]x[/]  Gagal inject 9router: {result['error']}",
                                            style="bold red")
 
-                # Update account.json log
+                # Update account.json log + handle register mode errors
+                register_error_file = os.path.join(WORKSPACE, "account.txt")
                 for r in batch_results:
                     if isinstance(r, Exception):
                         continue
-                    if isinstance(r, dict):
-                        email = r.get("email", "")
-                        if email:
-                            processed_emails[email] = {
-                                "success": r.get("success", False),
-                                "account_id": r.get("account_id", ""),
-                                "api_key": r.get("api_key", ""),
-                                "error": r.get("error", ""),
-                                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                            }
+                    if not isinstance(r, dict):
+                        continue
+                    email = r.get("email", "")
+                    if not email:
+                        continue
+                    is_success = r.get("success", False)
+
+                    if args.register and not is_success:
+                        # Mode register + error: tulis ke account.txt untuk proses manual,
+                        # JANGAN tulis ke account.json
+                        pwd = r.get("password", "")
+                        try:
+                            with open(register_error_file, "a", encoding="utf-8") as f:
+                                f.write(f"{email}:{pwd}\n")
+                            step("[yellow]>[/]", f"Akun error dipindahkan ke account.txt: {email}")
+                        except Exception as e:
+                            fail(f"Gagal menulis ke account.txt: {e}")
+                    else:
+                        # Sukses (semua mode) atau error mode login: catat di account.json
+                        processed_emails[email] = {
+                            "success": is_success,
+                            "account_id": r.get("account_id", ""),
+                            "api_key": r.get("api_key", ""),
+                            "error": r.get("error", ""),
+                            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        }
                 try:
                     with open(log_file, "w", encoding="utf-8") as f:
                         json.dump(processed_emails, f, indent=2, ensure_ascii=False)
@@ -1552,19 +1669,34 @@ async def main():
     print(f"  Rate      : {success_rate:.1f}%")
     print()
 
-    # Show completed accounts
+    # Daftar akun SUKSES
+    success_emails = []
+    fail_emails = []
     for idx in state.completed_accounts:
         if idx in state.accounts:
             account = state.accounts[idx]
-            email = account.email
             if account.status == Status.SUCCESS:
-                print(f"  + {idx}. {email}")
-                print(f"       Status: SUCCESS ({account.elapsed_ms}ms)")
+                success_emails.append((idx, account.email, account.elapsed_ms))
             else:
                 error_msg = account.error_message or "Unknown error"
-                print(f"  x {idx}. {email}")
-                print(f"       Error: {error_msg}")
+                fail_emails.append((idx, account.email, error_msg))
+
+    if success_emails:
+        fast_print("  AKUN BERHASIL:", style="bold green")
+        for idx, email, elapsed in success_emails:
+            print(f"    + {idx}. {email}  ({elapsed}ms)")
+        print()
+
+    if fail_emails:
+        fast_print("  AKUN GAGAL:", style="bold red")
+        for idx, email, error_msg in fail_emails:
+            print(f"    x {idx}. {email}")
+            print(f"         Error: {error_msg}")
+        if args.register:
             print()
+            info("Akun gagal (register mode) sudah dipindahkan ke account.txt")
+            info("Proses manual dengan: python main.py")
+        print()
 
     print(f"  Tersimpan di: {out}")
     print(f"  Log akun   : {log_file}")

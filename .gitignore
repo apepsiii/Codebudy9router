@@ -2,6 +2,8 @@
 account.txt
 account.json
 cloudflare_api.txt
+registerakun.txt
+*.bak
 
 # Python
 __pycache__/
