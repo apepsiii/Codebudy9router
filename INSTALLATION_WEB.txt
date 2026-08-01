@@ -1,0 +1,264 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║                                                                      ║
+║          KIRO WEB DASHBOARD - INSTALLATION GUIDE                     ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+📅 Date: 2026-08-01
+📦 Version: 1.0.0 Web Edition
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 STEP 1: INSTALL DEPENDENCIES
+
+1. Install Web Dashboard Requirements:
+   
+   cd C:\laragon\www\KiroApiKey
+   pip install -r requirements-web.txt
+
+   This will install:
+   - fastapi (web framework)
+   - uvicorn (web server)
+   - sqlalchemy (database ORM)
+   - pydantic (data validation)
+   - aiosqlite (async SQLite)
+   - playwright (browser automation)
+   - playwright-stealth (anti-detection)
+
+2. Install Playwright Browser:
+   
+   playwright install chromium
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 STEP 2: INITIALIZE DATABASE
+
+Initialize the SQLite database:
+
+   kiro init
+
+Or:
+
+   python kiro.py init
+
+This will create:
+   - kiro.db (SQLite database)
+   - Tables: accounts, config, process_logs
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 STEP 3: START WEB SERVER
+
+Start the web dashboard:
+
+   kiro start
+
+Or:
+
+   python kiro.py start
+
+Server will run at:
+   http://localhost:8000
+
+Options:
+   --port 3000         Use custom port
+   --reload            Auto-reload on code changes (dev mode)
+   --host 0.0.0.0      Allow external access
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🌐 STEP 4: ACCESS WEB DASHBOARD
+
+1. Open your browser
+2. Go to: http://localhost:8000
+3. You should see the dashboard with:
+   - Statistics cards (Total, Success, Failed, Injected)
+   - Add Accounts form (Single or Bulk)
+   - Process Settings
+   - Accounts table (empty initially)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📝 STEP 5: ADD ACCOUNTS
+
+OPTION 1: Single Account
+   1. Click "Single" tab
+   2. Enter email and password
+   3. Select type (Login or Register)
+   4. Click "Add Account"
+
+OPTION 2: Bulk Import
+   1. Click "Bulk Import" tab
+   2. Paste accounts in format:
+      email1@gmail.com:password1
+      email2@gmail.com:password2
+      email3@gmail.com:password3
+   3. Select type (Login or Register)
+   4. Click "Import Accounts"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚙️ STEP 6: CONFIGURE SETTINGS
+
+Process Settings:
+   - Workers: 2-4 (recommended)
+   - Delay: 3-5 seconds (safe)
+   - Show browser: Check for debugging
+   - Manual mode: Check for better success rate
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+▶️ STEP 7: START PROCESSING
+
+1. Click "Start Processing" button
+2. Processing will start in background
+3. Monitor status in real-time:
+   - pending → processing → success/failed
+4. Tokens will appear automatically when success
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📥 STEP 8: EXPORT TOKENS
+
+1. Click "Export Tokens" button
+2. Tokens will be saved to: kiro_tokens.txt
+3. Format: email:refresh_token_part1:refresh_token_part2
+
+Or copy token directly from dashboard:
+   - Click eye icon to view token
+   - Click copy icon to copy to clipboard
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 STEP 9: MANUAL INJECT TO 9ROUTER
+
+1. Export tokens from dashboard
+2. Open 9router dashboard:
+   http://localhost:20128/dashboard
+
+3. Select provider (anthropic/openai/etc)
+4. Copy token from Kiro dashboard or kiro_tokens.txt
+5. Paste to 9router form
+6. Save connection
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📁 FILE STRUCTURE
+
+KiroApiKey/
+├── kiro.py              ← CLI entry point
+├── kiro.bat             ← Windows launcher
+├── kiro.db              ← SQLite database (auto-created)
+├── kiro_tokens.txt      ← Exported tokens
+├── web/
+│   ├── app.py           ← FastAPI backend
+│   ├── database.py      ← Database models
+│   └── static/
+│       └── index.html   ← Web UI
+├── main.py              ← Original CLI (still works)
+├── requirements.txt     ← Original requirements
+└── requirements-web.txt ← Web requirements
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 QUICK START (TL;DR)
+
+   # Install
+   pip install -r requirements-web.txt
+   playwright install chromium
+
+   # Initialize
+   kiro init
+
+   # Start
+   kiro start
+
+   # Open browser
+   http://localhost:8000
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ VERIFICATION CHECKLIST
+
+Before starting, make sure:
+   [x] Python 3.8+ installed
+   [x] pip install -r requirements-web.txt (success)
+   [x] playwright install chromium (success)
+   [x] kiro init (database created)
+   [x] kiro start (server running)
+   [x] Browser can access http://localhost:8000
+   [x] Dashboard UI loads correctly
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🐛 TROUBLESHOOTING
+
+PROBLEM: "Module not found"
+   SOLUTION: pip install -r requirements-web.txt
+
+PROBLEM: "Port already in use"
+   SOLUTION: kiro start --port 3000
+
+PROBLEM: "Database error"
+   SOLUTION: Delete kiro.db and run: kiro init
+
+PROBLEM: "Playwright browser not found"
+   SOLUTION: playwright install chromium
+
+PROBLEM: "Page not loading"
+   SOLUTION: 
+   - Check server is running
+   - Check URL: http://localhost:8000
+   - Check browser console for errors
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 TIPS
+
+1. Development Mode:
+   kiro start --reload
+   (Auto-restart on code changes)
+
+2. Remote Access:
+   kiro start --host 0.0.0.0
+   Access from other devices: http://YOUR_IP:8000
+
+3. Production:
+   - Use reverse proxy (nginx)
+   - Add authentication
+   - Use HTTPS
+   - Regular database backups
+
+4. Performance:
+   - Workers: 2-4 optimal
+   - Delay: 3-5 seconds safe
+   - Manual mode for better success rate
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DOCUMENTATION
+
+   README-WEB.md        ← Full documentation
+   README.md            ← Original CLI docs
+   QUICK_REFERENCE.txt  ← Command reference
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎉 SUCCESS!
+
+You're now ready to use Kiro Web Dashboard!
+
+Next steps:
+   1. Add accounts via web interface
+   2. Configure process settings
+   3. Start processing
+   4. Export tokens
+   5. Manual inject to 9router
+
+Enjoy the user-friendly web interface! 🚀
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Support: Open issue on GitHub
+Version: 1.0.0 Web Edition
+Last Updated: 2026-08-01

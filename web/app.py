@@ -1,0 +1,581 @@
+"""
+Kiro Web Dashboard - FastAPI Backend
+"""
+from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse, JSONResponse
+from pydantic import BaseModel
+from typing import List, Optional
+import asyncio
+import os
+from datetime import datetime
+
+# Import database models
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from database import init_db, get_session, Account, Config, ProcessLog
+
+app = FastAPI(title="Kiro Token Generator", version="1.0.0")
+
+# Initialize database on startup
+@app.on_event("startup")
+async def startup_event():
+    init_db()
+
+# Pydantic models for API
+class AccountCreate(BaseModel):
+    email: str
+    password: str
+    account_type: str = "login"  # login or register
+
+class AccountBulkCreate(BaseModel):
+    accounts: List[AccountCreate]
+
+class ProcessConfig(BaseModel):
+    workers: int = 2
+    delay: float = 3.0
+    visible: bool = False
+    manual_mode: bool = False
+
+class AccountResponse(BaseModel):
+    id: int
+    email: str
+    account_type: str
+    status: str
+    refresh_token: Optional[str] = None
+    error_message: Optional[str] = None
+    created_at: datetime
+    processed_at: Optional[datetime] = None
+    injected_to_9router: bool
+    injected_at: Optional[datetime] = None
+    router_connection_id: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class RouterConfig(BaseModel):
+    router_url: str = "http://localhost:20128"
+    router_password: Optional[str] = None
+
+
+# ============================================================================
+# API ENDPOINTS
+# ============================================================================
+
+@app.get("/")
+async def root():
+    """Serve main dashboard HTML"""
+    html_file = os.path.join(os.path.dirname(__file__), "static", "index.html")
+    if os.path.exists(html_file):
+        with open(html_file, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    return {"message": "Kiro Web Dashboard API"}
+
+
+@app.get("/api/stats")
+async def get_stats():
+    """Get dashboard statistics"""
+    session = get_session()
+    try:
+        total = session.query(Account).count()
+        pending = session.query(Account).filter(Account.status == "pending").count()
+        processing = session.query(Account).filter(Account.status == "processing").count()
+        success = session.query(Account).filter(Account.status == "success").count()
+        failed = session.query(Account).filter(Account.status == "failed").count()
+        injected = session.query(Account).filter(Account.injected_to_9router == True).count()
+        
+        return {
+            "total": total,
+            "pending": pending,
+            "processing": processing,
+            "success": success,
+            "failed": failed,
+            "injected": injected,
+            "success_rate": round((success / total * 100) if total > 0 else 0, 1)
+        }
+    finally:
+        session.close()
+
+
+@app.get("/api/accounts", response_model=List[AccountResponse])
+async def get_accounts(
+    status: Optional[str] = None,
+    account_type: Optional[str] = None,
+    limit: int = 100,
+    offset: int = 0
+):
+    """Get accounts with optional filters"""
+    session = get_session()
+    try:
+        query = session.query(Account)
+        
+        if status:
+            query = query.filter(Account.status == status)
+        if account_type:
+            query = query.filter(Account.account_type == account_type)
+        
+        accounts = query.order_by(Account.created_at.desc()).offset(offset).limit(limit).all()
+        return accounts
+    finally:
+        session.close()
+
+
+@app.post("/api/accounts", response_model=AccountResponse)
+async def create_account(account: AccountCreate):
+    """Create single account"""
+    session = get_session()
+    try:
+        # Check if email already exists
+        existing = session.query(Account).filter(Account.email == account.email).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already exists")
+        
+        db_account = Account(
+            email=account.email,
+            password=account.password,
+            account_type=account.account_type,
+            status="pending"
+        )
+        session.add(db_account)
+        session.commit()
+        session.refresh(db_account)
+        return db_account
+    finally:
+        session.close()
+
+
+@app.post("/api/accounts/bulk")
+async def create_accounts_bulk(bulk: AccountBulkCreate):
+    """Create multiple accounts"""
+    session = get_session()
+    try:
+        created = []
+        skipped = []
+        
+        for account_data in bulk.accounts:
+            # Check if email already exists
+            existing = session.query(Account).filter(Account.email == account_data.email).first()
+            if existing:
+                skipped.append(account_data.email)
+                continue
+            
+            db_account = Account(
+                email=account_data.email,
+                password=account_data.password,
+                account_type=account_data.account_type,
+                status="pending"
+            )
+            session.add(db_account)
+            created.append(account_data.email)
+        
+        session.commit()
+        
+        return {
+            "created": len(created),
+            "skipped": len(skipped),
+            "created_emails": created,
+            "skipped_emails": skipped
+        }
+    finally:
+        session.close()
+
+
+@app.delete("/api/accounts/{account_id}")
+async def delete_account(account_id: int):
+    """Delete account"""
+    session = get_session()
+    try:
+        account = session.query(Account).filter(Account.id == account_id).first()
+        if not account:
+            raise HTTPException(status_code=404, detail="Account not found")
+        
+        session.delete(account)
+        session.commit()
+        return {"message": "Account deleted"}
+    finally:
+        session.close()
+
+
+@app.delete("/api/accounts")
+async def delete_all_accounts(status: Optional[str] = None):
+    """Delete all accounts or by status"""
+    session = get_session()
+    try:
+        query = session.query(Account)
+        if status:
+            query = query.filter(Account.status == status)
+        
+        count = query.delete()
+        session.commit()
+        return {"deleted": count}
+    finally:
+        session.close()
+
+
+@app.post("/api/process/start")
+async def start_processing(config: ProcessConfig, background_tasks: BackgroundTasks):
+    """Start processing accounts"""
+    session = get_session()
+    try:
+        # Get pending accounts
+        pending_accounts = session.query(Account).filter(Account.status == "pending").all()
+        
+        if not pending_accounts:
+            raise HTTPException(status_code=400, detail="No pending accounts to process")
+        
+        # Add to background task
+        background_tasks.add_task(process_accounts_background, [acc.id for acc in pending_accounts], config)
+        
+        return {
+            "message": "Processing started",
+            "accounts": len(pending_accounts),
+            "workers": config.workers
+        }
+    finally:
+        session.close()
+
+
+@app.post("/api/process/stop")
+async def stop_processing():
+    """Stop processing (placeholder)"""
+    # TODO: Implement stop mechanism
+    return {"message": "Stop signal sent"}
+
+
+@app.get("/api/logs/{account_id}")
+async def get_account_logs(account_id: int, limit: int = 50):
+    """Get logs for specific account"""
+    session = get_session()
+    try:
+        logs = session.query(ProcessLog).filter(
+            ProcessLog.account_id == account_id
+        ).order_by(ProcessLog.created_at.desc()).limit(limit).all()
+        
+        return [{
+            "id": log.id,
+            "log_type": log.log_type,
+            "message": log.message,
+            "created_at": log.created_at.isoformat()
+        } for log in logs]
+    finally:
+        session.close()
+
+
+@app.post("/api/export/tokens")
+async def export_tokens():
+    """Export all successful tokens to kiro_tokens.txt"""
+    session = get_session()
+    try:
+        success_accounts = session.query(Account).filter(
+            Account.status == "success",
+            Account.refresh_token.isnot(None)
+        ).all()
+        
+        if not success_accounts:
+            raise HTTPException(status_code=404, detail="No successful accounts to export")
+        
+        output_file = "kiro_tokens.txt"
+        with open(output_file, "w", encoding="utf-8") as f:
+            for account in success_accounts:
+                f.write(f"{account.email}:{account.refresh_token}\n")
+        
+        return {
+            "message": "Tokens exported",
+            "file": output_file,
+            "count": len(success_accounts)
+        }
+    finally:
+        session.close()
+
+
+@app.post("/api/inject/9router")
+async def inject_to_9router(config: RouterConfig, background_tasks: BackgroundTasks):
+    """Inject all successful tokens to 9router"""
+    session = get_session()
+    try:
+        # Get accounts with tokens that haven't been injected
+        accounts = session.query(Account).filter(
+            Account.status == "success",
+            Account.refresh_token.isnot(None),
+            Account.injected_to_9router == False
+        ).all()
+        
+        if not accounts:
+            raise HTTPException(status_code=400, detail="No tokens to inject")
+        
+        # Add to background task
+        background_tasks.add_task(inject_tokens_background, 
+                                 [acc.id for acc in accounts], 
+                                 config.router_url, 
+                                 config.router_password)
+        
+        return {
+            "message": "Injection started",
+            "accounts": len(accounts)
+        }
+    finally:
+        session.close()
+
+
+@app.post("/api/inject/9router/{account_id}")
+async def inject_single_to_9router(account_id: int, config: RouterConfig):
+    """Inject single account token to 9router"""
+    session = get_session()
+    try:
+        account = session.query(Account).filter(Account.id == account_id).first()
+        if not account:
+            raise HTTPException(status_code=404, detail="Account not found")
+        
+        if not account.refresh_token:
+            raise HTTPException(status_code=400, detail="No token available")
+        
+        # Inject to 9router
+        result = await inject_single_token(
+            router_url=config.router_url,
+            router_password=config.router_password,
+            email=account.email,
+            refresh_token=account.refresh_token
+        )
+        
+        if result["success"]:
+            account.injected_to_9router = True
+            account.injected_at = datetime.utcnow()
+            account.router_connection_id = result.get("connection_id")
+            session.commit()
+            
+            return {
+                "success": True,
+                "message": f"Token injected for {account.email}",
+                "connection_id": result.get("connection_id")
+            }
+        else:
+            return {
+                "success": False,
+                "error": result.get("error")
+            }
+    finally:
+        session.close()
+
+
+@app.get("/api/9router/config")
+async def get_9router_config():
+    """Get 9router configuration"""
+    session = get_session()
+    try:
+        config = session.query(Config).filter(Config.key == "9router_url").first()
+        router_url = config.value if config else "http://localhost:20128"
+        
+        return {
+            "router_url": router_url
+        }
+    finally:
+        session.close()
+
+
+@app.post("/api/9router/config")
+async def save_9router_config(config: RouterConfig):
+    """Save 9router configuration"""
+    session = get_session()
+    try:
+        # Save router URL
+        url_config = session.query(Config).filter(Config.key == "9router_url").first()
+        if url_config:
+            url_config.value = config.router_url
+            url_config.updated_at = datetime.utcnow()
+        else:
+            url_config = Config(key="9router_url", value=config.router_url)
+            session.add(url_config)
+        
+        session.commit()
+        return {"message": "Configuration saved"}
+    finally:
+        session.close()
+
+
+# ============================================================================
+# BACKGROUND TASK - Inject Tokens to 9Router
+# ============================================================================
+
+async def inject_single_token(router_url: str, router_password: Optional[str], email: str, refresh_token: str):
+    """Inject single token to 9router using correct endpoint"""
+    import urllib.request
+    import json
+    
+    # Login to 9router if password provided
+    auth_token = None
+    if router_password:
+        try:
+            login_url = f"{router_url.rstrip('/')}/api/auth/login"
+            body = json.dumps({"password": router_password}).encode("utf-8")
+            req = urllib.request.Request(
+                login_url, 
+                data=body,
+                headers={"Content-Type": "application/json"},
+                method="POST"
+            )
+            resp = urllib.request.urlopen(req, timeout=10)
+            for cookie in resp.headers.get_all("Set-Cookie"):
+                if cookie.startswith("auth_token="):
+                    auth_token = cookie.split(";")[0].split("=", 1)[1]
+                    break
+        except Exception as e:
+            return {"success": False, "error": f"Login failed: {e}"}
+    
+    # Use correct Kiro OAuth import endpoint
+    kiro_import_url = f"{router_url.rstrip('/')}/api/oauth/kiro/import"
+    payload = {"refreshToken": refresh_token}
+    body = json.dumps(payload).encode("utf-8")
+    headers = {
+        "Content-Type": "application/json",
+        "User-Agent": "KiroBot/1.0",
+    }
+    if auth_token:
+        headers["Cookie"] = f"auth_token={auth_token}"
+    
+    req = urllib.request.Request(kiro_import_url, data=body, headers=headers, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read())
+            if data.get("success"):
+                connection_id = data.get("connection", {}).get("id")
+                return {"success": True, "connection_id": connection_id}
+            else:
+                return {"success": False, "error": "Import failed"}
+    except urllib.error.HTTPError as e:
+        error_body = e.read().decode("utf-8", errors="replace")
+        try:
+            error_data = json.loads(error_body)
+            error_msg = error_data.get("error", error_body)
+        except Exception:
+            error_msg = error_body
+        return {"success": False, "error": f"HTTP {e.code}: {error_msg}"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+async def inject_tokens_background(account_ids: list, router_url: str, router_password: Optional[str]):
+    """Background task to inject tokens to 9router"""
+    session = get_session()
+    try:
+        for account_id in account_ids:
+            account = session.query(Account).filter(Account.id == account_id).first()
+            if not account or not account.refresh_token:
+                continue
+            
+            # Log
+            log = ProcessLog(
+                account_id=account_id,
+                log_type="info",
+                message=f"Injecting token for {account.email} to 9router..."
+            )
+            session.add(log)
+            session.commit()
+            
+            # Inject
+            result = await inject_single_token(
+                router_url=router_url,
+                router_password=router_password,
+                email=account.email,
+                refresh_token=account.refresh_token
+            )
+            
+            if result["success"]:
+                account.injected_to_9router = True
+                account.injected_at = datetime.utcnow()
+                account.router_connection_id = result.get("connection_id")
+                
+                log = ProcessLog(
+                    account_id=account_id,
+                    log_type="success",
+                    message=f"Successfully injected token for {account.email} to 9router"
+                )
+            else:
+                log = ProcessLog(
+                    account_id=account_id,
+                    log_type="error",
+                    message=f"Failed to inject {account.email}: {result.get('error')}"
+                )
+            
+            session.add(log)
+            session.commit()
+            
+            await asyncio.sleep(0.5)  # Small delay between injections
+    finally:
+        session.close()
+
+
+# ============================================================================
+# BACKGROUND TASK - Process Accounts
+# ============================================================================
+
+async def process_accounts_background(account_ids: List[int], config: ProcessConfig):
+    """Background task to process accounts"""
+    # TODO: Integrate with main.py processing logic
+    # For now, just simulate processing
+    
+    session = get_session()
+    try:
+        for account_id in account_ids:
+            account = session.query(Account).filter(Account.id == account_id).first()
+            if not account:
+                continue
+            
+            # Update status to processing
+            account.status = "processing"
+            session.commit()
+            
+            # Log
+            log = ProcessLog(
+                account_id=account_id,
+                log_type="info",
+                message=f"Processing account {account.email}..."
+            )
+            session.add(log)
+            session.commit()
+            
+            # Simulate processing (placeholder)
+            await asyncio.sleep(2)
+            
+            # TODO: Call actual processing function from main.py
+            # For now, simulate success/failure
+            import random
+            success = random.choice([True, False])
+            
+            if success:
+                account.status = "success"
+                account.refresh_token = f"token_simulated_{account_id}"
+                account.processed_at = datetime.utcnow()
+                
+                log = ProcessLog(
+                    account_id=account_id,
+                    log_type="success",
+                    message=f"Successfully captured token for {account.email}"
+                )
+            else:
+                account.status = "failed"
+                account.error_message = "Simulated failure"
+                
+                log = ProcessLog(
+                    account_id=account_id,
+                    log_type="error",
+                    message=f"Failed to process {account.email}: Simulated failure"
+                )
+            
+            session.add(log)
+            session.commit()
+            
+            await asyncio.sleep(config.delay)
+    finally:
+        session.close()
+
+
+# Mount static files
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

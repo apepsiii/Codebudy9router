@@ -876,23 +876,10 @@ def inject_to_9router(
         except RuntimeError as e:
             return {"success": False, "error": str(e)}
 
-    if check_duplicate:
-        try:
-            existing = get_9router_connections(router_url)
-            for conn in existing:
-                if conn.get("provider") == provider_name and conn.get("name") == email:
-                    return {"success": False, "error": "duplicate", "message": f"Akun {email} sudah ada di 9router"}
-        except Exception:
-            pass
-
-    providers_url = f"{router_url.rstrip('/')}/api/providers"
+    # Use the correct Kiro OAuth import endpoint
+    kiro_import_url = f"{router_url.rstrip('/')}/api/oauth/kiro/import"
     payload = {
-        "provider": provider_name,
-        "apiKey": refresh_token,
-        "name": email,
-        "priority": 1,
-        "testStatus": "active",
-        "providerSpecificData": {},
+        "refreshToken": refresh_token
     }
     body = json.dumps(payload).encode("utf-8")
     headers = {
@@ -902,11 +889,14 @@ def inject_to_9router(
     if _9router_auth_token:
         headers["Cookie"] = f"auth_token={_9router_auth_token}"
 
-    req = urllib.request.Request(providers_url, data=body, headers=headers, method="POST")
+    req = urllib.request.Request(kiro_import_url, data=body, headers=headers, method="POST")
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
             data = json.loads(resp.read())
-            return {"success": True, "data": data}
+            if data.get("success"):
+                return {"success": True, "data": data}
+            else:
+                return {"success": False, "error": "Import failed"}
     except urllib.error.HTTPError as e:
         error_body = e.read().decode("utf-8", errors="replace")
         try:
@@ -952,30 +942,10 @@ def inject_from_file(
         except RuntimeError as e:
             return {"success": False, "error": str(e)}
 
-    existing_names = set()
-    try:
-        existing = get_9router_connections(router_url)
-        for conn in existing:
-            if conn.get("provider") == provider_name:
-                existing_names.add(conn.get("name", ""))
-    except Exception:
-        pass
-
-    entries_to_inject = []
-    skipped = 0
-    for email, refresh_token in entries:
-        if email in existing_names:
-            skipped += 1
-        else:
-            entries_to_inject.append((email, refresh_token))
-
-    if not entries_to_inject:
-        return {"success": True, "total": len(entries), "injected": 0, "skipped": skipped, "failed": 0, "errors": []}
-
     from concurrent.futures import ThreadPoolExecutor, as_completed
     import threading
 
-    results = {"total": len(entries), "injected": 0, "skipped": skipped, "failed": 0, "errors": []}
+    results = {"total": len(entries), "injected": 0, "skipped": 0, "failed": 0, "errors": []}
     lock = threading.Lock()
 
     def inject_one(entry):
@@ -988,13 +958,12 @@ def inject_from_file(
         return (email, result)
 
     with ThreadPoolExecutor(max_workers=workers) as executor:
-        futures = {executor.submit(inject_one, entry): entry for entry in entries_to_inject}
+        futures = {executor.submit(inject_one, entry): entry for entry in entries}
         for future in as_completed(futures):
             email, result = future.result()
             with lock:
                 if result["success"]:
                     results["injected"] += 1
-                    existing_names.add(email)
                 else:
                     results["failed"] += 1
                     results["errors"].append(f"{email}: {result.get('error', 'unknown')}")
