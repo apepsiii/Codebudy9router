@@ -443,7 +443,7 @@ def generate_layout(state: DashboardState) -> Panel:
 
     header = Panel(
         Group(header_line1, header_line2, header_line3),
-        title="[bold bright_white]Cloudflare API Key GLM 5.2 v1.0[/]",
+        title="[bold bright_white]Kiro API Key Bot v1.0[/]",
         border_style="orange1",
         padding=(0, 2),
     )

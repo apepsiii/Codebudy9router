@@ -74,7 +74,6 @@ _live_mode: bool = False
 # Config
 WORKSPACE = os.path.dirname(os.path.abspath(__file__))
 
-KIRO_LANDING_URL = "https://kiro.dev/"
 KIRO_SIGNIN_URL = "https://app.kiro.dev/signin"
 KIRO_AUTH_DOMAIN = "kiro-prod-us-east-1.auth.us-east-1.amazoncognito.com"
 KIRO_APP_DOMAIN = "app.kiro.dev"
@@ -92,6 +91,7 @@ BROWSER_ARGS = [
     "--disable-component-update",
     "--disable-default-apps",
     "--no-default-browser-check",
+    "--incognito",
     "--disable-gpu",
     "--disable-datasaver",
     "--disable-ipc-flooding-protection",
@@ -99,17 +99,11 @@ BROWSER_ARGS = [
     "--disable-background-timer-throttling",
     "--disable-backgrounding-occluded-windows",
     "--disable-renderer-backgrounding",
-    "--disable-features=IsolateOrigins,site-per-process",
-    "--disable-site-isolation-trials",
-    "--disable-features=ImprovedCookieControls,LazyFrameLoading,GlobalMediaControls,DestroyProfileOnBrowserClose,MediaRouter,DialMediaRouteProvider,AcceptCHFrame,AutoExpandDetailsElement,CertificateTransparencyComponentUpdater,AvoidUnnecessaryBeforeUnloadCheckSync",
-    # Extra stealth flags
-    "--window-size=1920,1080",
-    "--start-maximized",
-    "--disable-blink-features=AutomationControlled",
-    "--excludeSwitches=enable-automation",
-    "--disable-logging",
-    "--log-level=3",
-    "--silent",
+    "--disable-window-activation",
+    "--disable-animations",
+    "--disable-web-security",
+    "--allow-running-insecure-content",
+    "--block-new-web-contents",
 ]
 
 BANNER = "[bold bright_magenta]Kiro Refresh Token Bot v1.0[/] [dim]| Playwright + Stealth | Cognito OAuth[/]"
@@ -359,37 +353,12 @@ async def goto_robust(page, url, desc="halaman", max_retries=3, timeout=120000):
     for attempt in range(1, max_retries + 1):
         try:
             step("> ", f"Navigasi ke {desc}...", f"attempt {attempt}/{max_retries}")
-            # Gunakan 'load' untuk SPA yang butuh JS execution
-            await page.goto(url, wait_until="load", timeout=timeout)
-            
-            # Tunggu networkidle untuk memastikan semua resource loaded
+            await page.goto(url, wait_until="domcontentloaded", timeout=timeout)
             try:
                 await page.wait_for_load_state("networkidle", timeout=30000)
             except Exception:
-                step("!", f"{desc} networkidle timeout, tunggu manual...")
-                await asyncio.sleep(5)
-            
-            # Tunggu DOM ready
-            try:
-                await page.wait_for_load_state("domcontentloaded", timeout=10000)
-            except Exception:
                 pass
-            
-            # Extra wait untuk SPA render
             await asyncio.sleep(3)
-            
-            # Validasi halaman tidak blank
-            try:
-                body_text = await page.evaluate("document.body ? document.body.innerText.trim().length : 0")
-                if body_text < 20:
-                    step("!", f"{desc} blank ({body_text} chars), retry...")
-                    if attempt < max_retries:
-                        await asyncio.sleep(5)
-                        continue
-                step("> ", f"{desc} loaded ({body_text} chars)", "ok")
-            except Exception:
-                pass
-            
             return True
         except Exception as e:
             step("!", f"{desc} gagal: {e}", f"retry {attempt}/{max_retries}")
@@ -543,17 +512,16 @@ async def handle_google_login(page, email, password):
                 else:
                     raise Exception("Email input dan password input tidak ditemukan")
 
-    # Isi Email dengan human-like typing
+    # Isi Email
     step("> ", f"Memasukkan email: {email}")
     email_input = page.locator('#identifierId')
     if await email_input.count() == 0:
         email_input = page.locator('input[type="email"]')
     if await email_input.count() > 0 and await email_input.first.is_visible():
         await email_input.first.click()
-        await asyncio.sleep(0.3 + (0.1 * (hash(email) % 5)))  # Random delay 0.3-0.8s
-        # Type char by char untuk lebih human-like
-        await email_input.first.type(email, delay=50 + (hash(email) % 50))  # 50-100ms per char
-        await asyncio.sleep(0.4 + (0.1 * (hash(email) % 3)))
+        await asyncio.sleep(0.2)
+        await email_input.first.fill(email)
+        await asyncio.sleep(0.3)
 
         step("> ", "Klik Next (email)...")
         next_btn = page.locator('#identifierNext')
@@ -561,7 +529,7 @@ async def handle_google_login(page, email, password):
             await next_btn.click()
         else:
             await page.locator('span:text-is("Next")').first.click()
-        await asyncio.sleep(3 + (0.5 * (hash(email) % 3)))  # Random delay 3-4.5s
+        await asyncio.sleep(3)
 
         error_el = page.locator('.o6cuMc, .dEOOab, [data-error="true"]')
         if await error_el.count() > 0:
@@ -569,7 +537,7 @@ async def handle_google_login(page, email, password):
             if "find" in err_text.lower() or "tidak dapat menemukan" in err_text.lower():
                 raise Exception(f"Google error: {err_text}")
 
-    # Isi Password dengan human-like typing
+    # Isi Password
     step("> ", "Memasukkan password...")
     password_input = page.locator('input[name="Passwd"]')
     if await password_input.count() == 0:
@@ -582,10 +550,9 @@ async def handle_google_login(page, email, password):
         raise Exception(f"Google error: {err}")
 
     await password_input.first.click()
-    await asyncio.sleep(0.3 + (0.1 * (hash(password) % 4)))  # Random delay
-    # Type char by char untuk lebih human-like
-    await password_input.first.type(password, delay=40 + (hash(password) % 60))  # 40-100ms per char
-    await asyncio.sleep(0.4 + (0.1 * (hash(password) % 3)))
+    await asyncio.sleep(0.2)
+    await password_input.first.fill(password)
+    await asyncio.sleep(0.3)
 
     step("> ", "Klik Next (password)...")
     next_btn = page.locator('#passwordNext')
@@ -593,7 +560,7 @@ async def handle_google_login(page, email, password):
         await next_btn.click()
     else:
         await page.locator('span:text-is("Next")').first.click()
-    await asyncio.sleep(2 + (0.5 * (hash(password) % 4)))  # Random delay 2-4s
+    await asyncio.sleep(2)
 
     # Handle "I understand" + "Continue" untuk akun GSuite baru
     step("> ", "Mengecek halaman interstitial GSuite...")
@@ -1081,114 +1048,9 @@ def list_accounts(log_file):
     print()
 
 
-# ── Manual Mode Processing ──────────────────────────────────────
-async def process_account_manual(context, email, index, total, worker_id=1):
-    """
-    Mode semi-auto: User login manual, bot capture token otomatis.
-    """
-    fast_print(f"  [bold bright_cyan]>[/]  Akun {index}/{total} — {email} [Worker {worker_id}] [MANUAL MODE]", style="bold bright_cyan")
-    
-    page = await context.new_page()
-    result = {"email": email, "password": "manual", "refresh_token": "", "success": False}
-    
-    # Setup token capture via network interception
-    token_capture = TokenCapture()
-    token_capture.attach(context)
-    
-    try:
-        # 1. Navigasi ke Kiro landing page
-        step("> ", "Navigasi ke Kiro landing page...")
-        await page.goto(KIRO_LANDING_URL, wait_until="load", timeout=60000)
-        await asyncio.sleep(2)
-        
-        # 2. Instruksi untuk user
-        fast_print("\n" + "="*70, style="bold yellow")
-        fast_print("  🔔 MODE MANUAL AKTIF", style="bold yellow")
-        fast_print("="*70, style="bold yellow")
-        fast_print("  📌 INSTRUKSI:", style="bold bright_white")
-        fast_print("     1. Klik tombol 'Sign in' di browser", style="bright_white")
-        fast_print("     2. Login dengan Google (manual)", style="bright_white")
-        fast_print("     3. Handle captcha/verification jika ada", style="bright_white")
-        fast_print("     4. Klik 'Allow/Izinkan' untuk consent", style="bright_white")
-        fast_print("     5. Tunggu sampai redirect ke app.kiro.dev", style="bright_white")
-        fast_print("     6. Bot akan AUTO CAPTURE refresh token!", style="bold bright_green")
-        fast_print("", style="")
-        fast_print(f"  ⏱️  Timeout: 5 menit (300 detik)", style="bright_yellow")
-        fast_print("="*70 + "\n", style="bold yellow")
-        
-        # 3. Tunggu user login manual (max 5 menit)
-        step("> ", "Menunggu Anda login manual...")
-        start_time = time.time()
-        timeout = 300  # 5 menit
-        check_interval = 2  # Check setiap 2 detik
-        
-        logged_in = False
-        while (time.time() - start_time) < timeout:
-            elapsed = int(time.time() - start_time)
-            
-            # Check URL apakah sudah di app.kiro.dev (dan bukan signin page)
-            try:
-                current_url = page.url
-                if KIRO_APP_DOMAIN in current_url and "/signin" not in current_url:
-                    step("[green]>[/]", f"Login berhasil terdeteksi! URL: {current_url[:60]}")
-                    logged_in = True
-                    break
-            except Exception:
-                pass
-            
-            # Log progress setiap 15 detik
-            if elapsed > 0 and elapsed % 15 == 0:
-                remaining = timeout - elapsed
-                step("[yellow]...[/]", f"Menunggu login... ({elapsed}s berlalu, {remaining}s tersisa)")
-            
-            await asyncio.sleep(check_interval)
-        
-        if not logged_in:
-            raise Exception("Timeout! Login manual tidak selesai dalam 5 menit")
-        
-        # 4. Tunggu page stabil
-        step("> ", "Login berhasil! Tunggu page stabil...")
-        await asyncio.sleep(5)
-        
-        try:
-            await page.wait_for_load_state("networkidle", timeout=30000)
-        except Exception:
-            step("!", "Networkidle timeout, lanjut capture token...")
-        
-        # 5. Capture refresh token
-        step("> ", "Mengambil refresh token...")
-        refresh_token = await capture_refresh_token(page, context, token_capture, timeout=120)
-        
-        if not refresh_token:
-            raise Exception("Refresh token tidak ditemukan (network, localStorage, URL, cookies semua gagal)")
-        
-        result["refresh_token"] = refresh_token
-        result["success"] = True
-        
-        step("[green]>[/]", f"Refresh token captured (...{refresh_token[-8:]})")
-        ok(f"AKUN #{index} BERHASIL! [Worker {worker_id}]")
-        fast_print(f"    Email : {email}")
-        fast_print(f"    Token : ...{refresh_token[-8:]} (disimpan ke file)")
-        
-    except Exception as e:
-        fail(f"AKUN #{index} GAGAL: {e} [Worker {worker_id}]")
-        result["success"] = False
-        result["error"] = str(e)
-    finally:
-        try:
-            await page.close()
-        except Exception:
-            pass
-    
-    return result
-
-
 # ── Main Processing ──────────────────────────────────────
-async def process_account(context, email, password, index, total, worker_id=1, register_mode=False, manual_mode=False):
+async def process_account(context, email, password, index, total, worker_id=1, register_mode=False):
     """Proses satu akun: Kiro signin → Google login → consent → capture refresh token."""
-
-    if manual_mode:
-        return await process_account_manual(context, email, index, total, worker_id)
 
     mode_label = "REGISTER" if register_mode else "LOGIN"
     fast_print(f"  [bold bright_magenta]>[/]  Akun {index}/{total} — {email} [Worker {worker_id}] [{mode_label}]", style="bold bright_magenta")
@@ -1201,129 +1063,12 @@ async def process_account(context, email, password, index, total, worker_id=1, r
     token_capture.attach(context)
 
     try:
-        # 1. Navigasi ke Kiro landing page (kiro.dev)
-        step("> ", "Navigasi ke Kiro landing page...")
-        await goto_robust(page, KIRO_LANDING_URL, desc="Kiro Landing Page")
-        
-        # Random delay seperti user membaca halaman
-        await asyncio.sleep(2 + (0.5 * (hash(email) % 4)))  # 2-4s
-        
-        # 2. Cari dan klik tombol "Sign in" di landing page
-        step("> ", "Mencari tombol 'Sign in' di landing page...")
-        signin_btn = None
-        signin_selectors = [
-            'a[href*="signin"]:has-text("Sign in")',
-            'a[href*="/signin"]:has-text("Sign in")',
-            'button:has-text("Sign in")',
-            'a:has-text("Sign In")',
-            'button:has-text("Sign In")',
-            'a[href*="signin"]',
-            'a[href*="/signin"]',
-            'a[href*="login"]',
-            'a:has-text("LOGIN")',
-            'button:has-text("LOGIN")',
-            'a:has-text("Log in")',
-            'button:has-text("Log in")',
-        ]
-        
-        for sel in signin_selectors:
-            btn = page.locator(sel).first
-            try:
-                if await btn.count() > 0 and await btn.is_visible():
-                    # Validasi href jika element adalah <a>
-                    href = None
-                    try:
-                        href = await btn.get_attribute("href")
-                    except Exception:
-                        pass
-                    
-                    text = await btn.inner_text(timeout=1000) if await btn.is_visible() else ""
-                    
-                    # Pastikan ini bukan link ke Google Search
-                    if href and ("google.com" in href or "search" in href):
-                        continue
-                    
-                    if any(kw in text.lower() for kw in ["sign in", "log in", "signin", "login"]):
-                        signin_btn = btn
-                        step("> ", f"Tombol 'Sign in' ditemukan: {sel} (href={href})")
-                        break
-            except Exception:
-                continue
-        
-        if signin_btn:
-            try:
-                await signin_btn.click(timeout=10000)
-            except Exception:
-                try:
-                    await signin_btn.evaluate("el => el.click()")
-                except Exception:
-                    pass
-            step("> ", "Klik 'Sign in'", "ok")
-            
-            # Tunggu redirect - LEBIH LAMA untuk SPA
-            await asyncio.sleep(8)  # Tunggu redirect (increase dari 5s ke 8s)
-            
-            # Tunggu sampai halaman signin fully loaded dengan retry
-            for retry in range(3):
-                try:
-                    await page.wait_for_load_state("load", timeout=30000)
-                    await page.wait_for_load_state("networkidle", timeout=20000)
-                    break
-                except Exception:
-                    step("!", f"Timeout waiting for load state, retry {retry+1}/3...")
-                    await asyncio.sleep(5)
-            
-            # Validasi halaman signin tidak blank dengan multiple checks
-            for check in range(5):
-                try:
-                    body_text = await page.evaluate("document.body ? document.body.innerText.trim().length : 0")
-                    current_url = page.url
-                    step("> ", f"Check #{check+1}: URL={current_url[:60]}, chars={body_text}")
-                    
-                    if body_text > 100:
-                        step("> ", f"Signin page loaded OK ({body_text} chars)")
-                        break
-                    
-                    if body_text < 20:
-                        step("!", f"Signin page blank ({body_text} chars), tunggu lagi...")
-                        await asyncio.sleep(3)
-                        
-                        # Reload hanya jika benar-benar blank dan bukan di Google Search
-                        if check >= 2 and "google.com/search" not in current_url:
-                            try:
-                                step("> ", "Reload page karena blank...")
-                                await page.reload(wait_until="load", timeout=30000)
-                                await asyncio.sleep(5)
-                            except Exception:
-                                pass
-                except Exception as e:
-                    step("!", f"Error checking page: {e}")
-                    await asyncio.sleep(2)
-                    
-        else:
-            # Fallback: langsung ke signin URL
-            step("[yellow]...[/]", "Tombol Sign in tidak ditemukan, navigasi langsung ke signin...")
-            await goto_robust(page, KIRO_SIGNIN_URL, desc="Kiro Signin")
+        # 1. Navigasi ke Kiro signin
+        step("> ", "Navigasi ke Kiro signin...")
+        await goto_robust(page, KIRO_SIGNIN_URL, desc="Kiro Signin")
 
-        # 3. Klik Google pada "Choose a way to sign in/sign up"
+        # 2. Klik Google pada "Choose a way to sign in/sign up"
         step("> ", "Mencari tombol Google...")
-        
-        # Cek URL dulu sebelum mencari tombol
-        current_url = page.url
-        step("> ", f"Current URL: {current_url}")
-        
-        # Jika redirect ke Google Search, ada masalah - langsung ke signin URL
-        if "google.com/search" in current_url:
-            step("!", "Terdeteksi redirect ke Google Search, navigasi ulang ke signin...")
-            await goto_robust(page, KIRO_SIGNIN_URL, desc="Kiro Signin (direct)")
-            await asyncio.sleep(5)
-        
-        # Jika masih di landing page atau bukan di signin page, navigasi ulang
-        if "app.kiro.dev" not in current_url or current_url == "https://app.kiro.dev/":
-            step("!", f"URL tidak sesuai ({current_url}), navigasi ke signin...")
-            await goto_robust(page, KIRO_SIGNIN_URL, desc="Kiro Signin (fallback)")
-            await asyncio.sleep(5)
-        
         await asyncio.sleep(3)
 
         # Tunggu halaman SPA load — bisa redirect ke Cognito hosted UI
@@ -1495,131 +1240,20 @@ async def process_account(context, email, password, index, total, worker_id=1, r
 
 
 # ── Worker Function ──────────────────────────────────────
-async def worker_task(account_index, email, password, browser, stealth, worker_id, total_accounts, register_mode=False, manual_mode=False, ctx=None):
+async def worker_task(account_index, email, password, browser, stealth, worker_id, total_accounts, register_mode=False, ctx=None):
     if ctx is None:
-        # Simplified context - minimal stealth untuk avoid property override errors
-        ctx = await browser.new_context(
-            permissions=["clipboard-read", "clipboard-write"],
-            viewport={"width": 1920, "height": 1080},
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-            java_script_enabled=True,
-            locale="en-US",
-        )
-        # DISABLE playwright-stealth untuk avoid readonly property errors
-        # await stealth.apply_stealth_async(ctx)
-        
-        # Minimal stealth - HANYA override webdriver (yang paling penting)
-        await ctx.add_init_script("""
-            // Only override webdriver - don't touch other properties
-            try {
-                Object.defineProperty(navigator, 'webdriver', {
-                    get: () => undefined,
-                    configurable: true
-                });
-            } catch(e) {}
-            
-            // Add chrome object minimally
-            if (!window.chrome) {
-                window.chrome = { runtime: {} };
-            }
-        """)
-    else:
-        ctx = await ctx.new_context(
-            permissions=["clipboard-read", "clipboard-write"],
-            viewport={"width": 1920, "height": 1080},
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-            java_script_enabled=True,
-            locale="en-US",
-        )
-
-    r = await process_account(
-        ctx, email, password, account_index,
-        total=total_accounts, worker_id=worker_id, register_mode=register_mode, manual_mode=manual_mode,
-    )
-    await ctx.close()
-    return r
-    if ctx is None:
-        # Randomize user agent untuk setiap worker - gunakan versi Chrome yang lebih update
-        chrome_versions = ["131.0.0.0", "130.0.0.0", "129.0.0.0"]
-        chrome_ver = chrome_versions[account_index % len(chrome_versions)]
-        
-        # Platform variations untuk lebih realistis
-        platforms = [
-            "Windows NT 10.0; Win64; x64",
-            "Windows NT 10.0; WOW64",
-            "Windows NT 10.0",
-        ]
-        platform = platforms[account_index % len(platforms)]
-        
         ctx = await browser.new_context(
             permissions=["clipboard-read", "clipboard-write"],
             viewport={"width": 1920, "height": 1080},
             user_agent=(
-                f"Mozilla/5.0 ({platform}) "
-                f"AppleWebKit/537.36 (KHTML, like Gecko) "
-                f"Chrome/{chrome_ver} Safari/537.36"
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/131.0.0.0 Safari/537.36"
             ),
             java_script_enabled=True,
             locale="en-US",
-            timezone_id="America/New_York",  # Add timezone
-            extra_http_headers={
-                "Accept-Language": "en-US,en;q=0.9",
-                "Accept-Encoding": "gzip, deflate, br",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-                "DNT": "1",
-                "Connection": "keep-alive",
-                "Upgrade-Insecure-Requests": "1",
-                "Sec-Fetch-Dest": "document",
-                "Sec-Fetch-Mode": "navigate",
-                "Sec-Fetch-Site": "none",
-                "Sec-Fetch-User": "?1",
-                "Cache-Control": "max-age=0",
-            },
         )
         await stealth.apply_stealth_async(ctx)
-        
-        # Inject extra stealth scripts - enhanced
-        await ctx.add_init_script("""
-            // Override navigator properties
-            Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
-            Object.defineProperty(navigator, 'plugins', {
-                get: () => [
-                    {name: 'Chrome PDF Plugin', filename: 'internal-pdf-viewer', description: 'Portable Document Format'},
-                    {name: 'Chrome PDF Viewer', filename: 'mhjfbmdgcfjbbpaeojofohoefgiehjai', description: ''},
-                    {name: 'Native Client', filename: 'internal-nacl-plugin', description: ''}
-                ]
-            });
-            Object.defineProperty(navigator, 'languages', {get: () => ['en-US', 'en']});
-            Object.defineProperty(navigator, 'platform', {get: () => 'Win32'});
-            Object.defineProperty(navigator, 'hardwareConcurrency', {get: () => 8});
-            Object.defineProperty(navigator, 'deviceMemory', {get: () => 8});
-            Object.defineProperty(navigator, 'maxTouchPoints', {get: () => 0});
-            
-            // Override permissions
-            const originalQuery = window.navigator.permissions.query;
-            window.navigator.permissions.query = (parameters) => (
-                parameters.name === 'notifications' ?
-                    Promise.resolve({state: Notification.permission}) :
-                    originalQuery(parameters)
-            );
-            
-            // Chrome runtime
-            window.chrome = {
-                runtime: {},
-                loadTimes: function() {},
-                csi: function() {},
-                app: {}
-            };
-            
-            // Add missing properties
-            if (!window.chrome.app) {
-                window.chrome.app = {
-                    isInstalled: false,
-                    InstallState: {DISABLED: 'disabled', INSTALLED: 'installed', NOT_INSTALLED: 'not_installed'},
-                    RunningState: {CANNOT_RUN: 'cannot_run', READY_TO_RUN: 'ready_to_run', RUNNING: 'running'}
-                };
-            }
-        """)
     else:
         ctx = await ctx.new_context(
             permissions=["clipboard-read", "clipboard-write"],
@@ -1676,7 +1310,6 @@ Examples:
     parser.add_argument("--inject-from-file", type=str, default=None, metavar="FILE", help="Inject dari file kiro_tokens.txt ke 9router")
     parser.add_argument("--provider", type=str, default="kiro", help="Provider name untuk 9router (default: kiro)")
     parser.add_argument("--chrome", action="store_true", help="Gunakan system Chrome/Chromium (bukan Playwright Chromium)")
-    parser.add_argument("--manual", action="store_true", help="Mode semi-auto: Anda login manual, bot capture token otomatis")
     return parser.parse_args()
 
 
@@ -1712,43 +1345,18 @@ async def main():
     headless = not args.visible
 
     async with async_playwright() as p:
-        # Simplified launch args - remove aggressive flags yang cause ERR_INVALID_ARGUMENT
-        launch_args = [
-            "--disable-blink-features=AutomationControlled",
-            "--no-sandbox",
-            "--disable-dev-shm-usage",
-            "--no-first-run",
-            "--disable-infobars",
-            "--no-default-browser-check",
-            "--window-size=1920,1080",
+        launch_args = BROWSER_ARGS + [
             "--start-maximized",
-            "--lang=en-US,en",
+            "--incognito"
         ]
-        
-        # Launch browser dengan channel (gunakan system Chrome jika ada)
-        try:
-            # Try chrome channel first (lebih natural)
-            browser = await p.chromium.launch(
-                headless=headless,
-                channel="chrome",  # Use system Chrome
-                args=launch_args
-            )
-            step("> ", "Menggunakan system Chrome")
-        except Exception:
-            # Fallback ke chromium biasa
-            browser = await p.chromium.launch(
-                headless=headless,
-                args=launch_args
-            )
-            step("> ", "Menggunakan Playwright Chromium")
-        
-        # Simplified context - remove extra headers yang cause ERR_INVALID_ARGUMENT
+        browser = await p.chromium.launch(
+            headless=headless,
+            args=launch_args
+        )
         context = await browser.new_context(
             viewport={"width": 1920, "height": 1080},
             java_script_enabled=True,
-            locale="en-US",
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-            # Remove extra_http_headers yang conflict
+            locale="en-US"
         )
 
         stealth = Stealth()
@@ -1818,9 +1426,7 @@ async def main():
 # ── Mode: Login / Register ──
         public_ip = await asyncio.to_thread(get_public_ip)
 
-        if args.manual:
-            info("MODE: MANUAL (Anda login manual, bot capture token)")
-        elif args.register:
+        if args.register:
             info("MODE: REGISTER (akun Kiro baru via Google)")
         else:
             info("MODE: LOGIN (akun Kiro yang sudah terdaftar)")
@@ -1900,25 +1506,13 @@ async def main():
             fast_print(f"  [bold bright_magenta]>[/]  Batch {batch_num}/{total_batches} — {len(batch)} akun...",
                        style="bold bright_magenta")
 
-            # Launch browser dengan channel chrome (lebih natural)
-            try:
-                fresh_browser = await p.chromium.launch(
-                    headless=headless, 
-                    channel="chrome",  # Use system Chrome
-                    args=launch_args
-                )
-            except Exception:
-                # Fallback ke chromium
-                fresh_browser = await p.chromium.launch(
-                    headless=headless, 
-                    args=launch_args
-                )
+            fresh_browser = await p.chromium.launch(headless=headless, args=BROWSER_ARGS)
 
             batch_tasks = []
             for idx, email, pwd in batch:
                 wid = (idx - 1) % NUM_WORKERS + 1
                 task = asyncio.create_task(
-                    worker_task(idx, email, pwd, fresh_browser, stealth, wid, total_accounts, register_mode=args.register, manual_mode=args.manual)
+                    worker_task(idx, email, pwd, fresh_browser, stealth, wid, total_accounts, register_mode=args.register)
                 )
                 batch_tasks.append(task)
 
