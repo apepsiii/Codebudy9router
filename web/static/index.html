@@ -211,8 +211,22 @@
                             </div>
                             <button @click="exportTokens()"
                                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
-                                <i class="fas fa-download mr-2"></i> Export Tokens
+                                <i class="fas fa-download mr-2"></i> Export Tokens (.txt)
                             </button>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button @click="exportExcel('')"
+                                        class="bg-green-700 hover:bg-green-800 text-white font-medium py-2 px-2 rounded-lg transition text-xs">
+                                    <i class="fas fa-file-excel mr-1"></i> All
+                                </button>
+                                <button @click="exportExcel('success')"
+                                        class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-2 rounded-lg transition text-xs">
+                                    <i class="fas fa-file-excel mr-1"></i> Success
+                                </button>
+                                <button @click="exportExcel('failed')"
+                                        class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-2 rounded-lg transition text-xs">
+                                    <i class="fas fa-file-excel mr-1"></i> Failed
+                                </button>
+                            </div>
                             <button @click="show9RouterModal = true"
                                     class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition">
                                 <i class="fas fa-upload mr-2"></i> Inject to 9Router
@@ -617,6 +631,29 @@
                         }
                     } catch (error) {
                         this.showToast('Error starting process', 'error');
+                    }
+                },
+
+                async exportExcel(status) {
+                    try {
+                        const url = status ? `/api/export/excel?status=${status}` : '/api/export/excel';
+                        const resp = await fetch(url);
+                        if (resp.ok) {
+                            const blob = await resp.blob();
+                            const a = document.createElement('a');
+                            a.href = URL.createObjectURL(blob);
+                            const cd = resp.headers.get('Content-Disposition') || '';
+                            const match = cd.match(/filename=(.+)/);
+                            a.download = match ? match[1] : 'kiro_accounts.xlsx';
+                            a.click();
+                            URL.revokeObjectURL(a.href);
+                            this.showToast('Excel exported successfully', 'success');
+                        } else {
+                            const error = await resp.json();
+                            this.showToast(error.detail || 'No data to export', 'error');
+                        }
+                    } catch (e) {
+                        this.showToast('Error exporting Excel', 'error');
                     }
                 },
 

@@ -3,11 +3,12 @@ Kiro Web Dashboard - FastAPI Backend
 """
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel
 from typing import List, Optional
 import asyncio
 import os
+import io
 from datetime import datetime
 
 # Import database models
@@ -343,6 +344,123 @@ async def export_tokens():
             "file": output_file,
             "count": len(success_accounts)
         }
+    finally:
+        session.close()
+
+
+@app.get("/api/export/excel")
+async def export_excel(status: Optional[str] = None):
+    """Export accounts to Excel file"""
+    from openpyxl import Workbook
+    from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+    from openpyxl.utils import get_column_letter
+
+    session = get_session()
+    try:
+        query = session.query(Account)
+        if status:
+            query = query.filter(Account.status == status)
+        accounts = query.order_by(Account.created_at.desc()).all()
+
+        if not accounts:
+            raise HTTPException(status_code=404, detail="No accounts found")
+
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Kiro Accounts"
+
+        header_fill = PatternFill(start_color="6B21A8", end_color="6B21A8", fill_type="solid")
+        header_font = Font(color="FFFFFF", bold=True, size=11)
+        center = Alignment(horizontal="center", vertical="center")
+        thin = Border(
+            left=Side(style="thin"), right=Side(style="thin"),
+            top=Side(style="thin"), bottom=Side(style="thin")
+        )
+
+        headers = ["#", "Email", "Password", "Type", "Status", "Refresh Token", "Injected to 9Router", "Injected At", "Processed At", "Error Message", "Created At"]
+        col_widths = [5, 35, 20, 10, 12, 80, 18, 20, 20, 40, 20]
+
+        for col, (header, width) in enumerate(zip(headers, col_widths), 1):
+            cell = ws.cell(row=1, column=col, value=header)
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.alignment = center
+            cell.border = thin
+            ws.column_dimensions[get_column_letter(col)].width = width
+
+        ws.row_dimensions[1].height = 22
+
+        status_colors = {
+            "success": "D1FAE5",
+            "failed": "FEE2E2",
+            "processing": "FEF9C3",
+            "pending": "F3F4F6",
+        }
+
+        for row_idx, account in enumerate(accounts, 2):
+            row_fill = PatternFill(
+                start_color=status_colors.get(account.status, "FFFFFF"),
+                end_color=status_colors.get(account.status, "FFFFFF"),
+                fill_type="solid"
+            )
+            values = [
+                row_idx - 1,
+                account.email,
+                account.password,
+                account.account_type,
+                account.status,
+                account.refresh_token or "",
+                "Yes" if account.injected_to_9router else "No",
+                account.injected_at.strftime("%Y-%m-%d %H:%M:%S") if account.injected_at else "",
+                account.processed_at.strftime("%Y-%m-%d %H:%M:%S") if account.processed_at else "",
+                account.error_message or "",
+                account.created_at.strftime("%Y-%m-%d %H:%M:%S") if account.created_at else "",
+            ]
+            for col, value in enumerate(values, 1):
+                cell = ws.cell(row=row_idx, column=col, value=value)
+                cell.fill = row_fill
+                cell.border = thin
+                cell.alignment = Alignment(vertical="center", wrap_text=(col == 6))
+            ws.row_dimensions[row_idx].height = 18
+
+        ws.freeze_panes = "A2"
+        ws.auto_filter.ref = f"A1:{get_column_letter(len(headers))}1"
+
+        summary_ws = wb.create_sheet("Summary")
+        total = len(accounts)
+        success_count = sum(1 for a in accounts if a.status == "success")
+        failed_count = sum(1 for a in accounts if a.status == "failed")
+        pending_count = sum(1 for a in accounts if a.status == "pending")
+        injected_count = sum(1 for a in accounts if a.injected_to_9router)
+
+        summary_data = [
+            ("Total Accounts", total),
+            ("Success", success_count),
+            ("Failed", failed_count),
+            ("Pending", pending_count),
+            ("Injected to 9Router", injected_count),
+            ("Success Rate", f"{round(success_count / total * 100, 1) if total > 0 else 0}%"),
+            ("Export Date", datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")),
+        ]
+        summary_ws.column_dimensions["A"].width = 25
+        summary_ws.column_dimensions["B"].width = 20
+        for r, (label, value) in enumerate(summary_data, 1):
+            lc = summary_ws.cell(row=r, column=1, value=label)
+            lc.font = Font(bold=True)
+            lc.border = thin
+            vc = summary_ws.cell(row=r, column=2, value=value)
+            vc.border = thin
+
+        output = io.BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        filename = f"kiro_accounts_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.xlsx"
+        return StreamingResponse(
+            output,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f"attachment; filename={filename}"}
+        )
     finally:
         session.close()
 
