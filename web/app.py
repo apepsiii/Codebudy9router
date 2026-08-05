@@ -510,64 +510,105 @@ async def inject_tokens_background(account_ids: list, router_url: str, router_pa
 # ============================================================================
 
 async def process_accounts_background(account_ids: List[int], config: ProcessConfig):
-    """Background task to process accounts"""
-    # TODO: Integrate with main.py processing logic
-    # For now, just simulate processing
-    
+    """Background task to process accounts using real Playwright automation from main.py"""
+    import sys
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+    from main import process_account, BROWSER_ARGS
+    from playwright.async_api import async_playwright
+    from playwright_stealth import Stealth
+
     session = get_session()
     try:
+        accounts_data = []
         for account_id in account_ids:
             account = session.query(Account).filter(Account.id == account_id).first()
             if not account:
                 continue
-            
-            # Update status to processing
             account.status = "processing"
-            session.commit()
-            
-            # Log
             log = ProcessLog(
                 account_id=account_id,
                 log_type="info",
-                message=f"Processing account {account.email}..."
+                message=f"Starting processing for {account.email}..."
             )
             session.add(log)
-            session.commit()
-            
-            # Simulate processing (placeholder)
-            await asyncio.sleep(2)
-            
-            # TODO: Call actual processing function from main.py
-            # For now, simulate success/failure
-            import random
-            success = random.choice([True, False])
-            
-            if success:
-                account.status = "success"
-                account.refresh_token = f"token_simulated_{account_id}"
-                account.processed_at = datetime.utcnow()
-                
-                log = ProcessLog(
-                    account_id=account_id,
-                    log_type="success",
-                    message=f"Successfully captured token for {account.email}"
-                )
-            else:
-                account.status = "failed"
-                account.error_message = "Simulated failure"
-                
-                log = ProcessLog(
-                    account_id=account_id,
-                    log_type="error",
-                    message=f"Failed to process {account.email}: Simulated failure"
-                )
-            
-            session.add(log)
-            session.commit()
-            
-            await asyncio.sleep(config.delay)
+            accounts_data.append((account_id, account.email, account.password, account.account_type))
+        session.commit()
     finally:
         session.close()
+
+    headless = not config.visible
+    register_mode = False
+
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(
+            headless=headless,
+            args=BROWSER_ARGS + ["--start-maximized"]
+        )
+        stealth = Stealth()
+
+        for idx, (account_id, email, password, account_type) in enumerate(accounts_data):
+            ctx = await browser.new_context(
+                permissions=["clipboard-read", "clipboard-write"],
+                viewport={"width": 1920, "height": 1080},
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+                java_script_enabled=True,
+                locale="en-US",
+            )
+            await ctx.add_init_script("""
+                try {
+                    Object.defineProperty(navigator, 'webdriver', {get: () => undefined, configurable: true});
+                } catch(e) {}
+                if (!window.chrome) { window.chrome = { runtime: {} }; }
+            """)
+
+            result = await process_account(
+                ctx, email, password,
+                index=idx + 1,
+                total=len(accounts_data),
+                worker_id=1,
+                register_mode=(account_type == "register"),
+                manual_mode=config.manual_mode,
+            )
+            await ctx.close()
+
+            session = get_session()
+            try:
+                account = session.query(Account).filter(Account.id == account_id).first()
+                if not account:
+                    continue
+
+                if result.get("success") and result.get("refresh_token"):
+                    account.status = "success"
+                    account.refresh_token = result["refresh_token"]
+                    account.processed_at = datetime.utcnow()
+
+                    output_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "kiro_tokens.txt")
+                    with open(output_file, "a", encoding="utf-8") as f:
+                        f.write(f"{email}:{result['refresh_token']}\n")
+
+                    log = ProcessLog(
+                        account_id=account_id,
+                        log_type="success",
+                        message=f"Token captured for {email}: ...{result['refresh_token'][-8:]}"
+                    )
+                else:
+                    account.status = "failed"
+                    account.error_message = result.get("error", "Unknown error")
+                    log = ProcessLog(
+                        account_id=account_id,
+                        log_type="error",
+                        message=f"Failed to process {email}: {result.get('error', 'Unknown error')}"
+                    )
+
+                session.add(log)
+                session.commit()
+            finally:
+                session.close()
+
+            await asyncio.sleep(config.delay)
+
+        await browser.close()
 
 
 # Mount static files
