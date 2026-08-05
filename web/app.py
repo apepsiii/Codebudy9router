@@ -279,6 +279,28 @@ async def stop_processing():
     return {"message": "Stop signal sent"}
 
 
+@app.get("/api/logs/recent")
+async def get_recent_logs(limit: int = 30):
+    """Get recent logs for all processing accounts"""
+    session = get_session()
+    try:
+        processing_ids = [a.id for a in session.query(Account).filter(Account.status == "processing").all()]
+        if not processing_ids:
+            return []
+        logs = session.query(ProcessLog).filter(
+            ProcessLog.account_id.in_(processing_ids)
+        ).order_by(ProcessLog.created_at.desc()).limit(limit).all()
+        return [{
+            "id": log.id,
+            "account_id": log.account_id,
+            "log_type": log.log_type,
+            "message": log.message,
+            "created_at": log.created_at.isoformat()
+        } for log in logs]
+    finally:
+        session.close()
+
+
 @app.get("/api/logs/{account_id}")
 async def get_account_logs(account_id: int, limit: int = 50):
     """Get logs for specific account"""

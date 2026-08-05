@@ -480,35 +480,29 @@
                     setInterval(() => {
                         if (this.stats.processing > 0) {
                             this.pollLiveLogs();
+                        } else {
+                            this.liveLogs = [];
+                            this.accountLogs = {};
                         }
-                    }, 2000);
+                    }, 3000);
                 },
 
                 async pollLiveLogs() {
-                    const processing = this.accounts.filter(a => a.status === 'processing');
-                    if (processing.length === 0) return;
-
-                    const allLogs = [];
-                    for (const account of processing) {
-                        try {
-                            const resp = await fetch(`/api/logs/${account.id}?limit=20`);
-                            if (resp.ok) {
-                                const logs = await resp.json();
-                                if (logs.length > 0) {
-                                    this.accountLogs[account.id] = logs[0].message.substring(0, 60);
-                                    allLogs.push(...logs.map(l => ({ ...l, email: account.email })));
-                                }
+                    try {
+                        const resp = await fetch('/api/logs/recent?limit=30');
+                        if (!resp.ok) return;
+                        const logs = await resp.json();
+                        this.liveLogs = logs;
+                        for (const log of logs) {
+                            if (!this.accountLogs[log.account_id]) {
+                                this.accountLogs[log.account_id] = log.message.substring(0, 60);
                             }
-                        } catch (e) {}
-                    }
-
-                    allLogs.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                    this.liveLogs = allLogs.slice(0, 20);
-
-                    this.$nextTick(() => {
-                        const el = document.getElementById('live-log-container');
-                        if (el) el.scrollTop = el.scrollHeight;
-                    });
+                        }
+                        this.$nextTick(() => {
+                            const el = document.getElementById('live-log-container');
+                            if (el) el.scrollTop = el.scrollHeight;
+                        });
+                    } catch (e) {}
                 },
 
                 async toggleInjected(account) {
