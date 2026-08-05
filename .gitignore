@@ -3,7 +3,12 @@ account.txt
 account.json
 cloudflare_api.txt
 registerakun.txt
+kiro_tokens.txt
+kiro_api.txt
 *.bak
+
+# Database
+kiro.db
 
 # Python
 __pycache__/
