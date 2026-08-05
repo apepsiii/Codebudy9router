@@ -221,33 +221,30 @@ class TokenCapture:
 
 
 async def get_tokens_from_localstorage(page) -> dict:
-    """Ambil Cognito tokens dari localStorage."""
+    """Ambil Cognito tokens dari localStorage - optimized version."""
     try:
         return await page.evaluate("""() => {
             const tokens = {};
             const keys = Object.keys(localStorage);
+            
+            // Single pass through all keys with early exit when all tokens found
             for (const key of keys) {
                 const lower = key.toLowerCase();
-                if (lower.includes('refreshtoken')) {
+                
+                // Check both lowercase and dot notation in one pass
+                if (!tokens.refresh_token && (lower.includes('refreshtoken') || key.includes('.refreshToken'))) {
                     tokens.refresh_token = localStorage.getItem(key);
                 }
-                if (lower.includes('accesstoken') && !lower.includes('refresh')) {
+                if (!tokens.access_token && (lower.includes('accesstoken') || key.includes('.accessToken')) && !lower.includes('refresh')) {
                     tokens.access_token = localStorage.getItem(key);
                 }
-                if (lower.includes('idtoken') && !lower.includes('refresh')) {
+                if (!tokens.id_token && (lower.includes('idtoken') || key.includes('.idToken')) && !lower.includes('refresh')) {
                     tokens.id_token = localStorage.getItem(key);
                 }
-            }
-            // Also check for keys with dots (Cognito format)
-            for (const key of keys) {
-                if (key.includes('.refreshToken')) {
-                    tokens.refresh_token = tokens.refresh_token || localStorage.getItem(key);
-                }
-                if (key.includes('.accessToken')) {
-                    tokens.access_token = tokens.access_token || localStorage.getItem(key);
-                }
-                if (key.includes('.idToken')) {
-                    tokens.id_token = tokens.id_token || localStorage.getItem(key);
+                
+                // Early exit if all tokens found
+                if (tokens.refresh_token && tokens.access_token && tokens.id_token) {
+                    break;
                 }
             }
             return tokens;
@@ -289,32 +286,32 @@ async def get_token_from_cookies(context) -> Optional[str]:
 async def capture_refresh_token(page, context, token_capture: TokenCapture, timeout: float = 120) -> Optional[str]:
     """
     Coba berbagai strategi untuk mendapatkan refresh token.
-    1. Network interception (paling reliable)
-    2. localStorage polling
+    1. localStorage (default - paling cepat)
+    2. Network interception (fallback)
     3. URL hash
     4. Cookies
     """
-    # Strategy 1: Network interception (sudah attach saat context dibuat)
-    step("> ", "Menunggu refresh token via network interception...")
-    found = await token_capture.wait(timeout=min(timeout, 60))
-    if found and token_capture.refresh_token:
-        step("[green]>[/]", "Refresh token via network interception!", "ok")
-        return token_capture.refresh_token
-
-    # Strategy 2: localStorage polling
-    step("> ", "Coba ambil dari localStorage...")
-    deadline = time.time() + timeout
+    # Strategy 1: localStorage (default - lebih cepat daripada network interception)
+    step("> ", "Mengambil refresh token dari localStorage...")
+    deadline = time.time() + 30  # 30 detik untuk localStorage
     while time.time() < deadline:
         tokens = await get_tokens_from_localstorage(page)
         if tokens.get("refresh_token"):
             step("[green]>[/]", "Refresh token via localStorage!", "ok")
+            # Simpan juga token lainnya
+            if tokens.get("access_token"):
+                token_capture.access_token = tokens["access_token"]
+            if tokens.get("id_token"):
+                token_capture.id_token = tokens["id_token"]
             return tokens["refresh_token"]
-        # Juga simpan access/id token jika ada
-        if tokens.get("access_token"):
-            token_capture.access_token = tokens["access_token"]
-        if tokens.get("id_token"):
-            token_capture.id_token = tokens["id_token"]
-        await asyncio.sleep(2)
+        await asyncio.sleep(1)  # Polling lebih cepat: 1 detik
+
+    # Strategy 2: Network interception (fallback jika localStorage gagal)
+    step("> ", "Fallback: menunggu refresh token via network interception...")
+    found = await token_capture.wait(timeout=min(timeout - 30, 30))
+    if found and token_capture.refresh_token:
+        step("[green]>[/]", "Refresh token via network interception!", "ok")
+        return token_capture.refresh_token
 
     # Strategy 3: URL hash
     step("> ", "Coba ambil dari URL hash...")
