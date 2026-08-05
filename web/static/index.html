@@ -223,8 +223,6 @@
                                 <i class="fas fa-list text-purple-600 mr-2"></i>
                                 Accounts (<span x-text="accounts.length">0</span>)
                             </h2>
-                            
-                            <!-- Filter -->
                             <div class="flex items-center space-x-2">
                                 <select x-model="filterStatus" @change="loadAccounts()"
                                         class="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-600">
@@ -237,13 +235,32 @@
                             </div>
                         </div>
 
+                        <!-- Live Log Panel -->
+                        <div x-show="stats.processing > 0" class="mb-4 bg-gray-900 rounded-lg p-3">
+                            <div class="flex items-center mb-2">
+                                <span class="inline-block w-2 h-2 bg-green-400 rounded-full animate-pulse mr-2"></span>
+                                <span class="text-green-400 text-xs font-mono font-bold">LIVE LOG</span>
+                            </div>
+                            <div class="space-y-1 max-h-32 overflow-y-auto" id="live-log-container">
+                                <template x-for="log in liveLogs" :key="log.id">
+                                    <div class="text-xs font-mono"
+                                         :class="{
+                                             'text-green-400': log.log_type === 'success',
+                                             'text-red-400': log.log_type === 'error',
+                                             'text-gray-300': log.log_type === 'info'
+                                         }"
+                                         x-text="'> ' + log.message"></div>
+                                </template>
+                                <div x-show="liveLogs.length === 0" class="text-gray-500 text-xs font-mono">Waiting for logs...</div>
+                            </div>
+                        </div>
+
                         <!-- Accounts Table -->
                         <div class="overflow-x-auto">
                             <table class="w-full">
                                 <thead class="bg-gray-50 border-b">
                                     <tr>
                                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
                                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Token</th>
                                         <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">9Router</th>
@@ -253,11 +270,9 @@
                                 <tbody class="divide-y divide-gray-200">
                                     <template x-for="account in accounts" :key="account.id">
                                         <tr class="hover:bg-gray-50">
-                                            <td class="px-4 py-3 text-sm" x-text="account.email"></td>
                                             <td class="px-4 py-3 text-sm">
-                                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
-                                                      :class="account.account_type === 'login' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'"
-                                                      x-text="account.account_type"></span>
+                                                <div x-text="account.email" class="font-medium"></div>
+                                                <div class="text-xs text-gray-400" x-text="account.account_type"></div>
                                             </td>
                                             <td class="px-4 py-3 text-sm">
                                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
@@ -268,6 +283,8 @@
                                                           'bg-red-100 text-red-800': account.status === 'failed'
                                                       }"
                                                       x-text="account.status"></span>
+                                                <div x-show="account.status === 'processing'" class="text-xs text-yellow-600 mt-1 font-mono" x-text="accountLogs[account.id] || ''"></div>
+                                                <div x-show="account.status === 'failed' && account.error_message" class="text-xs text-red-500 mt-1 truncate max-w-xs" x-text="account.error_message"></div>
                                             </td>
                                             <td class="px-4 py-3 text-sm">
                                                 <span x-show="account.refresh_token" class="text-green-600">
@@ -276,10 +293,15 @@
                                                 <span x-show="!account.refresh_token" class="text-gray-400">-</span>
                                             </td>
                                             <td class="px-4 py-3 text-sm">
-                                                <span x-show="account.injected_to_9router" class="text-purple-600">
-                                                    <i class="fas fa-check-circle"></i> Yes
-                                                </span>
-                                                <span x-show="!account.injected_to_9router" class="text-gray-400">No</span>
+                                                <button @click="toggleInjected(account)"
+                                                        x-show="account.refresh_token"
+                                                        :title="account.injected_to_9router ? 'Mark as NOT injected' : 'Mark as injected (manual)'"
+                                                        class="flex items-center space-x-1 px-2 py-1 rounded text-xs font-medium transition"
+                                                        :class="account.injected_to_9router ? 'bg-purple-100 text-purple-700 hover:bg-purple-200' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'">
+                                                    <i class="fas" :class="account.injected_to_9router ? 'fa-check-square' : 'fa-square'"></i>
+                                                    <span x-text="account.injected_to_9router ? 'Injected' : 'Not yet'"></span>
+                                                </button>
+                                                <span x-show="!account.refresh_token" class="text-gray-400 text-xs">-</span>
                                             </td>
                                             <td class="px-4 py-3 text-sm space-x-2">
                                                 <button @click="viewToken(account)" x-show="account.refresh_token"
@@ -290,9 +312,9 @@
                                                         class="text-green-600 hover:text-green-800" title="Copy Token">
                                                     <i class="fas fa-copy"></i>
                                                 </button>
-                                                <button @click="injectSingleTo9Router(account)" 
+                                                <button @click="injectSingleTo9Router(account)"
                                                         x-show="account.refresh_token && !account.injected_to_9router"
-                                                        class="text-purple-600 hover:text-purple-800" title="Inject to 9Router">
+                                                        class="text-purple-600 hover:text-purple-800" title="Auto Inject to 9Router">
                                                     <i class="fas fa-upload"></i>
                                                 </button>
                                                 <button @click="deleteAccount(account.id)"
@@ -304,7 +326,7 @@
                                     </template>
                                 </tbody>
                             </table>
-                            
+
                             <div x-show="accounts.length === 0" class="text-center py-12 text-gray-500">
                                 <i class="fas fa-inbox text-4xl mb-3"></i>
                                 <p>No accounts yet. Add accounts to get started.</p>
@@ -407,6 +429,8 @@
                     success_rate: 0
                 },
                 accounts: [],
+                liveLogs: [],
+                accountLogs: {},
                 newAccount: {
                     email: '',
                     password: '',
@@ -437,12 +461,58 @@
                     await this.refreshStats();
                     await this.loadAccounts();
                     await this.load9RouterConfig();
-                    
-                    // Auto refresh every 5 seconds
+
                     setInterval(() => {
                         this.refreshStats();
                         this.loadAccounts();
                     }, 5000);
+
+                    setInterval(() => {
+                        if (this.stats.processing > 0) {
+                            this.pollLiveLogs();
+                        }
+                    }, 2000);
+                },
+
+                async pollLiveLogs() {
+                    const processing = this.accounts.filter(a => a.status === 'processing');
+                    if (processing.length === 0) return;
+
+                    const allLogs = [];
+                    for (const account of processing) {
+                        try {
+                            const resp = await fetch(`/api/logs/${account.id}?limit=20`);
+                            if (resp.ok) {
+                                const logs = await resp.json();
+                                if (logs.length > 0) {
+                                    this.accountLogs[account.id] = logs[0].message.substring(0, 60);
+                                    allLogs.push(...logs.map(l => ({ ...l, email: account.email })));
+                                }
+                            }
+                        } catch (e) {}
+                    }
+
+                    allLogs.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    this.liveLogs = allLogs.slice(0, 20);
+
+                    this.$nextTick(() => {
+                        const el = document.getElementById('live-log-container');
+                        if (el) el.scrollTop = el.scrollHeight;
+                    });
+                },
+
+                async toggleInjected(account) {
+                    try {
+                        const resp = await fetch(`/api/accounts/${account.id}/mark-injected`, { method: 'PATCH' });
+                        if (resp.ok) {
+                            const result = await resp.json();
+                            account.injected_to_9router = result.injected;
+                            this.showToast(result.injected ? 'Marked as injected' : 'Marked as not injected', 'success');
+                            await this.refreshStats();
+                        }
+                    } catch (e) {
+                        this.showToast('Error updating status', 'error');
+                    }
                 },
 
                 async refreshStats() {

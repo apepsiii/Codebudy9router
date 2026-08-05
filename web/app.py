@@ -181,6 +181,22 @@ async def create_accounts_bulk(bulk: AccountBulkCreate):
         session.close()
 
 
+@app.patch("/api/accounts/{account_id}/mark-injected")
+async def mark_injected(account_id: int):
+    """Mark account as manually injected to 9router"""
+    session = get_session()
+    try:
+        account = session.query(Account).filter(Account.id == account_id).first()
+        if not account:
+            raise HTTPException(status_code=404, detail="Account not found")
+        account.injected_to_9router = not account.injected_to_9router
+        account.injected_at = datetime.utcnow() if account.injected_to_9router else None
+        session.commit()
+        return {"injected": account.injected_to_9router}
+    finally:
+        session.close()
+
+
 @app.delete("/api/accounts/{account_id}")
 async def delete_account(account_id: int):
     """Delete account"""
