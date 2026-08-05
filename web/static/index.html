@@ -199,6 +199,16 @@
                                     class="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-medium py-3 px-4 rounded-lg transition">
                                 <i class="fas fa-play mr-2"></i> Start Processing (<span x-text="stats.pending">0</span> pending)
                             </button>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button @click="resetAccounts('failed')" :disabled="stats.failed === 0"
+                                        class="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-400 text-white font-medium py-2 px-3 rounded-lg transition text-sm">
+                                    <i class="fas fa-redo mr-1"></i> Retry Failed (<span x-text="stats.failed">0</span>)
+                                </button>
+                                <button @click="resetAccounts('all')" :disabled="stats.total === 0"
+                                        class="bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-400 text-white font-medium py-2 px-3 rounded-lg transition text-sm">
+                                    <i class="fas fa-redo-alt mr-1"></i> Reset All
+                                </button>
+                            </div>
                             <button @click="exportTokens()"
                                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
                                 <i class="fas fa-download mr-2"></i> Export Tokens
@@ -643,6 +653,23 @@
                         }
                     } catch (error) {
                         this.showToast('Error deleting account', 'error');
+                    }
+                },
+
+                async resetAccounts(type) {
+                    const label = type === 'failed' ? 'failed accounts' : 'ALL accounts';
+                    if (!confirm(`Reset ${label} back to pending?`)) return;
+                    try {
+                        const url = type === 'failed' ? '/api/accounts/reset?status=failed' : '/api/accounts/reset';
+                        const resp = await fetch(url, { method: 'POST' });
+                        if (resp.ok) {
+                            const result = await resp.json();
+                            this.showToast(`Reset ${result.reset} accounts to pending`, 'success');
+                            await this.refreshStats();
+                            await this.loadAccounts();
+                        }
+                    } catch (e) {
+                        this.showToast('Error resetting accounts', 'error');
                     }
                 },
 

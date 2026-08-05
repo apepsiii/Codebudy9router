@@ -197,6 +197,26 @@ async def mark_injected(account_id: int):
         session.close()
 
 
+@app.post("/api/accounts/reset")
+async def reset_accounts(status: Optional[str] = None):
+    """Reset accounts back to pending status"""
+    session = get_session()
+    try:
+        query = session.query(Account)
+        if status:
+            query = query.filter(Account.status == status)
+        else:
+            query = query.filter(Account.status.in_(["failed", "success"]))
+        accounts = query.all()
+        for account in accounts:
+            account.status = "pending"
+            account.error_message = None
+        session.commit()
+        return {"reset": len(accounts)}
+    finally:
+        session.close()
+
+
 @app.delete("/api/accounts/{account_id}")
 async def delete_account(account_id: int):
     """Delete account"""
