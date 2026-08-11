@@ -574,58 +574,40 @@ async def save_9router_config(config: RouterConfig):
 # ============================================================================
 
 async def inject_single_token(router_url: str, router_password: Optional[str], email: str, refresh_token: str):
-    """Inject single token to 9router using correct endpoint"""
-    import urllib.request
-    import json
-    
-    # Login to 9router if password provided
-    auth_token = None
+    """Inject single token to 9router using requests (handles gzip/Cloudflare)"""
+    import requests as req_lib
+
+    base_url = router_url.rstrip("/")
+    browser_headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Origin": base_url,
+        "Referer": f"{base_url}/",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-origin",
+    }
+
+    session = req_lib.Session()
+    session.headers.update(browser_headers)
+
     if router_password:
         try:
-            login_url = f"{router_url.rstrip('/')}/api/auth/login"
-            body = json.dumps({"password": router_password}).encode("utf-8")
-            req = urllib.request.Request(
-                login_url, 
-                data=body,
-                headers={"Content-Type": "application/json"},
-                method="POST"
-            )
-            resp = urllib.request.urlopen(req, timeout=10)
-            for cookie in resp.headers.get_all("Set-Cookie"):
-                if cookie.startswith("auth_token="):
-                    auth_token = cookie.split(";")[0].split("=", 1)[1]
-                    break
+            resp = session.post(f"{base_url}/api/auth/login", json={"password": router_password}, timeout=15)
+            if resp.status_code != 200:
+                return {"success": False, "error": f"Login failed: HTTP {resp.status_code}"}
         except Exception as e:
             return {"success": False, "error": f"Login failed: {e}"}
-    
-    # Use correct Kiro OAuth import endpoint
-    kiro_import_url = f"{router_url.rstrip('/')}/api/oauth/kiro/import"
-    payload = {"refreshToken": refresh_token}
-    body = json.dumps(payload).encode("utf-8")
-    headers = {
-        "Content-Type": "application/json",
-        "User-Agent": "KiroBot/1.0",
-    }
-    if auth_token:
-        headers["Cookie"] = f"auth_token={auth_token}"
-    
-    req = urllib.request.Request(kiro_import_url, data=body, headers=headers, method="POST")
+
     try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            data = json.loads(resp.read())
+        resp = session.post(f"{base_url}/api/oauth/kiro/import", json={"refreshToken": refresh_token}, timeout=15)
+        if resp.status_code == 200:
+            data = resp.json()
             if data.get("success"):
-                connection_id = data.get("connection", {}).get("id")
-                return {"success": True, "connection_id": connection_id}
-            else:
-                return {"success": False, "error": "Import failed"}
-    except urllib.error.HTTPError as e:
-        error_body = e.read().decode("utf-8", errors="replace")
-        try:
-            error_data = json.loads(error_body)
-            error_msg = error_data.get("error", error_body)
-        except Exception:
-            error_msg = error_body
-        return {"success": False, "error": f"HTTP {e.code}: {error_msg}"}
+                return {"success": True, "connection_id": data.get("connection", {}).get("id")}
+            return {"success": False, "error": "Import failed"}
+        return {"success": False, "error": f"HTTP {resp.status_code}: {resp.text[:100]}"}
     except Exception as e:
         return {"success": False, "error": str(e)}
 
