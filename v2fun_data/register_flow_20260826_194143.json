@@ -1,0 +1,798 @@
+{
+  "timestamp": "20260826_194143",
+  "total_requests": 23,
+  "total_responses": 10,
+  "requests": [
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:40.471096",
+      "method": "GET",
+      "url": "https://v2fun.ai/api/i18n/messages/en",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:40.768690",
+      "method": "GET",
+      "url": "https://v2fun.ai/api/i18n/messages/en",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:41.119704",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/article/slot/get-by-entrance-code?lan=en",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:42.563516",
+      "method": "GET",
+      "url": "https://googleads.g.doubleclick.net/pagead/viewthroughconversion/18327802436/?random=1787747982526&cv=11&fst=1787747982526&bg=ffffff&guid=ON&async=1&en=gtag.config&gtm=45be68o1v9259475111za200zd9259475111xec&gcd=13l3l3l3l1l1&dma=0&tag_exp=115616986~115938466~115938469~118897920~118897930~119367802~119367810~120213116~120385422&u_w=1920&u_h=1080&url=https%3A%2F%2Fv2fun.ai%2F&rcb=12&frm=0&tiba=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20with%20V2Fun&hn=www.googleadservices.com&npa=0&pscdl=noapi&auid=500408823.1787747983&uaa=x86&uab=64&uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&uamb=0&uam=&uap=Windows&uapv=10.0&uaw=0&data=event%3Dgtag.config&ept=9&rfmt=3&fmt=4",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:42.563988",
+      "method": "POST",
+      "url": "https://www.google.com/rmkt/collect/18327802436/?random=1787747982526&cv=11&fst=1787747982526&fmt=8&bg=ffffff&guid=ON&async=1&en=gtag.config&gtm=45be68o1v9259475111za200zd9259475111xec&gcd=13l3l3l3l1l1&dma=0&tag_exp=115616986~115938466~115938469~118897920~118897930~119367802~119367810~120213116~120385422&u_w=1920&u_h=1080&url=https%3A%2F%2Fv2fun.ai%2F&rcb=12&frm=0&tiba=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20with%20V2Fun&hn=www.googleadservices.com&npa=0&pscdl=noapi&auid=500408823.1787747983&uaa=x86&uab=64&uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&uamb=0&uam=&uap=Windows&uapv=10.0&uaw=0&data=event%3Dgtag.config&ept=68&gcp=5",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:42.796402",
+      "method": "POST",
+      "url": "https://analytics.google.com/g/collect?v=2&tid=G-BH37PP25E7&gtm=45be68o1h1v9242789877z89250639389za200zb9259475111zd9259475111&_p=1787747977589&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1347859581&_eu=AAAAAGAC&are=1&cid=1397614202.1787747983&ec_mode=a&frm=0&pscdl=noapi&rcb=6&sr=1920x1080&uaa=x86&uab=64&uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&uam=&uamb=0&uap=Windows&uapv=10.0&uaw=0&ul=en-us&gaf=2&_s=1&tag_exp=115938466~115938468~118897920~118897930~119367802~119367810~120385423&sid=1787747982&sct=1&seg=0&dl=https%3A%2F%2Fv2fun.ai%2F&dt=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20with%20V2Fun&en=page_view&_fv=1&_nsi=1&_ss=1&tfd=5538",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:42.797035",
+      "method": "GET",
+      "url": "https://googleads.g.doubleclick.net/pagead/viewthroughconversion/17932665720/?random=1787747982756&cv=11&fst=1787747982756&bg=ffffff&guid=ON&async=1&en=gtag.config&gtm=45be68o1h1v9242789877z89250639389za200zb9259475111zd9259475111xec&gcd=13l3l3l3l1l1&dma=0&tag_exp=115938466~115938468~118897920~118897930~119367802~119367810~120385423&u_w=1920&u_h=1080&url=https%3A%2F%2Fv2fun.ai%2F&rcb=6&frm=0&tiba=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20with%20V2Fun&hn=www.googleadservices.com&npa=0&pscdl=noapi&auid=500408823.1787747983&uaa=x86&uab=64&uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&uamb=0&uam=&uap=Windows&uapv=10.0&uaw=0&data=event%3Dgtag.config&ept=9&rfmt=3&fmt=4",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:42.797361",
+      "method": "POST",
+      "url": "https://www.google.com/rmkt/collect/17932665720/?random=1787747982756&cv=11&fst=1787747982756&fmt=8&bg=ffffff&guid=ON&async=1&en=gtag.config&gtm=45be68o1h1v9242789877z89250639389za200zb9259475111zd9259475111xec&gcd=13l3l3l3l1l1&dma=0&tag_exp=115938466~115938468~118897920~118897930~119367802~119367810~120385423&u_w=1920&u_h=1080&url=https%3A%2F%2Fv2fun.ai%2F&rcb=6&frm=0&tiba=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20with%20V2Fun&hn=www.googleadservices.com&npa=0&pscdl=noapi&auid=500408823.1787747983&uaa=x86&uab=64&uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&uamb=0&uam=&uap=Windows&uapv=10.0&uaw=0&data=event%3Dgtag.config&ept=68&gcp=5",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:42.797613",
+      "method": "GET",
+      "url": "https://www.googleadservices.com/pagead/conversion/17932665720/?random=1787747982783&cv=11&fst=1787747982783&fmt=7&bg=ffffff&guid=ON&async=1&en=page_view&gtm=45be68o1h1v9242789877za200zb9259475111zd9259475111xec&gcd=13l3l3l3l1l1&dma=0&tag_exp=115938466~115938468~118897920~118897930~119367802~119367810~120385423&u_w=1920&u_h=1080&url=https%3A%2F%2Fv2fun.ai%2F&rcb=6&capi=1&frm=0&tiba=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20with%20V2Fun&npa=0&pscdl=noapi&auid=500408823.1787747983&label=XnacCJfM_PIbEPiG--ZC&hn=www.googleadservices.com&uaa=x86&uab=64&uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&uamb=0&uam=&uap=Windows&uapv=10.0&uaw=0&ec_mode=a&oid=1788638052.1787747983&oidsrc=3&ecsid2=879251249.1787747983&_tu=ABA&gcl_ctr=1~0~0~0&data=event%3Dgtag.config&category=acrcp_v1_512&em=tv.1&emd=tvd.1&ept=5",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:42.798152",
+      "method": "GET",
+      "url": "https://www.googleadservices.com/ccm/conversion/17932665720/?random=1787747982783&cv=11&fst=1787747982783&fmt=3&bg=ffffff&guid=ON&async=1&en=page_view&gtm=45be68o1h1v9242789877za200zb9259475111zd9259475111xec&gcd=13l3l3l3l1l1&dma=0&tag_exp=115938466~115938468~118897920~118897930~119367802~119367810~120385423&u_w=1920&u_h=1080&url=https%3A%2F%2Fv2fun.ai%2F&rcb=6&capi=1&frm=0&tiba=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20with%20V2Fun&npa=0&pscdl=noapi&auid=500408823.1787747983&label=XnacCJfM_PIbEPiG--ZC&hn=www.googleadservices.com&uaa=x86&uab=64&uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&uamb=0&uam=&uap=Windows&uapv=10.0&uaw=0&ec_mode=a&oid=1788638052.1787747983&oidsrc=3&ecsid2=879251249.1787747983&_tu=ABA&gcl_ctr=1~0~0~0&data=event%3Dgtag.config&em=tv.1&emd=tvd.1",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:42.874688",
+      "method": "GET",
+      "url": "https://www.google.com/pagead/1p-user-list/17932665720/?random=1787747982756&cv=11&fst=1787745600000&bg=ffffff&guid=ON&async=1&en=gtag.config&gtm=45be68o1h1v9242789877z89250639389za200zb9259475111zd9259475111xec&gcd=13l3l3l3l1l1&dma=0&tag_exp=115938466~115938468~118897920~118897930~119367802~119367810~120385423&u_w=1920&u_h=1080&url=https%3A%2F%2Fv2fun.ai%2F&rcb=6&frm=0&tiba=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20with%20V2Fun&hn=www.googleadservices.com&npa=0&pscdl=noapi&auid=500408823.1787747983&uaa=x86&uab=64&uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&uamb=0&uam=&uap=Windows&uapv=10.0&uaw=0&data=event%3Dgtag.config&ept=9&rfmt=3&fmt=3&is_vtc=1&cid=CAQS1AEAQM4h3OSzwu1S7JcNrNxBn_ZZiRnk2dsfMEAgg05qggPDmQgPbwtgWQ8vr3kKJl9vrOBzG__6T1gkYqwSK_p0XIe_jtzg-NxVHg6eSy3hR-e1U6GeGeN3TYERypshf2mkLN2nHL8MDBzsnJUtqTcXniAJ7RkQ1b_vJiTBwsH5-QWqq1FCu-wwN8Xl_ogbDy6nOqxjObzfPLa5ARwkSiYZCTFFDVoB4toMzieWKb8whLDKF54u2Ugws1FYGMR5hHS0XtEkcplTuPPTPOQnL3j9jkUL8Q&random=1063817545&rmt_tld=0&ipr=y",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:42.874987",
+      "method": "GET",
+      "url": "https://www.google.co.id/pagead/1p-user-list/17932665720/?random=1787747982756&cv=11&fst=1787745600000&bg=ffffff&guid=ON&async=1&en=gtag.config&gtm=45be68o1h1v9242789877z89250639389za200zb9259475111zd9259475111xec&gcd=13l3l3l3l1l1&dma=0&tag_exp=115938466~115938468~118897920~118897930~119367802~119367810~120385423&u_w=1920&u_h=1080&url=https%3A%2F%2Fv2fun.ai%2F&rcb=6&frm=0&tiba=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20with%20V2Fun&hn=www.googleadservices.com&npa=0&pscdl=noapi&auid=500408823.1787747983&uaa=x86&uab=64&uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&uamb=0&uam=&uap=Windows&uapv=10.0&uaw=0&data=event%3Dgtag.config&ept=9&rfmt=3&fmt=3&is_vtc=1&cid=CAQS1AEAQM4h3OSzwu1S7JcNrNxBn_ZZiRnk2dsfMEAgg05qggPDmQgPbwtgWQ8vr3kKJl9vrOBzG__6T1gkYqwSK_p0XIe_jtzg-NxVHg6eSy3hR-e1U6GeGeN3TYERypshf2mkLN2nHL8MDBzsnJUtqTcXniAJ7RkQ1b_vJiTBwsH5-QWqq1FCu-wwN8Xl_ogbDy6nOqxjObzfPLa5ARwkSiYZCTFFDVoB4toMzieWKb8whLDKF54u2Ugws1FYGMR5hHS0XtEkcplTuPPTPOQnL3j9jkUL8Q&random=1063817545&rmt_tld=1&ipr=y",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:42.875275",
+      "method": "GET",
+      "url": "https://www.google.com/pagead/1p-user-list/18327802436/?random=1787747982526&cv=11&fst=1787745600000&bg=ffffff&guid=ON&async=1&en=gtag.config&gtm=45be68o1v9259475111za200zd9259475111xec&gcd=13l3l3l3l1l1&dma=0&tag_exp=115616986~115938466~115938469~118897920~118897930~119367802~119367810~120213116~120385422&u_w=1920&u_h=1080&url=https%3A%2F%2Fv2fun.ai%2F&rcb=12&frm=0&tiba=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20with%20V2Fun&hn=www.googleadservices.com&npa=0&pscdl=noapi&auid=500408823.1787747983&uaa=x86&uab=64&uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&uamb=0&uam=&uap=Windows&uapv=10.0&uaw=0&data=event%3Dgtag.config&ept=9&rfmt=3&fmt=3&is_vtc=1&cid=CAQS1AEAQM4h3MiOPt5Ew2OaqrkFPCBQZuNe3AxTLctPUIPQwvl39qdKQO0LVDozPQetLsFfgYFmCX7imyjJP4PMZtLa68favgPc8zp7wfFM-RSnAxN6JFpmmEU3yJJ7EZ8XMM7-RRenA83hyKH0J3WkOlO4ZMXC-5AtXrkY1W0uwFNFT00IKg81bQ_bKVkywRKS6NIG67aBrD9ekr_5JViXDBn2RifR_X12gffKMXkCrlDSEJXOkoKRyDXkobcldNrviTlo2fDkHHT51kRdkgBVyhpNzVgklQ&random=1698378425&rmt_tld=0&ipr=y",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:42.875562",
+      "method": "GET",
+      "url": "https://www.google.co.id/pagead/1p-user-list/18327802436/?random=1787747982526&cv=11&fst=1787745600000&bg=ffffff&guid=ON&async=1&en=gtag.config&gtm=45be68o1v9259475111za200zd9259475111xec&gcd=13l3l3l3l1l1&dma=0&tag_exp=115616986~115938466~115938469~118897920~118897930~119367802~119367810~120213116~120385422&u_w=1920&u_h=1080&url=https%3A%2F%2Fv2fun.ai%2F&rcb=12&frm=0&tiba=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20with%20V2Fun&hn=www.googleadservices.com&npa=0&pscdl=noapi&auid=500408823.1787747983&uaa=x86&uab=64&uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&uamb=0&uam=&uap=Windows&uapv=10.0&uaw=0&data=event%3Dgtag.config&ept=9&rfmt=3&fmt=3&is_vtc=1&cid=CAQS1AEAQM4h3MiOPt5Ew2OaqrkFPCBQZuNe3AxTLctPUIPQwvl39qdKQO0LVDozPQetLsFfgYFmCX7imyjJP4PMZtLa68favgPc8zp7wfFM-RSnAxN6JFpmmEU3yJJ7EZ8XMM7-RRenA83hyKH0J3WkOlO4ZMXC-5AtXrkY1W0uwFNFT00IKg81bQ_bKVkywRKS6NIG67aBrD9ekr_5JViXDBn2RifR_X12gffKMXkCrlDSEJXOkoKRyDXkobcldNrviTlo2fDkHHT51kRdkgBVyhpNzVgklQ&random=1698378425&rmt_tld=1&ipr=y",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:43.128874",
+      "method": "POST",
+      "url": "https://googleads.g.doubleclick.net/pagead/viewthroughconversion/17932665720/?random=1167627646&cv=11&fst=1787747982783&fmt=8&bg=ffffff&guid=ON&async=1&en=page_view&gtm=45be68o1h1v9242789877za200zb9259475111zd9259475111xec&gcd=13l3l3l3l1l1&dma=0&tag_exp=115938466~115938468~118897920~118897930~119367802~119367810~120385423&u_w=1920&u_h=1080&url=https%3A%2F%2Fv2fun.ai%2F&rcb=6&capi=1&frm=0&tiba=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20with%20V2Fun&npa=0&pscdl=noapi&auid=500408823.1787747983&label=XnacCJfM_PIbEPiG--ZC&hn=www.googleadservices.com&uaa=x86&uab=64&uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&uamb=0&uam=&uap=Windows&uapv=10.0&uaw=0&ec_mode=a&oidsrc=3&ecsid2=879251249.1787747983&_tu=ABA&gcl_ctr=1~0~0~0&data=event%3Dgtag.config&category=acrcp_v1_512&em=tv.1&emd=tvd.1&ept=5&ct_cookie_present=false&eoid=CkQKEAjwnbrUBhD-mPyPiqGe3SESMABDRQTUbPCEgAxDrom93rzf9psqefFzj2G8ZygZUvsswFSMaaBtDCPsYndjv7W91_D_BwE&crd=CLTesQII8t-xAgit4bECCK_hsQIIobixAgixwbECCLDBsQIIscOxAgiKxbECCMLJsQII1-ixAgi0xrECCJPasQII29yxAgiH27ECCNPFsQII68yxAgjtzrECCNXPsQII9NqxAgjj6rECCJLrsQIIyeOxAgiX1LECCMnbsQIIzeaxAgjU5rECCLHhsQIIs-GxAgim3bECCIDbsQIIzeGxAkorbm90LW5hdmlnYXRpb24tc291cmNlLCB0cmlnZ2VyO2V2ZW50LXNvdXJjZVoDCgEBYgMKAQM&cerd=Chjs370t24m-Laenvi3_r74tg76-Le_Ovi0&fsk=ChAI8J261AYQjoaooMCKg49FEiwAh_KUGuq7167MfVhVzbV6VIb8erUh4Y70zfSU5s921NMHXxpT-WXYMEPl4hoCp9Q&pscrd=IhMI1pamnKi-lgMVAcKEAB2KuDXNOhFodHRwczovL3YyZnVuLmFpL0JXQ2hBSThKMjYxQVlRNDlUNDFvYnNuOHRtRWkwQVdicGRidUNDc1c2YmZ0eGtKdDhxbUs5WU1hMlVpSnk0eGZsTGdablJXM2NVRGJoREo2a1U0MFM0XzJJegwICWIICAAQABgAIAA",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:43.314157",
+      "method": "POST",
+      "url": "https://analytics.tiktok.com/api/v2/pixel",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "content-type": "text/plain;charset=UTF-8",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "post_data": {
+        "event": "LandingPageView",
+        "event_id": "",
+        "message_id": "messageId-1787747983310-6603930565387-D9JG7LRC77U820ARMG20",
+        "is_onsite": false,
+        "timestamp": "2026-08-26T12:39:43.310Z",
+        "context": {
+          "ad": {
+            "sdk_env": "external",
+            "jsb_status": 2
+          },
+          "device": {
+            "platform": "pc"
+          },
+          "user": {
+            "anonymous_id": "01M0Z1AQY1M9KKKDKZ67ESXPBC_.tt.1"
+          },
+          "pixel": {
+            "code": "D9JG7LRC77U820ARMG20",
+            "runtime": "1"
+          },
+          "page": {
+            "url": "https://v2fun.ai/",
+            "referrer": "",
+            "load_progress": "2"
+          },
+          "library": {
+            "name": "pixel.js",
+            "version": "2.2.1"
+          },
+          "session_id": "36a9f196-a14b-11f1-b6bf-c618f2b6459e::u5V0YP3CUR_qbHPrAFSm-D9JG7LRC77U820ARMG20",
+          "pageview_id": "36a9f196-a14b-11f1-b6bf-c618f2b6459e-9RzpF.0.0::36a9ce4e-a14b-11f1-b6bf-c618f2b6459e-D9JG7LRC77U820ARMG20",
+          "variation_id": "traffic_2::default",
+          "csid": "1787747983302::4FuSqweG1rIfCivyU8yg",
+          "page_csid": "1787747983303::P2SDYvsppyygXk7zBnY-",
+          "csct": 1,
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        },
+        "_inspection": {
+          "trigger_source": "pixel_self",
+          "ppf": [],
+          "vids": "76627536",
+          "inter_id": "1.-6089.0::0.0.0.0::0.0.0"
+        },
+        "properties": {},
+        "signal_diagnostic_labels": {
+          "raw_email": {
+            "label": "missing"
+          },
+          "raw_auto_email": {
+            "label": "missing"
+          },
+          "raw_phone": {
+            "label": "missing"
+          },
+          "raw_auto_phone": {
+            "label": "missing"
+          },
+          "hashed_email": {
+            "label": "missing"
+          },
+          "hashed_phone": {
+            "label": "missing"
+          },
+          "raw_eb_email": {
+            "label": "missing"
+          },
+          "raw_eb_phone": {
+            "label": "missing"
+          },
+          "hashed_eb_email": {
+            "label": "missing"
+          },
+          "hashed_eb_phone": {
+            "label": "missing"
+          }
+        }
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:43.314887",
+      "method": "POST",
+      "url": "https://analytics.tiktok.com/api/v2/pixel",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "content-type": "text/plain;charset=UTF-8",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "post_data": {
+        "event": "Pageview",
+        "event_id": "",
+        "message_id": "messageId-1787747983306-6024739190109-D9JG7LRC77U820ARMG20",
+        "is_onsite": false,
+        "timestamp": "2026-08-26T12:39:43.306Z",
+        "context": {
+          "ad": {
+            "sdk_env": "external",
+            "jsb_status": 2
+          },
+          "device": {
+            "platform": "pc"
+          },
+          "user": {
+            "anonymous_id": "01M0Z1AQY1M9KKKDKZ67ESXPBC_.tt.1"
+          },
+          "pixel": {
+            "code": "D9JG7LRC77U820ARMG20",
+            "runtime": "1"
+          },
+          "page": {
+            "url": "https://v2fun.ai/",
+            "referrer": "",
+            "load_progress": "2"
+          },
+          "library": {
+            "name": "pixel.js",
+            "version": "2.2.1"
+          },
+          "session_id": "36a9f196-a14b-11f1-b6bf-c618f2b6459e::u5V0YP3CUR_qbHPrAFSm-D9JG7LRC77U820ARMG20",
+          "pageview_id": "36a9f196-a14b-11f1-b6bf-c618f2b6459e-9RzpF.0.0::36a9ce4e-a14b-11f1-b6bf-c618f2b6459e-D9JG7LRC77U820ARMG20",
+          "variation_id": "traffic_2::default",
+          "csid": "1787747983302::4FuSqweG1rIfCivyU8yg",
+          "page_csid": "1787747983303::P2SDYvsppyygXk7zBnY-",
+          "csct": 1,
+          "css": 1,
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        },
+        "_inspection": {
+          "ppf": [
+            {
+              "id": 7,
+              "d": 22200,
+              "f": [
+                {
+                  "id": 19,
+                  "d": 0
+                },
+                {
+                  "id": 1,
+                  "d": 600
+                },
+                {
+                  "id": 19,
+                  "d": 0
+                },
+                {
+                  "id": 2,
+                  "d": 9300
+                },
+                {
+                  "id": 18,
+                  "d": 0
+                },
+                {
+                  "id": 15,
+                  "d": 200
+                },
+                {
+                  "id": 7,
+                  "d": 100
+                },
+                {
+                  "id": 6,
+                  "d": 2600
+                },
+                {
+                  "id": 8,
+                  "d": 0
+                },
+                {
+                  "id": 9,
+                  "d": 0
+                },
+                {
+                  "id": 11,
+                  "d": 200
+                },
+                {
+                  "id": 4,
+                  "d": 6100
+                },
+                {
+                  "id": 22,
+                  "d": 2000
+                },
+                {
+                  "id": 3,
+                  "d": 8600
+                },
+                {
+                  "id": 19,
+                  "d": 0
+                },
+                {
+                  "id": 16,
+                  "d": 100
+                },
+                {
+                  "id": 17,
+                  "d": 0
+                }
+              ]
+            }
+          ],
+          "vids": "76627536",
+          "inter_id": "1.-6089.0::0.0.0.0::0.0.0"
+        },
+        "properties": {},
+        "signal_diagnostic_labels": {
+          "raw_email": {
+            "label": "missing"
+          },
+          "raw_auto_email": {
+            "label": "missing"
+          },
+          "raw_phone": {
+            "label": "missing"
+          },
+          "raw_auto_phone": {
+            "label": "missing"
+          },
+          "hashed_email": {
+            "label": "missing"
+          },
+          "hashed_phone": {
+            "label": "missing"
+          },
+          "raw_eb_email": {
+            "label": "missing"
+          },
+          "raw_eb_phone": {
+            "label": "missing"
+          },
+          "hashed_eb_email": {
+            "label": "missing"
+          },
+          "hashed_eb_phone": {
+            "label": "missing"
+          }
+        }
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:43.413988",
+      "method": "GET",
+      "url": "https://www.google.com/pagead/1p-conversion/17932665720/?random=1167627646&cv=11&fst=1787747982783&fmt=8&bg=ffffff&guid=ON&async=1&en=page_view&gtm=45be68o1h1v9242789877za200zb9259475111zd9259475111xec&gcd=13l3l3l3l1l1&dma=0&tag_exp=115938466~115938468~118897920~118897930~119367802~119367810~120385423&u_w=1920&u_h=1080&url=https%3A%2F%2Fv2fun.ai%2F&rcb=6&capi=1&frm=0&tiba=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20with%20V2Fun&npa=0&pscdl=noapi&auid=500408823.1787747983&label=XnacCJfM_PIbEPiG--ZC&hn=www.googleadservices.com&uaa=x86&uab=64&uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&uamb=0&uam=&uap=Windows&uapv=10.0&uaw=0&ec_mode=a&oidsrc=3&ecsid2=879251249.1787747983&_tu=ABA&gcl_ctr=1~0~0~0&data=event%3Dgtag.config&category=acrcp_v1_512&em=tv.1&emd=tvd.1&ept=5&ct_cookie_present=false&eoid=CkQKEAjwnbrUBhD-mPyPiqGe3SESMABDRQTUbPCEgAxDrom93rzf9psqefFzj2G8ZygZUvsswFSMaaBtDCPsYndjv7W91_D_BwE&crd=CLTesQII8t-xAgit4bECCK_hsQIIobixAgixwbECCLDBsQIIscOxAgiKxbECCMLJsQII1-ixAgi0xrECCJPasQII29yxAgiH27ECCNPFsQII68yxAgjtzrECCNXPsQII9NqxAgjj6rECCJLrsQIIyeOxAgiX1LECCMnbsQIIzeaxAgjU5rECCLHhsQIIs-GxAgim3bECCIDbsQIIzeGxAkorbm90LW5hdmlnYXRpb24tc291cmNlLCB0cmlnZ2VyO2V2ZW50LXNvdXJjZVoDCgEBYgMKAQM&cerd=Chjs370t24m-Laenvi3_r74tg76-Le_Ovi0&fsk=ChAI8J261AYQjoaooMCKg49FEiwAh_KUGuq7167MfVhVzbV6VIb8erUh4Y70zfSU5s921NMHXxpT-WXYMEPl4hoCp9Q&pscrd=IhMI1pamnKi-lgMVAcKEAB2KuDXNOhFodHRwczovL3YyZnVuLmFpL0JXQ2hBSThKMjYxQVlRNDlUNDFvYnNuOHRtRWkwQVdicGRidUNDc1c2YmZ0eGtKdDhxbUs5WU1hMlVpSnk0eGZsTGdablJXM2NVRGJoREo2a1U0MFM0XzJJegwICWIICAAQABgAIAA&is_vtc=1&cid=CAQS1AEAQM4h3Bz-JVEBHCeTVBOmYcH7wQ8FhK8lCDGcXZLOByy4ZmjJpNA5muU29qFIlt1AY4rrxbt2BFeNKtQa4yfPn6KjgP8h55tgcgrhgkGz3BbtW5JVKWmUw43PmIfSLAGTRl-zRW3lJc3hmlDtTRCKvOrVBHlED9uizLHMLTtZGMsocvniakXBRhEdKM3qrYKpskgKMPEjE1CfQ0LBh0-IF53MbBjyGEbf0DdMJte-hVrjOBHQC0kxMbBXvnnwUiVJ_2-nX9r8DQcDui3G4mrNED2Agw&random=2354251778",
+      "headers": {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "referer": "https://v2fun.ai/"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:43.415573",
+      "method": "GET",
+      "url": "https://www.google.co.id/pagead/1p-conversion/17932665720/?random=1167627646&cv=11&fst=1787747982783&fmt=8&bg=ffffff&guid=ON&async=1&en=page_view&gtm=45be68o1h1v9242789877za200zb9259475111zd9259475111xec&gcd=13l3l3l3l1l1&dma=0&tag_exp=115938466~115938468~118897920~118897930~119367802~119367810~120385423&u_w=1920&u_h=1080&url=https%3A%2F%2Fv2fun.ai%2F&rcb=6&capi=1&frm=0&tiba=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20with%20V2Fun&npa=0&pscdl=noapi&auid=500408823.1787747983&label=XnacCJfM_PIbEPiG--ZC&hn=www.googleadservices.com&uaa=x86&uab=64&uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&uamb=0&uam=&uap=Windows&uapv=10.0&uaw=0&ec_mode=a&oidsrc=3&ecsid2=879251249.1787747983&_tu=ABA&gcl_ctr=1~0~0~0&data=event%3Dgtag.config&category=acrcp_v1_512&em=tv.1&emd=tvd.1&ept=5&ct_cookie_present=false&eoid=CkQKEAjwnbrUBhD-mPyPiqGe3SESMABDRQTUbPCEgAxDrom93rzf9psqefFzj2G8ZygZUvsswFSMaaBtDCPsYndjv7W91_D_BwE&crd=CLTesQII8t-xAgit4bECCK_hsQIIobixAgixwbECCLDBsQIIscOxAgiKxbECCMLJsQII1-ixAgi0xrECCJPasQII29yxAgiH27ECCNPFsQII68yxAgjtzrECCNXPsQII9NqxAgjj6rECCJLrsQIIyeOxAgiX1LECCMnbsQIIzeaxAgjU5rECCLHhsQIIs-GxAgim3bECCIDbsQIIzeGxAkorbm90LW5hdmlnYXRpb24tc291cmNlLCB0cmlnZ2VyO2V2ZW50LXNvdXJjZVoDCgEBYgMKAQM&cerd=Chjs370t24m-Laenvi3_r74tg76-Le_Ovi0&fsk=ChAI8J261AYQjoaooMCKg49FEiwAh_KUGuq7167MfVhVzbV6VIb8erUh4Y70zfSU5s921NMHXxpT-WXYMEPl4hoCp9Q&is_vtc=1&cid=CAQS1AEAQM4h3Bz-JVEBHCeTVBOmYcH7wQ8FhK8lCDGcXZLOByy4ZmjJpNA5muU29qFIlt1AY4rrxbt2BFeNKtQa4yfPn6KjgP8h55tgcgrhgkGz3BbtW5JVKWmUw43PmIfSLAGTRl-zRW3lJc3hmlDtTRCKvOrVBHlED9uizLHMLTtZGMsocvniakXBRhEdKM3qrYKpskgKMPEjE1CfQ0LBh0-IF53MbBjyGEbf0DdMJte-hVrjOBHQC0kxMbBXvnnwUiVJ_2-nX9r8DQcDui3G4mrNED2Agw&random=2354251778&ipr=y&pscrd=IhMI1pamnKi-lgMVAcKEAB2KuDXNOhFodHRwczovL3YyZnVuLmFpL0JXQ2hBSThKMjYxQVlRNDlUNDFvYnNuOHRtRWkwQVdicGRidUNDc1c2YmZ0eGtKdDhxbUs5WU1hMlVpSnk0eGZsTGdablJXM2NVRGJoREo2a1U0MFM0XzJJegwICWIICAAQABgAIACCAQlwAYgBAeIBAQI",
+      "headers": {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "referer": "https://v2fun.ai/"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:43.525006",
+      "method": "GET",
+      "url": "https://www.gstatic.com/recaptcha/api2/logo_48.png",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://www.gstatic.com/recaptcha/releases/GY0lZUzQQgeA0wDxVI-SQEZw/styles__ltr.css",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:43.551706",
+      "method": "POST",
+      "url": "https://analytics.tiktok.com/api/v2/pixel/act",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "content-type": "text/plain;charset=UTF-8",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "post_data": {
+        "event_id": "",
+        "message_id": "messageId-1787747983549-6522629075061",
+        "is_onsite": false,
+        "timestamp": "2026-08-26T12:39:43.549Z",
+        "context": {
+          "ad": {
+            "sdk_env": "external",
+            "jsb_status": 2
+          },
+          "device": {
+            "platform": "pc"
+          },
+          "user": {
+            "anonymous_id": "01M0Z1AQY1M9KKKDKZ67ESXPBC_.tt.1"
+          },
+          "pixel": {
+            "code": "D9JG7LRC77U820ARMG20",
+            "runtime": "1",
+            "codes": "D9JG7LRC77U820ARMG20"
+          },
+          "page": {
+            "url": "https://v2fun.ai/",
+            "referrer": "",
+            "load_progress": "2"
+          },
+          "library": {
+            "name": "pixel.js",
+            "version": "2.2.1"
+          },
+          "session_id": "36a9f196-a14b-11f1-b6bf-c618f2b6459e::u5V0YP3CUR_qbHPrAFSm",
+          "pageview_id": "36a9f196-a14b-11f1-b6bf-c618f2b6459e-9RzpF.0.0::36a9ce4e-a14b-11f1-b6bf-c618f2b6459e",
+          "variation_id": "traffic_2::default",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "index": 0,
+          "sessions": [
+            {
+              "csid": "1787747983302::4FuSqweG1rIfCivyU8yg",
+              "page_csid": "1787747983303::P2SDYvsppyygXk7zBnY-",
+              "csct": 1,
+              "pixel_code": "D9JG7LRC77U820ARMG20"
+            }
+          ]
+        },
+        "_inspection": {
+          "ppf": [
+            {
+              "id": 6,
+              "d": 7200
+            }
+          ],
+          "vids": "76627536",
+          "inter_id": "1.-6089.0::0.0.0.0::0.0.0"
+        },
+        "properties": {},
+        "signal_diagnostic_labels": {
+          "raw_email": {
+            "label": "missing"
+          },
+          "raw_auto_email": {
+            "label": "missing"
+          },
+          "raw_phone": {
+            "label": "missing"
+          },
+          "raw_auto_phone": {
+            "label": "missing"
+          },
+          "hashed_email": {
+            "label": "missing"
+          },
+          "hashed_phone": {
+            "label": "missing"
+          },
+          "raw_eb_email": {
+            "label": "missing"
+          },
+          "raw_eb_phone": {
+            "label": "missing"
+          },
+          "hashed_eb_email": {
+            "label": "missing"
+          },
+          "hashed_eb_phone": {
+            "label": "missing"
+          }
+        },
+        "action": "Metadata",
+        "auto_collected_properties": {
+          "page_trigger": "PageView",
+          "content_data": {
+            "open_graph": "{\"og:type\":\"website\",\"og:title\":\"AI 3D Model Generator | Create 3D Models with V2Fun\",\"og:description\":\"Generate 3D models, characters, game assets, and animations from images or text with V2Fun's AI 3D creation platform.\",\"og:image\":\"https://v2fun.ai/og-image.webp\",\"og:url\":\"https://v2fun.ai/\",\"twitter:card\":\"summary_large_image\",\"twitter:title\":\"AI 3D Model Generator | Create 3D Models with V2Fun\",\"twitter:description\":\"Generate 3D models, characters, game assets, and animations from images or text with V2Fun's AI 3D creation platform.\",\"twitter:image\":\"https://v2fun.ai/og-image.webp\"}",
+            "microdata": "[]",
+            "json_ld": "[{\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"@id\":\"https://v2fun.ai/#organization\",\"name\":\"V2Fun\",\"url\":\"https://v2fun.ai\",\"logo\":\"https://v2fun.ai/https://v2fun.ai/_nuxt/head-logo.B-noIpwZ.svg\",\"sameAs\":[\"https://www.youtube.com/@V2Fun-official\",\"https://www.tiktok.com/@v2fun_official\",\"https://x.com/V2FUN_official\"],\"contactPoint\":{\"@type\":\"ContactPoint\",\"contactType\":\"customer support\",\"email\":\"saki@staff.v2fun.ai\",\"availableLanguage\":[\"en\",\"zh-CN\",\"de\",\"es\",\"fr\",\"it\",\"ja\",\"ko\",\"pt-BR\",\"cs\",\"hi\",\"id\",\"ms-MY\",\"nl\",\"tl\",\"pl\",\"pt-PT\",\"ru\",\"sv\",\"tr\",\"uk\",\"vi\",\"th\",\"zh-Hant\"]}},{\"@context\":\"https://schema.org\",\"@type\":\"WebSite\",\"@id\":\"https://v2fun.ai/#website\",\"name\":\"V2Fun\",\"url\":\"https://v2fun.ai/\",\"publisher\":{\"@id\":\"https://v2fun.ai/#organization\"},\"inLanguage\":\"en\"},{\"@context\":\"https://schema.org\",\"@type\":\"WebPage\",\"name\":\"AI 3D Model Generator | Create 3D Models with V2Fun\",\"description\":\"Create 3D models, characters, game assets, and animations with V2Fun's AI 3D model generator. Turn images or text into 3D faster.\",\"url\":\"https://v2fun.ai/\",\"inLanguage\":\"en\",\"image\":\"https://v2fun.ai/og-image.webp\"},{\"@context\":\"https://schema.org\",\"@type\":\"FAQPage\",\"@id\":\"https://v2fun.ai/#faq\",\"inLanguage\":\"en\",\"mainEntity\":[{\"@type\":\"Question\",\"name\":\"What is V2Fun?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"V2Fun is an AI 3D creation platform that helps users generate 3D models, character assets, and animation-ready content from images or text. It is designed for game development, 3D design, animation, and 3D printing workflows.\"}},{\"@type\":\"Question\",\"name\":\"What types of 3D models can I create with V2Fun?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"You can create 3D character models, game assets, props, scene elements, and 3D-printable models. V2Fun is useful for fast concept testing, modeling references, creative drafts, and production support.\"}},{\"@type\":\"Question\",\"name\":\"Can I turn a picture into a 3D model with V2Fun?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"Yes. You can upload an image and convert characters, objects, or concept art into 3D models, making it easier to move from 2D images to usable 3D assets.\"}},{\"@type\":\"Question\",\"name\":\"Can V2Fun create AI 3D animations?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"Yes. V2Fun supports AI 3D animation creation, helping users animate existing characters or 3D content for character animation, showcase videos, and creative projects.\"}},{\"@type\":\"Question\",\"name\":\"Who is V2Fun for?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"V2Fun is built for anyone who wants to create 3D content faster. Whether you want to make characters, props, animation assets, 3D-printable models, or turn image ideas into 3D assets, V2Fun helps speed up the creative process.\"}},{\"@type\":\"Question\",\"name\":\"What 3D model file formats does V2Fun support?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"V2Fun supports multiple common 3D model file formats, including OBJ, FBX, GLB, and STL. You can download your generated 3D models and use them for game development, animation, 3D printing, design previews, or further editing workflows.\"}}]}]",
+            "meta": "{\"title\":\"V2Fun - AI 3D Model Generator | Create 3D Models with V2Fun\",\"meta:description\":\"Create 3D models, characters, game assets, and animations with V2Fun's AI 3D model generator. Turn images or text into 3D faster.\",\"meta:keywords\":\"AI 3D Model Generator, AI 3D creation platform, text to 3D, image to 3D, picture to 3D model, AI 3D modeling, AI 3D animation, AI motion capture, AI rigging, AI texture generator, 3D character models, game assets, 3D printing models\"}"
+          }
+        }
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:47.812158",
+      "method": "POST",
+      "url": "https://analytics.google.com/g/collect?v=2&tid=G-BH37PP25E7&gtm=45be68o1h1v9242789877za200zb9259475111zd9259475111&_p=1787747977589&gcd=13l3l3l3l1l1&npa=0&dma=0&ecid=1347859581&_eu=AEAAAGQC&ae=a&are=1&cid=1397614202.1787747983&frm=0&pscdl=noapi&rcb=6&sr=1920x1080&uaa=x86&uab=64&uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&uam=&uamb=0&uap=Windows&uapv=10.0&uaw=0&ul=en-us&gaf=2&_s=2&tag_exp=115938466~115938468~118897920~118897930~119367802~119367810~120385423&sid=1787747982&sct=1&seg=0&dl=https%3A%2F%2Fv2fun.ai%2F&dt=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20with%20V2Fun&en=scroll&epn.percent_scrolled=90&_et=51&tfd=10596",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:39:53.317006",
+      "method": "POST",
+      "url": "https://analytics.tiktok.com/api/v2/pixel",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "content-type": "text/plain;charset=UTF-8",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "post_data": {
+        "event": "EngagedSession",
+        "event_id": "",
+        "message_id": "messageId-1787747993314-1756092057007-D9JG7LRC77U820ARMG20",
+        "is_onsite": false,
+        "timestamp": "2026-08-26T12:39:53.314Z",
+        "context": {
+          "ad": {
+            "sdk_env": "external",
+            "jsb_status": 2
+          },
+          "device": {
+            "platform": "pc"
+          },
+          "user": {
+            "anonymous_id": "01M0Z1AQY1M9KKKDKZ67ESXPBC_.tt.1"
+          },
+          "pixel": {
+            "code": "D9JG7LRC77U820ARMG20",
+            "runtime": "1"
+          },
+          "page": {
+            "url": "https://v2fun.ai/",
+            "referrer": "",
+            "load_progress": "2"
+          },
+          "library": {
+            "name": "pixel.js",
+            "version": "2.2.1"
+          },
+          "session_id": "36a9f196-a14b-11f1-b6bf-c618f2b6459e::u5V0YP3CUR_qbHPrAFSm-D9JG7LRC77U820ARMG20",
+          "pageview_id": "36a9f196-a14b-11f1-b6bf-c618f2b6459e-9RzpF.0.0::36a9ce4e-a14b-11f1-b6bf-c618f2b6459e-D9JG7LRC77U820ARMG20",
+          "variation_id": "traffic_2::default",
+          "csid": "1787747983302::4FuSqweG1rIfCivyU8yg",
+          "page_csid": "1787747983303::P2SDYvsppyygXk7zBnY-",
+          "csct": 1,
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        },
+        "_inspection": {
+          "trigger_source": "pixel_self",
+          "ppf": [
+            {
+              "id": 10,
+              "d": 3700
+            },
+            {
+              "id": 12,
+              "d": 0
+            },
+            {
+              "id": 5,
+              "d": 0
+            }
+          ],
+          "vids": "76627536",
+          "inter_id": "1.-6089.0::0.0.0.0::0.0.0"
+        },
+        "properties": {
+          "lpv_trigger_type": "duration_10s"
+        },
+        "signal_diagnostic_labels": {
+          "raw_email": {
+            "label": "missing"
+          },
+          "raw_auto_email": {
+            "label": "missing"
+          },
+          "raw_phone": {
+            "label": "missing"
+          },
+          "raw_auto_phone": {
+            "label": "missing"
+          },
+          "hashed_email": {
+            "label": "missing"
+          },
+          "hashed_phone": {
+            "label": "missing"
+          },
+          "raw_eb_email": {
+            "label": "missing"
+          },
+          "raw_eb_phone": {
+            "label": "missing"
+          },
+          "hashed_eb_email": {
+            "label": "missing"
+          },
+          "hashed_eb_phone": {
+            "label": "missing"
+          }
+        }
+      }
+    }
+  ],
+  "responses": [
+    {
+      "type": "response",
+      "time": "2026-08-26T19:39:40.757325",
+      "url": "https://v2fun.ai/api/i18n/messages/en",
+      "status": 200,
+      "body": "{\"language\":\"Language\",\"English\":\"English\",\"简体中文\":\"简体中文\",\"hello\":\"Hello\",\"welcome\":\"Welcome to our site\",\"用户\":\"User\",\"搜索\":\"Search\",\"工作区\":\"Workspace\",\"消息中心\":\"Message Center\",\"帮助中心\":\"Help Center\",\"用户反馈\":\"Feedback\",\"登录\":\"Login\",\"注册\":\"Register\",\"确定\":\"Confirm\",\"作品展示\":\"Gallery\",\"首页\":\"Home\",\"我的资料\":\"My Profile\",\"资产库\":\"Asset Library\",\"订阅中心\":\"Subscription\",\"服务条款\":\"Terms of Service\",\"退出登录\":\"Log Out\",\"退出\":\"Log Out\",\"seo\":{\"title\":\"Your Creativity Under Control\",\"keywords\":\"V2Fun,AI creativity platform,3D ge"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:39:40.866735",
+      "url": "https://v2fun.ai/api/i18n/messages/en",
+      "status": 200,
+      "body": "{\"language\":\"Language\",\"English\":\"English\",\"简体中文\":\"简体中文\",\"hello\":\"Hello\",\"welcome\":\"Welcome to our site\",\"用户\":\"User\",\"搜索\":\"Search\",\"工作区\":\"Workspace\",\"消息中心\":\"Message Center\",\"帮助中心\":\"Help Center\",\"用户反馈\":\"Feedback\",\"登录\":\"Login\",\"注册\":\"Register\",\"确定\":\"Confirm\",\"作品展示\":\"Gallery\",\"首页\":\"Home\",\"我的资料\":\"My Profile\",\"资产库\":\"Asset Library\",\"订阅中心\":\"Subscription\",\"服务条款\":\"Terms of Service\",\"退出登录\":\"Log Out\",\"退出\":\"Log Out\",\"seo\":{\"title\":\"Your Creativity Under Control\",\"keywords\":\"V2Fun,AI creativity platform,3D ge"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:39:41.643692",
+      "url": "https://api.prod.v2fun.ai/article/slot/get-by-entrance-code?lan=en",
+      "status": 200,
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":[{\"id\":\"2046147882593779714\",\"content\":null,\"contentEn\":null,\"btnText\":null,\"btnTextEn\":null,\"imgUrl\":\"\",\"imgUrlEn\":\"\",\"targetUrl\":\"https://discord.com/invite/2uBMRp275u\",\"widthRatio\":2,\"startTime\":\"2026-04-18 16:50:13\",\"endTime\":\"2029-04-26 16:50:12\",\"status\":\"A\",\"entrance\":\"community\",\"sortOrder\":0,\"createTime\":\"2026-04-20 08:44:05\",\"updateTime\":\"2026-04-20 09:02:46\",\"delFlag\":0,\"dictValue\":\"6\"},{\"id\":\"2081982108147449857\",\"content\":null,\"conten"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:39:42.876010",
+      "url": "https://googleads.g.doubleclick.net/pagead/viewthroughconversion/17932665720/?random=1787747982756&cv=11&fst=1787747982756&bg=ffffff&guid=ON&async=1&en=gtag.config&gtm=45be68o1h1v9242789877z89250639389za200zb9259475111zd9259475111xec&gcd=13l3l3l3l1l1&dma=0&tag_exp=115938466~115938468~118897920~118897930~119367802~119367810~120385423&u_w=1920&u_h=1080&url=https%3A%2F%2Fv2fun.ai%2F&rcb=6&frm=0&tiba=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20with%20V2Fun&hn=www.googleadservices.com&npa=0&pscdl=noapi&auid=500408823.1787747983&uaa=x86&uab=64&uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&uamb=0&uam=&uap=Windows&uapv=10.0&uaw=0&data=event%3Dgtag.config&ept=9&rfmt=3&fmt=4",
+      "status": 200,
+      "body": "(function(){var s = {};(function(){var k=typeof Object.defineProperties==\"function\"?Object.defineProperty:function(b,d,a){if(b==Array.prototype||b==Object.prototype)return b;b[d]=a.value;return b};function l(b){b=[\"object\"==typeof globalThis&&globalThis,b,\"object\"==typeof window&&window,\"object\"==typeof self&&self,\"object\"==typeof global&&global];for(var d=0;d<b.length;++d){var a=b[d];if(a&&a.Math==Math)return a}throw Error(\"Cannot find global object\");} var p=l(this),q=typeof Symbol===\"function"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:39:42.876072",
+      "url": "https://googleads.g.doubleclick.net/pagead/viewthroughconversion/18327802436/?random=1787747982526&cv=11&fst=1787747982526&bg=ffffff&guid=ON&async=1&en=gtag.config&gtm=45be68o1v9259475111za200zd9259475111xec&gcd=13l3l3l3l1l1&dma=0&tag_exp=115616986~115938466~115938469~118897920~118897930~119367802~119367810~120213116~120385422&u_w=1920&u_h=1080&url=https%3A%2F%2Fv2fun.ai%2F&rcb=12&frm=0&tiba=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20with%20V2Fun&hn=www.googleadservices.com&npa=0&pscdl=noapi&auid=500408823.1787747983&uaa=x86&uab=64&uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&uamb=0&uam=&uap=Windows&uapv=10.0&uaw=0&data=event%3Dgtag.config&ept=9&rfmt=3&fmt=4",
+      "status": 200,
+      "body": "(function(){var s = {};(function(){var k=typeof Object.defineProperties==\"function\"?Object.defineProperty:function(b,d,a){if(b==Array.prototype||b==Object.prototype)return b;b[d]=a.value;return b};function l(b){b=[\"object\"==typeof globalThis&&globalThis,b,\"object\"==typeof window&&window,\"object\"==typeof self&&self,\"object\"==typeof global&&global];for(var d=0;d<b.length;++d){var a=b[d];if(a&&a.Math==Math)return a}throw Error(\"Cannot find global object\");} var p=l(this),q=typeof Symbol===\"function"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:39:43.315208",
+      "url": "https://www.googleadservices.com/pagead/conversion/17932665720/?random=1787747982783&cv=11&fst=1787747982783&fmt=7&bg=ffffff&guid=ON&async=1&en=page_view&gtm=45be68o1h1v9242789877za200zb9259475111zd9259475111xec&gcd=13l3l3l3l1l1&dma=0&tag_exp=115938466~115938468~118897920~118897930~119367802~119367810~120385423&u_w=1920&u_h=1080&url=https%3A%2F%2Fv2fun.ai%2F&rcb=6&capi=1&frm=0&tiba=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20with%20V2Fun&npa=0&pscdl=noapi&auid=500408823.1787747983&label=XnacCJfM_PIbEPiG--ZC&hn=www.googleadservices.com&uaa=x86&uab=64&uafvl=Chromium%3B151.0.7922.34%7CNot%253DA%253FBrand%3B99.0.0.0&uamb=0&uam=&uap=Windows&uapv=10.0&uaw=0&ec_mode=a&oid=1788638052.1787747983&oidsrc=3&ecsid2=879251249.1787747983&_tu=ABA&gcl_ctr=1~0~0~0&data=event%3Dgtag.config&category=acrcp_v1_512&em=tv.1&emd=tvd.1&ept=5",
+      "status": 200,
+      "body": "event: message\ndata: {\"fetch\":[\"https://googleads.g.doubleclick.net/pagead/viewthroughconversion/17932665720/?random=1167627646&cv=11&fst=1787747982783&fmt=8&bg=ffffff&guid=ON&async=1&en=page_view&gtm=45be68o1h1v9242789877za200zb9259475111zd9259475111xec&gcd=13l3l3l3l1l1&dma=0&tag_exp=115938466~115938468~118897920~118897930~119367802~119367810~120385423&u_w=1920&u_h=1080&url=https%3A%2F%2Fv2fun.ai%2F&rcb=6&capi=1&frm=0&tiba=V2Fun%20-%20AI%203D%20Model%20Generator%20%7C%20Create%203D%20Models%20w"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:39:43.787240",
+      "url": "https://analytics.tiktok.com/api/v2/pixel",
+      "status": 200,
+      "body": null
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:39:43.844295",
+      "url": "https://analytics.tiktok.com/api/v2/pixel",
+      "status": 200,
+      "body": null
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:39:43.844867",
+      "url": "https://analytics.tiktok.com/api/v2/pixel/act",
+      "status": 200,
+      "body": null
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:39:53.578920",
+      "url": "https://analytics.tiktok.com/api/v2/pixel",
+      "status": 200,
+      "body": null
+    }
+  ]
+}
