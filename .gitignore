@@ -23,3 +23,6 @@ env/
 Thumbs.db
 .vscode/
 .idea/
+
+# Archive (old projects)
+archive/

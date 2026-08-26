@@ -1,7 +1,0 @@
-=== V2Fun.ai Discovered Endpoints ===
-
-
-
-Total endpoints: 0
-Total requests: 0
-Total responses: 0

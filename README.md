@@ -1,45 +1,74 @@
-# CodeBuddy Automation Bot
+# V2Fun.ai API Automation
 
-> Web automation tool untuk register/login ke CodeBuddy.ai menggunakan akun Gmail dan mengambil cookies/session untuk keperluan pembelajaran.
+> Web automation dan API exploration tool untuk V2Fun.ai - AI 3D Model Generator
 
-**Base Project:** Adaptasi dari [Kiro Token Generator](https://github.com/apepsiii/Codebudy9router)
-
----
-
-## 🚀 Features
-
-- ✅ **Automated Google OAuth Login** - Login otomatis menggunakan Gmail
-- ✅ **Human-like Typing** - Mengetik seperti manusia dengan random delay
-- ✅ **Anti-detection** - Menggunakan playwright-stealth untuk bypass detection
-- ✅ **Multi-worker** - Process multiple accounts parallel
-- ✅ **Cookie Capture** - Automatic cookie extraction setelah login
-- ✅ **Resume Support** - Skip akun yang sudah berhasil
-- ✅ **Manual Mode** - User login manual, bot capture cookies otomatis
-- ✅ **Rich Console Output** - Beautiful CLI dengan progress tracking
+**Repository:** https://github.com/apepsiii/Codebudy9router
 
 ---
 
-## 📋 Requirements
+## 📁 Project Structure
 
-- Python 3.8+
-- pip
+```
+Codebudy9router/
+├── v2fun_scripts/          # Scripts untuk exploration & automation
+│   ├── capture_v2fun_api.py         # Network capture tool
+│   ├── capture_v2fun_simple.py      # Simplified capture
+│   ├── explore_v2fun.py             # API testing script
+│   ├── explore_v2fun_v2.py          # Token-based testing
+│   ├── v2fun_interactive_discovery.py  # Interactive discovery
+│   └── run_v2fun_discovery.bat      # Windows launcher
+│
+├── v2fun_data/             # Data capture & documentation
+│   ├── v2fun_capture_*.json         # Network captures (4 files)
+│   ├── v2fun_endpoints.txt          # Discovered endpoints
+│   ├── V2FUN_API_DISCOVERY.md       # API findings
+│   ├── V2FUN_DISCOVERY_HOWTO.md     # Discovery instructions
+│   └── V2FUN_MANUAL_GUIDE.md        # Manual inspection guide
+│
+├── archive/                # Old projects (archived)
+│   ├── codebuddy/          # CodeBuddy automation (80% complete)
+│   └── kiro/               # Kiro token generator (production-ready)
+│
+├── requirements.txt        # Python dependencies
+├── requirements-web.txt    # Web dashboard dependencies
+└── README.md              # This file
+```
 
 ---
 
-## 🔧 Installation
+## 🎯 Current Status
+
+**Project:** V2Fun.ai API Exploration  
+**Status:** 🔄 In Progress (20% complete)  
+**Phase:** Discovery & API mapping  
+**Last Updated:** 2026-08-26
+
+### What's Done
+- ✅ Network capture tools created (5 scripts)
+- ✅ Initial API endpoint discovery
+- ✅ Documentation framework ready
+- ✅ Project structure reorganized
+
+### What's Next
+- ⏳ Deep API endpoint analysis
+- ⏳ Authentication flow mapping
+- ⏳ API automation implementation
+- ⏳ Cookie/token management
+
+---
+
+## 🚀 Quick Start
 
 ### 1. Install Dependencies
 
 ```bash
-pip install -r requirements-web.txt
+pip install -r requirements.txt
 ```
 
-Packages yang diinstall:
+**Required packages:**
 - `playwright` - Browser automation
 - `playwright-stealth` - Anti-detection
 - `rich` - Beautiful CLI output
-- `fastapi` - Web dashboard (optional)
-- `uvicorn` - Web server (optional)
 
 ### 2. Install Browser
 
@@ -47,223 +76,164 @@ Packages yang diinstall:
 playwright install chromium
 ```
 
----
-
-## 📖 Usage
-
-### Quick Start
+### 3. Run Network Capture
 
 ```bash
-# Process all accounts dengan 2 workers
-python main_codebuddy.py
+# Interactive discovery mode
+python v2fun_scripts/v2fun_interactive_discovery.py
 
-# Process 10 accounts dengan 4 workers
-python main_codebuddy.py 10 4
+# Simple capture mode
+python v2fun_scripts/capture_v2fun_simple.py
 
-# Show browser (non-headless mode)
-python main_codebuddy.py 10 4 --visible
-
-# Manual mode (user login manual, bot capture cookies)
-python main_codebuddy.py --manual --visible
-
-# List processed accounts
-python main_codebuddy.py --list
-```
-
-### File Input
-
-Buat file `account.txt` dengan format:
-```
-email1@gmail.com:password1
-email2@gmail.com:password2
-email3@gmail.com:password3
-```
-
-### Command Options
-
-```bash
-python main_codebuddy.py [jumlah] [workers] [options]
-
-Positional Arguments:
-  jumlah              Jumlah akun yang diproses (default: all)
-  workers             Jumlah worker paralel (default: 2)
-
-Options:
-  -a, --accounts FILE    Path file akun (default: account.txt)
-  -o, --output FILE      Path output cookies (default: cookies_codebuddy.json)
-  -d, --delay SECONDS    Delay antar batch (default: 3.0)
-  --visible              Tampilkan browser (default: headless)
-  --register             Mode register (akun baru)
-  --list                 List akun dari account_codebuddy.json
-  --manual               Mode manual (user login, bot capture)
+# Windows batch launcher
+v2fun_scripts/run_v2fun_discovery.bat
 ```
 
 ---
 
-## 🔄 Automation Flow
+## 🔍 Discovered API Endpoints
 
-1. **Navigate** ke `https://www.codebuddy.ai/home`
-2. **Click** tombol "Login"
-3. **Handle** checkbox "I confirm that xxx"
-4. **Click** "Sign up with Google"
-5. **Handle** Service Agreement dialog (conditional)
-6. **Login** dengan Google OAuth:
-   - Input email (human-like typing)
-   - Input password (human-like typing)
-   - Handle GSuite prompt (conditional)
-7. **Return** ke CodeBuddy (klik "Continue/Lanjutkan")
-8. **Navigate** ke `/profile/`
-9. **Capture** cookies
-10. **Save** ke file
+Based on network capture analysis:
+
+### Base API URL
+```
+https://api.prod.v2fun.ai/
+```
+
+### Endpoints Found
+
+1. **Article Slot (Landing Page Content)**
+   ```
+   GET /article/slot/get-by-entrance-code?lan=en
+   ```
+   - Purpose: Get landing page content slots
+   - Method: GET
+   - Language parameter: `lan=en`
+
+2. **Internationalization**
+   ```
+   GET https://v2fun.ai/api/i18n/messages/en
+   ```
+   - Purpose: Get translation messages
+   - Language: English (en)
+
+### Statistics
+- **Total API requests captured:** 91
+- **Total responses received:** 72
+- **Unique endpoints found:** 1 (API endpoint)
+- **Framework detected:** Nuxt.js (SSR)
 
 ---
 
-## 📁 File Structure
+## 📊 Network Analysis
 
-```
-Codebudy9router/
-├── main_codebuddy.py           # Main automation script
-├── account.txt                 # Input accounts (email:password)
-├── cookies_codebuddy.json      # Output cookies (JSON)
-├── account_codebuddy.json      # Process log (email → status/cookies)
-├── requirements-web.txt        # Python dependencies
-├── DEV.md                      # Development plan
-├── AGENT.md                    # AI agent instructions
-├── PROJECT.md                  # Kiro project documentation
-└── README.md                   # This file
-```
-
----
-
-## 📊 Output Files
-
-### 1. `cookies_codebuddy.json`
-Cookies hasil capture per akun:
-```json
+### Request Headers Pattern
+```javascript
 {
-  "user@gmail.com": {
-    "cookies": [...],
-    "profile_url": "https://www.codebuddy.ai/profile/",
-    "timestamp": "2026-08-26 10:30:45"
-  }
+  "sec-ch-ua-platform": "Windows",
+  "referer": "https://v2fun.ai/",
+  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+  "sec-ch-ua": "Chromium;v=151, Not=A?Brand;v=99",
+  "sec-ch-ua-mobile": "?0"
 }
 ```
 
-### 2. `account_codebuddy.json`
-Log proses per akun:
-```json
-{
-  "user@gmail.com": {
-    "success": true,
-    "cookies": {...},
-    "profile_url": "https://www.codebuddy.ai/profile/",
-    "error": "",
-    "timestamp": "2026-08-26 10:30:45"
-  }
-}
-```
+### Technologies Detected
+- **Frontend:** Nuxt.js (Vue.js SSR framework)
+- **Assets:** `/_nuxt/` path structure
+- **CDN:** Own domain hosting
+- **Analytics:** Google Analytics + Google Ads tracking
 
 ---
 
-## 🎯 Success Criteria
+## 📝 Documentation
 
-Bot dianggap berhasil jika:
-1. ✅ Login ke CodeBuddy.ai berhasil
-2. ✅ Halaman `/profile/` ter-load dengan benar
-3. ✅ Cookies tersimpan di file
-4. ✅ Cookies valid untuk akses selanjutnya
-5. ✅ Error rate < 10% untuk batch processing
+Detailed documentation available in `v2fun_data/`:
+
+- **V2FUN_API_DISCOVERY.md** - API findings and analysis
+- **V2FUN_DISCOVERY_HOWTO.md** - Step-by-step discovery guide
+- **V2FUN_MANUAL_GUIDE.md** - Manual inspection instructions
 
 ---
 
-## 🐛 Troubleshooting
+## 🔧 Available Tools
 
-### Browser tidak ditemukan
+### 1. Interactive Discovery
 ```bash
-playwright install chromium
+python v2fun_scripts/v2fun_interactive_discovery.py
 ```
+Interactive tool untuk explore API endpoints dengan menu.
 
-### Syntax Error
+### 2. Capture API Calls
 ```bash
-python -m py_compile main_codebuddy.py
+python v2fun_scripts/capture_v2fun_api.py
 ```
+Capture semua network requests ke file JSON.
 
-### Cookies tidak ter-capture
-- Pastikan halaman profile berhasil dimuat
-- Coba gunakan `--visible` mode untuk debug
-- Check network connection
+### 3. Simple Capture
+```bash
+python v2fun_scripts/capture_v2fun_simple.py
+```
+Simplified version untuk quick capture.
 
-### Akun gagal login
-- Verify email & password correct
-- Check for 2FA/verification
-- Try `--manual` mode
-
----
-
-## ⚙️ Configuration
-
-### Browser Settings
-- **Headless:** Default `True`, gunakan `--visible` untuk show browser
-- **Workers:** Default `2`, increase untuk faster processing
-- **Delay:** Default `3.0s` antar batch
-
-### Typing Simulation
-- **Delay per char:** 50-100ms (random)
-- **Delay after action:** 0.3-0.8s (random)
+### 4. Explore API
+```bash
+python v2fun_scripts/explore_v2fun.py
+```
+Test discovered API endpoints.
 
 ---
 
-## 🔒 Security Notes
+## 🎓 Learning & Insights
 
-- ⚠️ Jangan commit file `account.txt` ke git
-- ⚠️ Cookies bersifat sensitif, jangan share
-- ⚠️ Gunakan untuk pembelajaran saja
-- ⚠️ Respect CodeBuddy.ai Terms of Service
+### Challenges
+- ⚠️ Limited API endpoint visibility (Nuxt.js SSR)
+- ⚠️ Need to trigger user actions for more endpoints
+- ⚠️ Authentication flow not yet discovered
+
+### Recommendations
+- 💡 Manual browser inspection needed for full flow
+- 💡 Login/signup flow analysis required
+- 💡 Check browser DevTools Network tab for XHR requests
+- 💡 Test API endpoints with different parameters
 
 ---
 
-## 📝 Development
+## 📦 Archived Projects
 
-### Phase Status
+Old projects moved to `archive/` folder:
 
-- ✅ **Phase 0:** Code Adaptation dari Kiro (1-2 hari)
-- ✅ **Phase 1:** Core Automation (2-3 hari)
-- ⏳ **Phase 2:** Database & Storage (0.5 hari)
-- ⏳ **Phase 3:** CLI Interface (0.5 hari)
-- ⏳ **Phase 4:** Error Handling (0.5 hari)
-- ⏳ **Phase 5:** Web Dashboard (1 hari)
-- ⏳ **Phase 6:** Testing & Optimization (1-2 hari)
+### CodeBuddy Automation Bot
+- **Status:** 80% complete, ready for testing
+- **Purpose:** Automated login/registration to CodeBuddy.ai
+- **Location:** `archive/codebuddy/`
 
-**Total Estimasi:** 5-8 hari
-
-### Documentation
-
-- `DEV.md` - Development plan & architecture
-- `AGENT.md` - AI agent instructions
-- `PROJECT.md` - Kiro project reference
+### Kiro Token Generator
+- **Status:** Production-ready
+- **Purpose:** Generate tokens for Kiro.dev via Google OAuth
+- **Location:** `archive/kiro/`
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read the development docs first.
+This is a personal learning project for API exploration and automation.
 
 ---
 
-## 📄 License
+## ⚠️ Disclaimer
 
-For educational purposes only.
+This tool is for educational purposes only. Always respect website Terms of Service and rate limits.
 
 ---
 
-## 🙏 Credits
+## 📞 Support
 
-- Base project: [Kiro Token Generator](https://github.com/apepsiii/Codebudy9router)
-- Playwright: https://playwright.dev/python/
-- playwright-stealth: https://github.com/AtuboDad/playwright_stealth
+For questions or issues, create an issue on GitHub:  
+https://github.com/apepsiii/Codebudy9router/issues
 
 ---
 
 **Last Updated:** 2026-08-26  
-**Version:** 1.0.0  
-**Status:** 🟢 Phase 1 Complete
+**Version:** 0.2.0 (V2Fun Focus)  
+**Author:** apepsiii
