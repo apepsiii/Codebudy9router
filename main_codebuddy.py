@@ -1840,143 +1840,30 @@ async def process_account_manual_codebuddy(context, email, index, total, worker_
 
 # ── Worker Function ──────────────────────────────────────
 async def worker_task(account_index, email, password, browser, stealth, worker_id, total_accounts, register_mode=False, manual_mode=False, ctx=None):
-    if ctx is None:
-        # Simplified context - minimal stealth untuk avoid property override errors
-        ctx = await browser.new_context(
-            permissions=["clipboard-read", "clipboard-write"],
-            viewport={"width": 1920, "height": 1080},
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-            java_script_enabled=True,
-            locale="en-US",
-        )
-        # DISABLE playwright-stealth untuk avoid readonly property errors
-        # await stealth.apply_stealth_async(ctx)
-        
-        # Minimal stealth - HANYA override webdriver (yang paling penting)
-        await ctx.add_init_script("""
-            // Only override webdriver - don't touch other properties
-            try {
-                Object.defineProperty(navigator, 'webdriver', {
-                    get: () => undefined,
-                    configurable: true
-                });
-            } catch(e) {}
-            
-            // Add chrome object minimally
-            if (!window.chrome) {
-                window.chrome = { runtime: {} };
-            }
-        """)
-    else:
-        ctx = await ctx.new_context(
-            permissions=["clipboard-read", "clipboard-write"],
-            viewport={"width": 1920, "height": 1080},
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-            java_script_enabled=True,
-            locale="en-US",
-        )
-
-    r = await process_account(
-        ctx, email, password, account_index,
-        total=total_accounts, worker_id=worker_id, register_mode=register_mode, manual_mode=manual_mode,
+    # Simplified context - minimal stealth untuk avoid property override errors
+    ctx = await browser.new_context(
+        permissions=["clipboard-read", "clipboard-write"],
+        viewport={"width": 1920, "height": 1080},
+        user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        java_script_enabled=True,
+        locale="en-US",
     )
-    await ctx.close()
-    return r
-    if ctx is None:
-        # Randomize user agent untuk setiap worker - gunakan versi Chrome yang lebih update
-        chrome_versions = ["131.0.0.0", "130.0.0.0", "129.0.0.0"]
-        chrome_ver = chrome_versions[account_index % len(chrome_versions)]
-        
-        # Platform variations untuk lebih realistis
-        platforms = [
-            "Windows NT 10.0; Win64; x64",
-            "Windows NT 10.0; WOW64",
-            "Windows NT 10.0",
-        ]
-        platform = platforms[account_index % len(platforms)]
-        
-        ctx = await browser.new_context(
-            permissions=["clipboard-read", "clipboard-write"],
-            viewport={"width": 1920, "height": 1080},
-            user_agent=(
-                f"Mozilla/5.0 ({platform}) "
-                f"AppleWebKit/537.36 (KHTML, like Gecko) "
-                f"Chrome/{chrome_ver} Safari/537.36"
-            ),
-            java_script_enabled=True,
-            locale="en-US",
-            timezone_id="America/New_York",  # Add timezone
-            extra_http_headers={
-                "Accept-Language": "en-US,en;q=0.9",
-                "Accept-Encoding": "gzip, deflate, br",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-                "DNT": "1",
-                "Connection": "keep-alive",
-                "Upgrade-Insecure-Requests": "1",
-                "Sec-Fetch-Dest": "document",
-                "Sec-Fetch-Mode": "navigate",
-                "Sec-Fetch-Site": "none",
-                "Sec-Fetch-User": "?1",
-                "Cache-Control": "max-age=0",
-            },
-        )
-        await stealth.apply_stealth_async(ctx)
-        
-        # Inject extra stealth scripts - enhanced
-        await ctx.add_init_script("""
-            // Override navigator properties
-            Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
-            Object.defineProperty(navigator, 'plugins', {
-                get: () => [
-                    {name: 'Chrome PDF Plugin', filename: 'internal-pdf-viewer', description: 'Portable Document Format'},
-                    {name: 'Chrome PDF Viewer', filename: 'mhjfbmdgcfjbbpaeojofohoefgiehjai', description: ''},
-                    {name: 'Native Client', filename: 'internal-nacl-plugin', description: ''}
-                ]
+    
+    # Minimal stealth - HANYA override webdriver (yang paling penting)
+    await ctx.add_init_script("""
+        // Only override webdriver - don't touch other properties
+        try {
+            Object.defineProperty(navigator, 'webdriver', {
+                get: () => undefined,
+                configurable: true
             });
-            Object.defineProperty(navigator, 'languages', {get: () => ['en-US', 'en']});
-            Object.defineProperty(navigator, 'platform', {get: () => 'Win32'});
-            Object.defineProperty(navigator, 'hardwareConcurrency', {get: () => 8});
-            Object.defineProperty(navigator, 'deviceMemory', {get: () => 8});
-            Object.defineProperty(navigator, 'maxTouchPoints', {get: () => 0});
-            
-            // Override permissions
-            const originalQuery = window.navigator.permissions.query;
-            window.navigator.permissions.query = (parameters) => (
-                parameters.name === 'notifications' ?
-                    Promise.resolve({state: Notification.permission}) :
-                    originalQuery(parameters)
-            );
-            
-            // Chrome runtime
-            window.chrome = {
-                runtime: {},
-                loadTimes: function() {},
-                csi: function() {},
-                app: {}
-            };
-            
-            // Add missing properties
-            if (!window.chrome.app) {
-                window.chrome.app = {
-                    isInstalled: false,
-                    InstallState: {DISABLED: 'disabled', INSTALLED: 'installed', NOT_INSTALLED: 'not_installed'},
-                    RunningState: {CANNOT_RUN: 'cannot_run', READY_TO_RUN: 'ready_to_run', RUNNING: 'running'}
-                };
-            }
-        """)
-    else:
-        ctx = await ctx.new_context(
-            permissions=["clipboard-read", "clipboard-write"],
-            viewport={"width": 1920, "height": 1080},
-            user_agent=(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/131.0.0.0 Safari/537.36"
-            ),
-            java_script_enabled=True,
-            locale="en-US",
-        )
-        await stealth.apply_stealth_async(ctx)
+        } catch(e) {}
+        
+        // Add chrome object minimally
+        if (!window.chrome) {
+            window.chrome = { runtime: {} };
+        }
+    """)
 
     r = await process_account_codebuddy(
         ctx, email, password, account_index,
@@ -2077,61 +1964,6 @@ async def main():
         )
 
         stealth = Stealth()
-
-        # ── Mode: List ──
-        if args.list:
-            list_accounts(log_file)
-            await browser.close()
-            return
-
-        # ── Mode: Inject from file ──
-        if args.inject_from_file:
-            file_path = args.inject_from_file
-            if not os.path.isabs(file_path):
-                file_path = os.path.join(WORKSPACE, file_path)
-
-            inject_workers = args.workers
-            if args.jumlah != "all":
-                try:
-                    inject_workers = int(args.jumlah)
-                except ValueError:
-                    pass
-
-            print()
-            rule("═")
-            fast_print("  INJECT KIRO REFRESH TOKEN KE 9ROUTER DARI FILE", style="bold bright_magenta")
-            rule("═")
-            print()
-            info(f"File: {file_path}")
-            info(f"9router: {args.router_url}")
-            info(f"Provider: {args.provider}")
-            info(f"Workers: {inject_workers}")
-            print()
-
-            result = inject_from_file(
-                file_path=file_path,
-                router_url=args.router_url,
-                password=args.router_password,
-                provider_name=args.provider,
-                workers=inject_workers,
-            )
-
-            if not result["success"]:
-                fail(result["error"])
-                await browser.close()
-                return
-
-            print()
-            ok(f"Total entry: {result['total']}")
-            ok(f"Berhasil inject: {result['injected']}")
-            if result["skipped"] > 0:
-                info(f"Duplicate skip: {result['skipped']}")
-            if result["failed"] > 0:
-                fail(f"Gagal: {result['failed']}")
-                for err in result["errors"][:5]:
-                    print(f"    - {err}")
-                if len(result["errors"]) > 5:
-                    print(f"    ... dan {len(result['errors']) - 5} error lainnya")
 
         # ── Mode: List ──
         if args.list:
