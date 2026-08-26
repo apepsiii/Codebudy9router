@@ -1,0 +1,1237 @@
+{
+  "timestamp": "20260826_195023",
+  "total_captured": 73,
+  "data": [
+    {
+      "type": "request",
+      "time": "2026-08-26T19:45:19.952433",
+      "method": "GET",
+      "url": "https://v2fun.ai/api/i18n/messages/en",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:45:20.495067",
+      "url": "https://v2fun.ai/api/i18n/messages/en",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=60, s-maxage=60, stale-while-revalidate=86400",
+        "content-encoding": "br",
+        "etag": "W/\"r1-bd298b241a23f99c3e40-en-8da992dc9c043473-53a9c9919cf2499c\"",
+        "x-i18n-source": "cdn",
+        "x-i18n-release": "r1-bd298b241a23f99c3e40",
+        "date": "Wed, 26 Aug 2026 12:45:21 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Accept-Encoding",
+        "content-language": "en"
+      },
+      "body": "{\"language\":\"Language\",\"English\":\"English\",\"简体中文\":\"简体中文\",\"hello\":\"Hello\",\"welcome\":\"Welcome to our site\",\"用户\":\"User\",\"搜索\":\"Search\",\"工作区\":\"Workspace\",\"消息中心\":\"Message Center\",\"帮助中心\":\"Help Center\",\"用户反馈\":\"Feedback\",\"登录\":\"Login\",\"注册\":\"Register\",\"确定\":\"Confirm\",\"作品展示\":\"Gallery\",\"首页\":\"Home\",\"我的资料\":\"My Profile\",\"资产库\":\"Asset Library\",\"订阅中心\":\"Subscription\",\"服务条款\":\"Terms of Service\",\"退出登录\":\"Log Out\",\"退出\":\"Log Out\",\"seo\":{\"title\":\"Your Creativity Under Control\",\"keywords\":\"V2Fun,AI creativity platform,3D generation,3D modeling,AI video,viral short videos,text-to-3D,image-to-3D,animation generation,motion capture,image generation,\",\"description\":\"V2Fun is where your wildest ideas come to life. It’s a creative accelerator that turns your concepts into stunning 2D/3D visuals, from images and models to animations and viral videos, all with a click. Take full control of characters and scenes, and watch your imagination become reality, faster than ever before. It's time to create, inspire, and make your"
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:45:20.495550",
+      "method": "GET",
+      "url": "https://v2fun.ai/api/i18n/messages/en",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:45:20.533830",
+      "url": "https://v2fun.ai/api/i18n/messages/en",
+      "status": 200,
+      "headers": {
+        "cache-control": "public, max-age=60, s-maxage=60, stale-while-revalidate=86400",
+        "content-encoding": "br",
+        "etag": "W/\"r1-bd298b241a23f99c3e40-en-8da992dc9c043473-53a9c9919cf2499c\"",
+        "x-i18n-source": "cdn",
+        "x-i18n-release": "r1-bd298b241a23f99c3e40",
+        "date": "Wed, 26 Aug 2026 12:45:21 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Accept-Encoding",
+        "content-language": "en"
+      },
+      "body": "{\"language\":\"Language\",\"English\":\"English\",\"简体中文\":\"简体中文\",\"hello\":\"Hello\",\"welcome\":\"Welcome to our site\",\"用户\":\"User\",\"搜索\":\"Search\",\"工作区\":\"Workspace\",\"消息中心\":\"Message Center\",\"帮助中心\":\"Help Center\",\"用户反馈\":\"Feedback\",\"登录\":\"Login\",\"注册\":\"Register\",\"确定\":\"Confirm\",\"作品展示\":\"Gallery\",\"首页\":\"Home\",\"我的资料\":\"My Profile\",\"资产库\":\"Asset Library\",\"订阅中心\":\"Subscription\",\"服务条款\":\"Terms of Service\",\"退出登录\":\"Log Out\",\"退出\":\"Log Out\",\"seo\":{\"title\":\"Your Creativity Under Control\",\"keywords\":\"V2Fun,AI creativity platform,3D generation,3D modeling,AI video,viral short videos,text-to-3D,image-to-3D,animation generation,motion capture,image generation,\",\"description\":\"V2Fun is where your wildest ideas come to life. It’s a creative accelerator that turns your concepts into stunning 2D/3D visuals, from images and models to animations and viral videos, all with a click. Take full control of characters and scenes, and watch your imagination become reality, faster than ever before. It's time to create, inspire, and make your"
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:45:20.803588",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/article/slot/get-by-entrance-code?lan=en",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:45:22.314042",
+      "url": "https://api.prod.v2fun.ai/article/slot/get-by-entrance-code?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:45:23 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":[{\"id\":\"2046147882593779714\",\"content\":null,\"contentEn\":null,\"btnText\":null,\"btnTextEn\":null,\"imgUrl\":\"\",\"imgUrlEn\":\"\",\"targetUrl\":\"https://discord.com/invite/2uBMRp275u\",\"widthRatio\":2,\"startTime\":\"2026-04-18 16:50:13\",\"endTime\":\"2029-04-26 16:50:12\",\"status\":\"A\",\"entrance\":\"community\",\"sortOrder\":0,\"createTime\":\"2026-04-20 08:44:05\",\"updateTime\":\"2026-04-20 09:02:46\",\"delFlag\":0,\"dictValue\":\"6\"},{\"id\":\"2081982108147449857\",\"content\":null,\"contentEn\":null,\"btnText\":null,\"btnTextEn\":null,\"imgUrl\":\"https://external-v2fun-data-hk-1.oss-accelerate.aliyuncs.com/temp/2026/07/28/8K（英文）banner-1-1_1785218145774.png\",\"imgUrlEn\":\"https://external-v2fun-data-hk-1.oss-accelerate.aliyuncs.com/temp/2026/07/28/8K（英文）banner-1_1785218188394.png\",\"targetUrl\":\"/workspace?tab=model\",\"widthRatio\":1,\"startTime\":null,\"endTime\":null,\"status\":\"A\",\"entrance\":\"banner\",\"sortOrder\":0,\"createTime\":\"2026-07-28 05:56:30\",\"updateTime\":\"2026-07-28 05:56:30\",\"delFlag\":0,\""
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:45.252994",
+      "method": "POST",
+      "url": "https://api.prod.v2fun.ai/sys/user/nologin/loginByGoogle?lan=en",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "accept": "application/json",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "content-type": "application/json",
+        "sec-ch-ua-mobile": "?0"
+      },
+      "post_data": {
+        "loginType": "googleLogin",
+        "agree": "1",
+        "regionType": "GLOBAL",
+        "loginAppId": "1",
+        "code": "4/0ATsMZqDitv8fIgBTLDcbSVvPXWdxlVxv4KqWC_UQQ3bSEN1_paYSs_P3IO_BJvbY8NL4Ww",
+        "redirectUri": "https://v2fun.ai"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:46.917615",
+      "method": "POST",
+      "url": "https://api.prod.v2fun.ai/sys/user/getLoginInfo?lan=en",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0",
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "accept": "application/json",
+        "content-type": "application/json"
+      },
+      "post_data": {
+        "bindType": 1
+      }
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:46.920298",
+      "url": "https://api.prod.v2fun.ai/sys/user/nologin/loginByGoogle?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:47 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"Sign up and log in successfully.\",\"code\":200,\"result\":{\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ\",\"tenantList\":[],\"userInfo\":{\"id\":\"2092594606259572737\",\"username\":\"kcvTWmedwin119@gezon.net\",\"realname\":null,\"nickName\":\"montague Irene\",\"regionType\":\"GLOBAL\",\"avatar\":\"upload/image/2026/08/26/20260826124647_427e493d.jpg\",\"birthday\":null,\"sex\":null,\"email\":\"edwin119@gezon.net\",\"phone\":null,\"orgCode\":null,\"loginTenantId\":0,\"orgCodeTxt\":null,\"status\":1,\"delFlag\":0,\"workNo\":null,\"post\":null,\"telephone\":null,\"createBy\":null,\"createTime\":\"2026-08-26 20:46:47\",\"updateBy\":null,\"updateTime\":\"2026-08-26 20:46:47\",\"activitiSync\":1,\"userIdentity\":null,\"departIds\":null,\"relTenantIds\":null,\"clientId\":null,\"clientType\":\"web\",\"homePath\":null,\"postText\":null,\"bpmStatus\":null,\"izBindThird\":fa"
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:46.929710",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/ums/external/sse?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "accept": "text/event-stream",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:46.933075",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/sys/onboarding/system-tasks?taskKey=join-discord&lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:47.145641",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/interactive/external/survey/needSurvey?scene=new_user_onboarding&region=overseas&lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:47.145996",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/article/slot/get-by-entrance-code?lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:47.146222",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/sys/onboarding/system-tasks?taskKey=join-discord&lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:47.146444",
+      "url": "https://api.prod.v2fun.ai/sys/user/getLoginInfo?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:48 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"Operation successful\",\"code\":200,\"result\":{\"userInfo\":{\"id\":\"2092594606259572737\",\"username\":\"kcvTWmedwin119@gezon.net\",\"realname\":null,\"nickName\":\"montague Irene\",\"regionType\":\"GLOBAL\",\"avatar\":\"upload/image/2026/08/26/20260826124647_427e493d.jpg\",\"birthday\":null,\"sex\":null,\"email\":\"edwin119@gezon.net\",\"phone\":null,\"orgCode\":null,\"loginTenantId\":0,\"orgCodeTxt\":null,\"status\":1,\"delFlag\":0,\"workNo\":null,\"post\":null,\"telephone\":null,\"createBy\":null,\"createTime\":\"2026-08-26 20:46:47\",\"updateBy\":null,\"updateTime\":\"2026-08-26 20:46:48\",\"activitiSync\":1,\"userIdentity\":null,\"departIds\":null,\"relTenantIds\":null,\"clientId\":null,\"clientType\":\"web\",\"homePath\":null,\"postText\":null,\"bpmStatus\":null,\"izBindThird\":false,\"isAdm\":0,\"invitedAdmin\":\"0\",\"isActivated\":1,\"acceptDate\":null,\"isMember\":0,\"invitationCode\":null,\"languageCode\":\"en\",\"hwOpenId\":null,\"hwUnionId\":null,\"hwPushToken\":null,\"impactClickId\":null,\"countryCode\":\"ID\"},\"bindGoogle\":true,\"bindFacebook\":false,\"bindWei"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:47.146516",
+      "url": "https://api.prod.v2fun.ai/sys/onboarding/system-tasks?taskKey=join-discord&lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:48 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":[{\"taskId\":\"2080489792438329346\",\"taskKey\":\"join-discord\",\"title\":\"加入Discord频道奖励\",\"titleEn\":\"Join Discord\",\"rewardPoints\":30,\"completed\":false}],\"timestamp\":1787748408152,\"serviceCode\":null}"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:47.250595",
+      "url": "https://api.prod.v2fun.ai/sys/onboarding/system-tasks?taskKey=join-discord&lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:48 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":[{\"taskId\":\"2080489792438329346\",\"taskKey\":\"join-discord\",\"title\":\"加入Discord频道奖励\",\"titleEn\":\"Join Discord\",\"rewardPoints\":30,\"completed\":false}],\"timestamp\":1787748408329,\"serviceCode\":null}"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:47.397811",
+      "url": "https://api.prod.v2fun.ai/article/slot/get-by-entrance-code?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:48 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":[{\"id\":\"2046147882593779714\",\"content\":null,\"contentEn\":null,\"btnText\":null,\"btnTextEn\":null,\"imgUrl\":\"\",\"imgUrlEn\":\"\",\"targetUrl\":\"https://discord.com/invite/2uBMRp275u\",\"widthRatio\":2,\"startTime\":\"2026-04-18 16:50:13\",\"endTime\":\"2029-04-26 16:50:12\",\"status\":\"A\",\"entrance\":\"community\",\"sortOrder\":0,\"createTime\":\"2026-04-20 08:44:05\",\"updateTime\":\"2026-04-20 09:02:46\",\"delFlag\":0,\"dictValue\":\"6\"},{\"id\":\"2081982108147449857\",\"content\":null,\"contentEn\":null,\"btnText\":null,\"btnTextEn\":null,\"imgUrl\":\"https://external-v2fun-data-hk-1.oss-accelerate.aliyuncs.com/temp/2026/07/28/8K（英文）banner-1-1_1785218145774.png\",\"imgUrlEn\":\"https://external-v2fun-data-hk-1.oss-accelerate.aliyuncs.com/temp/2026/07/28/8K（英文）banner-1_1785218188394.png\",\"targetUrl\":\"/workspace?tab=model\",\"widthRatio\":1,\"startTime\":null,\"endTime\":null,\"status\":\"A\",\"entrance\":\"banner\",\"sortOrder\":0,\"createTime\":\"2026-07-28 05:56:30\",\"updateTime\":\"2026-07-28 05:56:30\",\"delFlag\":0,\""
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:47.828304",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/article/slot/get-by-entrance-code?lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:47.828974",
+      "method": "POST",
+      "url": "https://api.prod.v2fun.ai/work/getTagList?lan=en",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0",
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "accept": "application/json",
+        "content-type": "application/json"
+      },
+      "post_data": {
+        "pager": {
+          "pageNo": 1,
+          "pageSize": 100,
+          "needQueryCount": false
+        },
+        "parm": {
+          "clear": 0
+        }
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:47.829626",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/sys/user/plan/get-subscription-info?lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:47.830382",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/sys/user/has-sign?lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:47.830892",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/sys/onboarding/get-user-task-progress?lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:47.831157",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/sys/user/get-balance?lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:47.831433",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/sys/onboarding/system-tasks?taskKey=join-discord&lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:47.831683",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/work/config/business-config/list?lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:47.831930",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/ums/external/notifications/records?category=announcement&pageNo=1&pageSize=30&channel=inbox&lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:47.832230",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/article/slot/get-by-entrance-code?code=6&lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:47.832474",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/article/slot/get-by-entrance-code?code=4&lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:47.832671",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/sys/onboarding/get-user-task-progress?lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:47.832864",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/ums/external/notifications/records/unread-count?lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:47.833103",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/sys/onboarding/get-user-task-progress?lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:48.672313",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/sys/onboarding/system-tasks?taskKey=new-user-survey&lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:48.672660",
+      "url": "https://api.prod.v2fun.ai/interactive/external/survey/needSurvey?scene=new_user_onboarding&region=overseas&lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:48 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":{\"needSurvey\":true,\"surveyKey\":\"new_user_onboarding_v1\",\"surveyName\":\"新用户调研问卷\",\"scene\":\"new_user_onboarding\",\"taskKey\":\"new-user-survey\",\"questions\":[{\"questionKey\":\"identity\",\"i18nText\":{\"en\":\"Which of the following best describes you?\",\"cn\":\"以下哪些身份更接近你？\"},\"questionType\":\"CHECKBOX\",\"required\":true,\"minSelect\":1,\"maxSelect\":2,\"supportOther\":true,\"sortOrder\":1,\"options\":[{\"optionKey\":\"modeler_character_designer\",\"i18nText\":{\"en\":\"3D Modeler / Character Designer\",\"cn\":\"3D 建模师 / 角色设计师\"},\"groupKey\":null,\"region\":null,\"icon\":\"questionnaire-character\",\"sortOrder\":1},{\"optionKey\":\"game_dev\",\"i18nText\":{\"en\":\"Game Developer\",\"cn\":\"游戏开发者\"},\"groupKey\":null,\"region\":null,\"icon\":\"questionnaire-game-development\",\"sortOrder\":2},{\"optionKey\":\"animation_film_creator\",\"i18nText\":{\"en\":\"Animation / Film Creator\",\"cn\":\"动画 / 影视创作者\"},\"groupKey\":null,\"region\":null,\"icon\":\"questionnaire-animation-film\",\"sortOrder\":3},{\"optionKey\":\"ai_explorer\",\"i18nText\":{\"en\""
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:48.756403",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/article/slot/get-by-entrance-code?lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:48.756899",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/sys/onboarding/system-tasks?taskKey=join-discord&lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:48.757387",
+      "url": "https://api.prod.v2fun.ai/article/slot/get-by-entrance-code?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:48 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":[{\"id\":\"2046147882593779714\",\"content\":null,\"contentEn\":null,\"btnText\":null,\"btnTextEn\":null,\"imgUrl\":\"\",\"imgUrlEn\":\"\",\"targetUrl\":\"https://discord.com/invite/2uBMRp275u\",\"widthRatio\":2,\"startTime\":\"2026-04-18 16:50:13\",\"endTime\":\"2029-04-26 16:50:12\",\"status\":\"A\",\"entrance\":\"community\",\"sortOrder\":0,\"createTime\":\"2026-04-20 08:44:05\",\"updateTime\":\"2026-04-20 09:02:46\",\"delFlag\":0,\"dictValue\":\"6\"},{\"id\":\"2081982108147449857\",\"content\":null,\"contentEn\":null,\"btnText\":null,\"btnTextEn\":null,\"imgUrl\":\"https://external-v2fun-data-hk-1.oss-accelerate.aliyuncs.com/temp/2026/07/28/8K（英文）banner-1-1_1785218145774.png\",\"imgUrlEn\":\"https://external-v2fun-data-hk-1.oss-accelerate.aliyuncs.com/temp/2026/07/28/8K（英文）banner-1_1785218188394.png\",\"targetUrl\":\"/workspace?tab=model\",\"widthRatio\":1,\"startTime\":null,\"endTime\":null,\"status\":\"A\",\"entrance\":\"banner\",\"sortOrder\":0,\"createTime\":\"2026-07-28 05:56:30\",\"updateTime\":\"2026-07-28 05:56:30\",\"delFlag\":0,\""
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:48.757518",
+      "url": "https://api.prod.v2fun.ai/sys/onboarding/system-tasks?taskKey=join-discord&lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:48 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":[{\"taskId\":\"2080489792438329346\",\"taskKey\":\"join-discord\",\"title\":\"加入Discord频道奖励\",\"titleEn\":\"Join Discord\",\"rewardPoints\":30,\"completed\":false}],\"timestamp\":1787748408992,\"serviceCode\":null}"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:48.865185",
+      "url": "https://api.prod.v2fun.ai/ums/external/notifications/records?category=announcement&pageNo=1&pageSize=30&channel=inbox&lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:49 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":{\"records\":[],\"total\":0,\"size\":30,\"current\":1,\"orders\":[],\"optimizeCountSql\":true,\"searchCount\":true,\"maxLimit\":null,\"countId\":null,\"pages\":0},\"timestamp\":1787748409086,\"serviceCode\":null}"
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:48.919505",
+      "method": "POST",
+      "url": "https://api.prod.v2fun.ai/work/get-free-cnt?lan=en",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0",
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "accept": "application/json",
+        "content-type": "application/json"
+      },
+      "post_data": {
+        "configIds": [
+          "2048727132348956673",
+          "2027223916544393217",
+          "1999059275770777602",
+          "1999058822540242946",
+          "2072232369544179713",
+          "2048727897058656258",
+          "2027224098833039361",
+          "1999364117728792578",
+          "1999345578888335362",
+          "2072232439534530561",
+          "2005566311005237249",
+          "2037420722827362306",
+          "2005578171616145409",
+          "2005584046959439873",
+          "2005584317174652929",
+          "2005586377985830913",
+          "2005888354655268866",
+          "2037418377902362625",
+          "2005887778982850561"
+        ]
+      }
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:48.921889",
+      "url": "https://api.prod.v2fun.ai/work/config/business-config/list?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:49 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":[{\"id\":\"1999052372806225921\",\"functionName\":null,\"functionType\":0,\"code\":\"imgen\",\"value\":null,\"order\":1,\"enabled\":true,\"points\":null,\"freeTimes\":null,\"isMember\":null,\"parentId\":null,\"i18n\":null,\"extra\":null,\"children\":[{\"id\":\"1999055521761406977\",\"functionName\":null,\"functionType\":1,\"code\":\"prompt\",\"value\":null,\"order\":1,\"enabled\":true,\"points\":null,\"freeTimes\":null,\"isMember\":null,\"parentId\":\"1999052372806225921\",\"i18n\":null,\"extra\":null,\"children\":null},{\"id\":\"1999055864102932481\",\"functionName\":null,\"functionType\":1,\"code\":\"prompt_rewrite\",\"value\":null,\"order\":2,\"enabled\":true,\"points\":null,\"freeTimes\":null,\"isMember\":null,\"parentId\":\"1999052372806225921\",\"i18n\":null,\"extra\":null,\"children\":[{\"id\":\"1999057391148355585\",\"functionName\":null,\"functionType\":2,\"code\":\"enhancement\",\"value\":null,\"order\":1,\"enabled\":true,\"points\":null,\"freeTimes\":null,\"isMember\":null,\"parentId\":\"1999055864102932481\",\"i18n\":\"{\\\"zh\\\": \\\"提示词优化\\\", \\\"en\\\": \\\"Optim"
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:48.961143",
+      "method": "POST",
+      "url": "https://api.prod.v2fun.ai/sys/user/sign?lan=en",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0",
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "accept": "application/json",
+        "content-type": "application/json"
+      },
+      "post_data": {}
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:48.961447",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/sys/user/get-sign-points?lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:48.961652",
+      "url": "https://api.prod.v2fun.ai/sys/user/has-sign?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:49 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":false,\"timestamp\":1787748409086,\"serviceCode\":null}"
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:49.092208",
+      "method": "POST",
+      "url": "https://api.prod.v2fun.ai/work/getItemMapList?lan=en",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0",
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "accept": "application/json",
+        "content-type": "application/json"
+      },
+      "post_data": {
+        "pager": {
+          "pageNo": 1,
+          "pageSize": 20,
+          "needQueryCount": true,
+          "orderBy": "createTime"
+        },
+        "parm": {
+          "keyword": null,
+          "tag": "",
+          "tagId": "0",
+          "workType": null
+        }
+      }
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.093004",
+      "url": "https://api.prod.v2fun.ai/work/getTagList?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:49 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":{\"records\":[{\"id\":\"0\",\"name\":\"推荐\",\"nameEn\":\"Featured\",\"description\":null,\"tagType\":null,\"color\":\"\",\"count\":0,\"elite\":\"1\",\"eliteHot\":null,\"sortNum\":null,\"status\":null,\"delFlag\":0,\"tenantId\":null,\"revision\":null,\"createBy\":null,\"createTime\":null,\"updateBy\":null,\"updateTime\":null,\"elite_dictText\":\"是\"},{\"id\":\"2039664452513923073\",\"name\":\"电影巨星\",\"nameEn\":\"Movie Icons\",\"description\":null,\"tagType\":null,\"color\":null,\"count\":0,\"elite\":\"1\",\"eliteHot\":\"1\",\"sortNum\":1,\"status\":\"A\",\"delFlag\":0,\"tenantId\":null,\"revision\":null,\"createBy\":\"e9ca23d68d884d4ebb19d07889727dae\",\"createTime\":\"2026-04-02 19:21:15\",\"updateBy\":\"e9ca23d68d884d4ebb19d07889727dae\",\"updateTime\":\"2026-04-07 11:55:07\",\"elite_dictText\":\"是\",\"eliteHot_dictText\":\"是\",\"status_dictText\":\"审核通过\"},{\"id\":\"2039664656025747458\",\"name\":\"体坛名将\",\"nameEn\":\"Sports Legends\",\"description\":null,\"tagType\":null,\"color\":null,\"count\":0,\"elite\":\"1\",\"eliteHot\":\"1\",\"sortNum\":2,\"status\":\"A\",\"delFlag\":0,\"tenantId\":"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.093134",
+      "url": "https://api.prod.v2fun.ai/article/slot/get-by-entrance-code?code=4&lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:49 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":[],\"timestamp\":1787748409088,\"serviceCode\":null}"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.093306",
+      "url": "https://api.prod.v2fun.ai/article/slot/get-by-entrance-code?code=6&lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:49 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":[{\"id\":\"2046147882593779714\",\"content\":null,\"contentEn\":null,\"btnText\":null,\"btnTextEn\":null,\"imgUrl\":\"\",\"imgUrlEn\":\"\",\"targetUrl\":\"https://discord.com/invite/2uBMRp275u\",\"widthRatio\":2,\"startTime\":\"2026-04-18 16:50:13\",\"endTime\":\"2029-04-26 16:50:12\",\"status\":\"A\",\"entrance\":\"community\",\"sortOrder\":0,\"createTime\":\"2026-04-20 08:44:05\",\"updateTime\":\"2026-04-20 09:02:46\",\"delFlag\":0,\"dictValue\":\"6\"}],\"timestamp\":1787748409088,\"serviceCode\":null}"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.093418",
+      "url": "https://api.prod.v2fun.ai/ums/external/notifications/records/unread-count?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:49 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":[{\"category\":\"notification\",\"count\":0},{\"category\":\"interaction\",\"count\":0},{\"category\":\"announcement\",\"count\":0}],\"timestamp\":1787748409090,\"serviceCode\":null}"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.093485",
+      "url": "https://api.prod.v2fun.ai/sys/user/get-balance?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:49 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":300,\"timestamp\":1787748409088,\"serviceCode\":null}"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.110912",
+      "url": "https://api.prod.v2fun.ai/sys/user/plan/get-subscription-info?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:49 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":{\"currentPlan\":{\"id\":\"2027311875710873601\",\"planKey\":\"free\",\"planName\":\"免费会员\",\"planNameEn\":\"Free\",\"planDescription\":\"轻度创作体验\",\"planDescriptionEn\":\"Light Creative Experience\",\"benefits\":\"[{\\\"title\\\":\\\"AI 图像生成\\\",\\\"titleEn\\\":\\\"AI Image Generation\\\",\\\"items\\\":[{\\\"value\\\":\\\"Nano-Banana-2\\\",\\\"tag\\\":\\\"限免5次\\\",\\\"tip\\\":\\\"升级后可继续使用\\\",\\\"valueEn\\\":\\\"Nano-Banana-2\\\",\\\"tagEn\\\":\\\"5 free uses\\\",\\\"tipEn\\\":\\\"Available after upgrading\\\"},{\\\"value\\\":\\\"Nano-Banana-Pro\\\",\\\"tag\\\":\\\"限免5次\\\",\\\"tip\\\":\\\"升级后可继续使用\\\",\\\"valueEn\\\":\\\"Nano-Banana-Pro\\\",\\\"tagEn\\\":\\\"5 free uses\\\",\\\"tipEn\\\":\\\"Available after upgrading\\\"},{\\\"value\\\":\\\"GPT-Image-2\\\",\\\"tag\\\":\\\"限免5次\\\",\\\"tip\\\":\\\"升级后可继续使用\\\",\\\"valueEn\\\":\\\"GPT-Image-2\\\",\\\"tagEn\\\":\\\"5 free uses\\\",\\\"tipEn\\\":\\\"Available after upgrading\\\"},{\\\"value\\\":\\\"Nano-Banana-2-Lite\\\",\\\"tag\\\":\\\"限免5次\\\",\\\"tip\\\":\\\"升级后可继续使用\\\",\\\"valueEn\\\":\\\"Nano-Banana-2-Lite\\\",\\\"tagEn\\\":\\\"5 free uses\\\",\\\"tipEn\\\":\\\"Available after upgrading\\\"}]},{\\\"title\\\":\\\"AI 3D 模型生成\\\",\\"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.285571",
+      "url": "https://api.prod.v2fun.ai/sys/onboarding/get-user-task-progress?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:49 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":{\"progressList\":[{\"id\":\"2092594606490259457\",\"userId\":\"2092594606259572737\",\"taskId\":\"2014547892263907329\",\"status\":\"PENDING\",\"pointsToGet\":30,\"completeTime\":null,\"progressValue\":0,\"maxProgress\":1,\"delFlag\":0,\"createTime\":\"2026-08-26 20:46:47\",\"updateTime\":\"2026-08-26 20:46:47\"},{\"id\":\"2092594606490259458\",\"userId\":\"2092594606259572737\",\"taskId\":\"2014550724559958018\",\"status\":\"PENDING\",\"pointsToGet\":60,\"completeTime\":null,\"progressValue\":0,\"maxProgress\":1,\"delFlag\":0,\"createTime\":\"2026-08-26 20:46:47\",\"updateTime\":\"2026-08-26 20:46:47\"},{\"id\":\"2092594606490259459\",\"userId\":\"2092594606259572737\",\"taskId\":\"2014594959597461506\",\"status\":\"PENDING\",\"pointsToGet\":60,\"completeTime\":null,\"progressValue\":0,\"maxProgress\":1,\"delFlag\":0,\"createTime\":\"2026-08-26 20:46:47\",\"updateTime\":\"2026-08-26 20:46:47\"},{\"id\":\"2092594606490259460\",\"userId\":\"2092594606259572737\",\"taskId\":\"2014596509556367362\",\"status\":\"PENDING\",\"pointsToGet\":60,\"completeTime\":null"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.285781",
+      "url": "https://api.prod.v2fun.ai/sys/onboarding/system-tasks?taskKey=new-user-survey&lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:49 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":[{\"taskId\":\"2080489598549045250\",\"taskKey\":\"new-user-survey\",\"title\":\"新用户问卷填写奖励\",\"titleEn\":\"New User Survey\",\"rewardPoints\":200,\"completed\":false}],\"timestamp\":1787748409891,\"serviceCode\":null}"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.286072",
+      "url": "https://api.prod.v2fun.ai/article/slot/get-by-entrance-code?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:49 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":[{\"id\":\"2046147882593779714\",\"content\":null,\"contentEn\":null,\"btnText\":null,\"btnTextEn\":null,\"imgUrl\":\"\",\"imgUrlEn\":\"\",\"targetUrl\":\"https://discord.com/invite/2uBMRp275u\",\"widthRatio\":2,\"startTime\":\"2026-04-18 16:50:13\",\"endTime\":\"2029-04-26 16:50:12\",\"status\":\"A\",\"entrance\":\"community\",\"sortOrder\":0,\"createTime\":\"2026-04-20 08:44:05\",\"updateTime\":\"2026-04-20 09:02:46\",\"delFlag\":0,\"dictValue\":\"6\"},{\"id\":\"2081982108147449857\",\"content\":null,\"contentEn\":null,\"btnText\":null,\"btnTextEn\":null,\"imgUrl\":\"https://external-v2fun-data-hk-1.oss-accelerate.aliyuncs.com/temp/2026/07/28/8K（英文）banner-1-1_1785218145774.png\",\"imgUrlEn\":\"https://external-v2fun-data-hk-1.oss-accelerate.aliyuncs.com/temp/2026/07/28/8K（英文）banner-1_1785218188394.png\",\"targetUrl\":\"/workspace?tab=model\",\"widthRatio\":1,\"startTime\":null,\"endTime\":null,\"status\":\"A\",\"entrance\":\"banner\",\"sortOrder\":0,\"createTime\":\"2026-07-28 05:56:30\",\"updateTime\":\"2026-07-28 05:56:30\",\"delFlag\":0,\""
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.300481",
+      "url": "https://api.prod.v2fun.ai/sys/onboarding/system-tasks?taskKey=join-discord&lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:49 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":[{\"taskId\":\"2080489792438329346\",\"taskKey\":\"join-discord\",\"title\":\"加入Discord频道奖励\",\"titleEn\":\"Join Discord\",\"rewardPoints\":30,\"completed\":false}],\"timestamp\":1787748409913,\"serviceCode\":null}"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.314349",
+      "url": "https://api.prod.v2fun.ai/sys/user/get-sign-points?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:50 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":20,\"timestamp\":1787748410239,\"serviceCode\":null}"
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:49.351958",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/sys/user/get-balance?lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:49.352821",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/sys/user/onboarding/tasks/list?taskType=onboardingTask&lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.353217",
+      "url": "https://api.prod.v2fun.ai/sys/user/sign?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:50 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":320,\"timestamp\":1787748410256,\"serviceCode\":null}"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.353368",
+      "url": "https://api.prod.v2fun.ai/sys/onboarding/get-user-task-progress?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:50 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":{\"progressList\":[{\"id\":\"2092594606490259457\",\"userId\":\"2092594606259572737\",\"taskId\":\"2014547892263907329\",\"status\":\"PENDING\",\"pointsToGet\":30,\"completeTime\":null,\"progressValue\":0,\"maxProgress\":1,\"delFlag\":0,\"createTime\":\"2026-08-26 20:46:47\",\"updateTime\":\"2026-08-26 20:46:47\"},{\"id\":\"2092594606490259458\",\"userId\":\"2092594606259572737\",\"taskId\":\"2014550724559958018\",\"status\":\"PENDING\",\"pointsToGet\":60,\"completeTime\":null,\"progressValue\":0,\"maxProgress\":1,\"delFlag\":0,\"createTime\":\"2026-08-26 20:46:47\",\"updateTime\":\"2026-08-26 20:46:47\"},{\"id\":\"2092594606490259459\",\"userId\":\"2092594606259572737\",\"taskId\":\"2014594959597461506\",\"status\":\"PENDING\",\"pointsToGet\":60,\"completeTime\":null,\"progressValue\":0,\"maxProgress\":1,\"delFlag\":0,\"createTime\":\"2026-08-26 20:46:47\",\"updateTime\":\"2026-08-26 20:46:47\"},{\"id\":\"2092594606490259460\",\"userId\":\"2092594606259572737\",\"taskId\":\"2014596509556367362\",\"status\":\"PENDING\",\"pointsToGet\":60,\"completeTime\":null"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.471129",
+      "url": "https://api.prod.v2fun.ai/work/getItemMapList?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:50 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":{\"records\":[{\"id\":\"2092377399514169346\",\"workAreaId\":\"2092377399501586433\",\"clientType\":\"web\",\"defaultAsset\":0,\"defaultAssetClientType\":null,\"prompt\":\"\",\"title\":\"farmer fs2013\",\"titleEn\":null,\"thumb\":\"images/2950831e-07d9-4738-ace9-da8b98476f6d.png\",\"videoUrl\":\"videos/835da7c1-4889-4170-bbf9-713a359ccae2.mp4\",\"urls\":null,\"fileListData\":null,\"description\":null,\"userId\":\"2086322761112301570\",\"workType\":2,\"isUpload\":1,\"num\":1,\"siteElite\":1,\"siteEliteStatus\":\"A\",\"sourceWorkId\":null,\"sourceItemId\":null,\"regenerateItemId\":null,\"rovedReason\":null,\"rovedTime\":\"2026-08-26 07:49:54\",\"status\":\"A\",\"delFlag\":0,\"tenantId\":null,\"revision\":0,\"createBy\":\"2086322761112301570\",\"createTime\":\"2026-08-26 06:23:41\",\"updateBy\":\"2088227574371287041\",\"updateTime\":\"2026-08-26 15:00:00\",\"for3dmodel\":0,\"childMenu\":0,\"model\":null,\"quality\":null,\"ratio\":null,\"referenceImage\":\"\",\"fixedSeed\":null,\"license\":\"CC0\",\"generateType\":\"UPLOAD_ASSETS\",\"frontImage\":\"\",\"backImage\""
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:49.474249",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/sys/user/onboarding/tasks/list?taskType=onboardingTask&lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.474733",
+      "url": "https://api.prod.v2fun.ai/work/get-free-cnt?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:50 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":{\"1999345578888335362\":0,\"2005584317174652929\":3,\"2037418377902362625\":0,\"2005566311005237249\":3,\"2005578171616145409\":3,\"1999059275770777602\":5,\"2048727132348956673\":5,\"2027224098833039361\":5,\"2072232439534530561\":5,\"2005887778982850561\":0,\"2037420722827362306\":3,\"2005584046959439873\":3,\"2005586377985830913\":0,\"2072232369544179713\":5,\"1999058822540242946\":0,\"2048727897058656258\":5,\"1999364117728792578\":5,\"2005888354655268866\":0,\"2027223916544393217\":5},\"timestamp\":1787748410434,\"serviceCode\":null}"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.475202",
+      "url": "https://api.prod.v2fun.ai/sys/onboarding/get-user-task-progress?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:50 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":{\"progressList\":[{\"id\":\"2092594606490259457\",\"userId\":\"2092594606259572737\",\"taskId\":\"2014547892263907329\",\"status\":\"PENDING\",\"pointsToGet\":30,\"completeTime\":null,\"progressValue\":0,\"maxProgress\":1,\"delFlag\":0,\"createTime\":\"2026-08-26 20:46:47\",\"updateTime\":\"2026-08-26 20:46:47\"},{\"id\":\"2092594606490259458\",\"userId\":\"2092594606259572737\",\"taskId\":\"2014550724559958018\",\"status\":\"PENDING\",\"pointsToGet\":60,\"completeTime\":null,\"progressValue\":0,\"maxProgress\":1,\"delFlag\":0,\"createTime\":\"2026-08-26 20:46:47\",\"updateTime\":\"2026-08-26 20:46:47\"},{\"id\":\"2092594606490259459\",\"userId\":\"2092594606259572737\",\"taskId\":\"2014594959597461506\",\"status\":\"PENDING\",\"pointsToGet\":60,\"completeTime\":null,\"progressValue\":0,\"maxProgress\":1,\"delFlag\":0,\"createTime\":\"2026-08-26 20:46:47\",\"updateTime\":\"2026-08-26 20:46:47\"},{\"id\":\"2092594606490259460\",\"userId\":\"2092594606259572737\",\"taskId\":\"2014596509556367362\",\"status\":\"PENDING\",\"pointsToGet\":60,\"completeTime\":null"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.476780",
+      "url": "https://api.prod.v2fun.ai/sys/user/get-balance?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:50 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":320,\"timestamp\":1787748410510,\"serviceCode\":null}"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.572334",
+      "url": "https://api.prod.v2fun.ai/sys/user/onboarding/tasks/list?taskType=onboardingTask&lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:50 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":[{\"id\":\"2014547892263907329\",\"taskKey\":\"first-image\",\"title\":\"生成你的第一张AI图像\",\"description\":\"输入你的想法，生成一张属于你的 AI 图片。\",\"titleEn\":\"Generate Your First AI Image\",\"descriptionEn\":\"Turn your ideas into an AI-generated image.\",\"rewardPoints\":30,\"maxProgress\":1,\"sortOrder\":0,\"route\":\"/workspace?tab=image\",\"taskType\":\"onboardingTask\",\"clientType\":\"web\",\"delFlag\":0,\"createTime\":\"2026-01-23 11:57:01\",\"updateTime\":\"2026-06-30 19:10:00\"},{\"id\":\"2014550724559958018\",\"taskKey\":\"first-3d-mesh\",\"title\":\"使用生成的图像创建3D模型\",\"description\":\"选择你生成的图像，一键生成 3D 模型。\",\"titleEn\":\"Create a 3D Model from an AI Image\",\"descriptionEn\":\"Select an image you generated and create a 3D model with one click.\",\"rewardPoints\":60,\"maxProgress\":1,\"sortOrder\":0,\"route\":\"/workspace?tab=model\",\"taskType\":\"onboardingTask\",\"clientType\":\"web\",\"delFlag\":0,\"createTime\":\"2026-01-23 12:08:16\",\"updateTime\":\"2026-06-30 19:10:00\"},{\"id\":\"2014594959597461506\",\"taskKey\":\"first-multi-view-display-3d-m"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:49.625018",
+      "url": "https://api.prod.v2fun.ai/sys/user/onboarding/tasks/list?taskType=onboardingTask&lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:50 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":[{\"id\":\"2014547892263907329\",\"taskKey\":\"first-image\",\"title\":\"生成你的第一张AI图像\",\"description\":\"输入你的想法，生成一张属于你的 AI 图片。\",\"titleEn\":\"Generate Your First AI Image\",\"descriptionEn\":\"Turn your ideas into an AI-generated image.\",\"rewardPoints\":30,\"maxProgress\":1,\"sortOrder\":0,\"route\":\"/workspace?tab=image\",\"taskType\":\"onboardingTask\",\"clientType\":\"web\",\"delFlag\":0,\"createTime\":\"2026-01-23 11:57:01\",\"updateTime\":\"2026-06-30 19:10:00\"},{\"id\":\"2014550724559958018\",\"taskKey\":\"first-3d-mesh\",\"title\":\"使用生成的图像创建3D模型\",\"description\":\"选择你生成的图像，一键生成 3D 模型。\",\"titleEn\":\"Create a 3D Model from an AI Image\",\"descriptionEn\":\"Select an image you generated and create a 3D model with one click.\",\"rewardPoints\":60,\"maxProgress\":1,\"sortOrder\":0,\"route\":\"/workspace?tab=model\",\"taskType\":\"onboardingTask\",\"clientType\":\"web\",\"delFlag\":0,\"createTime\":\"2026-01-23 12:08:16\",\"updateTime\":\"2026-06-30 19:10:00\"},{\"id\":\"2014594959597461506\",\"taskKey\":\"first-multi-view-display-3d-m"
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:46:56.869271",
+      "method": "POST",
+      "url": "https://api.prod.v2fun.ai/sys/user/interact/daily?lan=en&clientType=web",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:46:56.991510",
+      "url": "https://api.prod.v2fun.ai/sys/user/interact/daily?lan=en&clientType=web",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:46:58 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":null,\"timestamp\":1787748418075,\"serviceCode\":null}"
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:49:47.074637",
+      "method": "POST",
+      "url": "https://api.prod.v2fun.ai/interactive/external/survey/submit?lan=en",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0",
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "accept": "application/json",
+        "content-type": "application/json"
+      },
+      "post_data": {
+        "surveyKey": "new_user_onboarding_v1",
+        "answers": {
+          "identity": {
+            "selectedValues": [
+              "brand_visual_designer",
+              "ecommerce_marketing_operator"
+            ],
+            "otherText": null
+          },
+          "use_case": {
+            "selectedValues": [
+              "ecommerce_marketing"
+            ],
+            "otherText": null
+          },
+          "usage_mode": {
+            "selectedValues": [
+              "personal"
+            ],
+            "otherText": null
+          },
+          "source": {
+            "selectedValues": [
+              "microsoft_copilot",
+              "google_ai"
+            ],
+            "otherText": null
+          }
+        },
+        "lan": "en"
+      }
+    },
+    {
+      "type": "request",
+      "time": "2026-08-26T19:49:47.301705",
+      "method": "GET",
+      "url": "https://api.prod.v2fun.ai/sys/user/get-balance?lan=en",
+      "headers": {
+        "x-access-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtjdlRXbWVkd2luMTE5QGdlem9uLm5ldCIsImNsaWVudFR5cGUiOiJ3ZWIiLCJ1c2VyaWQiOiIyMDkyNTk0NjA2MjU5NTcyNzM3IiwiZXhwIjoxNzg4MDUwODA3fQ.0M1dxbp6AY2f64t6eX8AoSnltY0fZcMZyEsUw0daTKQ",
+        "referer": "https://v2fun.ai/",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "sec-ch-ua": "\"Chromium\";v=\"151\", \"Not=A?Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:49:47.315732",
+      "url": "https://api.prod.v2fun.ai/interactive/external/survey/submit?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:49:48 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":{\"needSurvey\":false,\"surveyKey\":\"new_user_onboarding_v1\",\"surveyName\":\"新用户调研问卷\",\"scene\":\"new_user_onboarding\",\"taskKey\":\"new-user-survey\",\"questions\":null},\"timestamp\":1787748588328,\"serviceCode\":null}"
+    },
+    {
+      "type": "response",
+      "time": "2026-08-26T19:49:47.360361",
+      "url": "https://api.prod.v2fun.ai/sys/user/get-balance?lan=en",
+      "status": 200,
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "access-control-allow-origin": "https://v2fun.ai",
+        "content-encoding": "gzip",
+        "date": "Wed, 26 Aug 2026 12:49:48 GMT",
+        "content-type": "application/json",
+        "vary": "Accept-Encoding, Origin, Access-Control-Request-Method, Access-Control-Request-Headers",
+        "access-control-allow-credentials": "true"
+      },
+      "body": "{\"success\":true,\"message\":\"\",\"code\":200,\"result\":520,\"timestamp\":1787748588445,\"serviceCode\":null}"
+    }
+  ]
+}
