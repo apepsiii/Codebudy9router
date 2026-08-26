@@ -1,8 +1,0 @@
-=== V2Fun.ai Discovered Endpoints ===
-
-GET /article/slot/get-by-entrance-code
-
-
-Total endpoints: 1
-Total requests: 91
-Total responses: 72

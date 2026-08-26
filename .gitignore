@@ -6,9 +6,25 @@ registerakun.txt
 kiro_tokens.txt
 kiro_api.txt
 *.bak
+.env
+getresource.md
+
+# V2Fun sensitive data
+v2fun_data/v2fun_tokens_*.json
+v2fun_data/v2fun_session_*_latest.json
+v2fun_data/v2fun_session_*_latest.json
+v2fun_data/temp_account.txt
+v2fun_data/debug_*.png
 
 # Database
 kiro.db
+v2fun_data/v2fun.db
+v2fun_data/*.db
+
+# User uploads & results
+v2fun_data/uploads/
+v2fun_data/results/
+v2fun_data/generations/
 
 # Python
 __pycache__/
@@ -26,3 +42,5 @@ Thumbs.db
 
 # Archive (old projects)
 archive/
+v2fun_data/archive/
+v2fun_scripts/archive/

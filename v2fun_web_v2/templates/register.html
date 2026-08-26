@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - V2Fun Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #7C3AED;
+            --color-on-primary: #FFFFFF;
+            --color-secondary: #6366F1;
+            --color-accent: #EC4899;
+            --color-background: #FAF5FF;
+            --color-foreground: #0F172A;
+            --color-muted: #F7F3FD;
+            --color-border: #EFE7FC;
+            --color-destructive: #DC2626;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--color-background);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--color-foreground);
+        }
+        .container { width: 100%; max-width: 400px; }
+        .logo { text-align: center; margin-bottom: 40px; }
+        .logo h1 { font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 700; color: var(--color-primary); margin-bottom: 8px; }
+        .logo p { font-size: 14px; color: #64748b; }
+        .card { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .card h2 { font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 600; margin-bottom: 24px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500; }
+        .form-group input {
+            width: 100%; padding: 12px 16px; border: 2px solid var(--color-border);
+            border-radius: 8px; font-size: 14px; font-family: inherit;
+            transition: border-color 150ms ease; background: white;
+        }
+        .form-group input:focus { outline: none; border-color: var(--color-primary); }
+        .field-hint { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+        .btn {
+            width: 100%; padding: 14px; background: var(--color-primary);
+            color: white; border: none; border-radius: 8px; font-size: 16px;
+            font-weight: 600; font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer; transition: opacity 150ms ease, transform 150ms ease;
+        }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; display: none; }
+        .alert.active { display: block; }
+        .alert.success { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
+        .alert.error { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+        .link { text-align: center; margin-top: 24px; font-size: 14px; color: #64748b; }
+        .link a { color: var(--color-primary); text-decoration: none; font-weight: 500; }
+        .link a:hover { opacity: 0.8; }
+        @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>V2Fun Generator</h1>
+            <p>AI-Powered Image Generation</p>
+        </div>
+        <div class="card">
+            <h2>Create Account</h2>
+            <div id="alert" class="alert"></div>
+            <form id="registerForm" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="your@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required minlength="6">
+                    <p class="field-hint">Minimum 6 characters</p>
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password</label>
+                    <input type="password" id="confirm_password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn" id="registerBtn">Create Account</button>
+            </form>
+            <div class="link">Already have an account? <a href="/login">Login</a></div>
+        </div>
+    </div>
+    <script>
+        async function handleRegister(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirm_password').value;
+            
+            if (password !== confirm) {
+                showAlert('Passwords do not match', 'error');
+                return;
+            }
+            
+            document.getElementById('registerBtn').disabled = true;
+            document.getElementById('registerBtn').textContent = 'Creating account...';
+            
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email, password})
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    setTimeout(() => window.location.href = '/login', 1500);
+                } else {
+                    showAlert(data.message, 'error');
+                    document.getElementById('registerBtn').disabled = false;
+                    document.getElementById('registerBtn').textContent = 'Create Account';
+                }
+            } catch (err) {
+                showAlert('Registration failed: ' + err.message, 'error');
+                document.getElementById('registerBtn').disabled = false;
+                document.getElementById('registerBtn').textContent = 'Create Account';
+            }
+        }
+        
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.className = 'alert ' + type + ' active';
+            alertDiv.textContent = message;
+        }
+    </script>
+</body>
+</html>

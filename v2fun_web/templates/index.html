@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V2Fun.ai Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card h2 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .session-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+        
+        .session-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .user-info.active {
+            display: block;
+        }
+        
+        .user-info p {
+            margin: 5px 0;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .result.active {
+            display: block;
+        }
+        
+        .result h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .result-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .result-item p {
+            margin: 5px 0;
+            color: #555;
+            font-size: 13px;
+        }
+        
+        .result-item strong {
+            color: #333;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert.active {
+            display: block;
+        }
+        
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .history {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .history-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+        
+        .history-item p {
+            margin: 3px 0;
+            color: #666;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .badge.status-i {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge.status-c {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge.status-f {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎨 V2Fun.ai Generator</h1>
+            <p>Generate AI images using V2Fun.ai API</p>
+        </div>
+        
+        <!-- Session Selection -->
+        <div class="card">
+            <h2>📋 Select Account</h2>
+            <select id="sessionSelect" class="session-select" onchange="selectSession()">
+                <option value="">-- Select an account --</option>
+                {% for session in sessions %}
+                <option value="{{ session.email }}">{{ session.email }} ({{ session.timestamp }})</option>
+                {% endfor %}
+            </select>
+            
+            <div id="userInfo" class="user-info">
+                <p><strong>Email:</strong> <span id="userEmail">-</span></p>
+                <p><strong>User ID:</strong> <span id="userId">-</span></p>
+                <p><strong>Credits:</strong> <span id="userCredits">-</span></p>
+            </div>
+        </div>
+        
+        <!-- Alert -->
+        <div id="alert" class="alert"></div>
+        
+        <!-- Generation Form -->
+        <div class="card">
+            <h2>✨ Generate Image</h2>
+            
+            <form id="generateForm" onsubmit="generateImage(event)">
+                <div class="form-group">
+                    <label for="prompt">Prompt *</label>
+                    <textarea id="prompt" placeholder="Describe what you want to generate..." required></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quality">Quality</label>
+                        <select id="quality">
+                            <option value="low">Low (Fast)</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High (Slow)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ratio">Aspect Ratio</label>
+                        <select id="ratio">
+                            <option value="1:1">1:1 (Square)</option>
+                            <option value="16:9" selected>16:9 (Landscape)</option>
+                            <option value="9:16">9:16 (Portrait)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="num">Number</label>
+                        <select id="num">
+                            <option value="1" selected>1 image</option>
+                            <option value="2">2 images</option>
+                            <option value="4">4 images</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn" id="generateBtn">
+                    🚀 Generate Image
+                </button>
+            </form>
+            
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 15px; color: #666;">Submitting request...</p>
+            </div>
+            
+            <div id="result" class="result"></div>
+        </div>
+        
+        <!-- History -->
+        <div class="card">
+            <h2>📜 Generation History</h2>
+            <div id="history" class="history">
+                <p style="color: #666; text-align: center;">No generations yet</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentSession = null;
+        
+        async function selectSession() {
+            const email = document.getElementById('sessionSelect').value;
+            if (!email) {
+                document.getElementById('userInfo').classList.remove('active');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/select-session', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email})
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentSession = email;
+                    await loadUserInfo();
+                    await loadHistory();
+                    showAlert(data.message, 'success');
+                } else {
+                    showAlert(data.message, 'error');
+                }
+            } catch (err) {
+                showAlert('Failed to select session: ' + err.message, 'error');
+            }
+        }
+        
+        async function loadUserInfo() {
+            try {
+                const response = await fetch('/api/user-info');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const userInfo = data.user_info || {};
+                    const balance = data.balance || {};
+                    
+                    document.getElementById('userEmail').textContent = userInfo.username || currentSession;
+                    document.getElementById('userId').textContent = userInfo.id || 'N/A';
+                    document.getElementById('userCredits').textContent = balance.balance || '0';
+                    document.getElementById('userInfo').classList.add('active');
+                }
+            } catch (err) {
+                console.error('Failed to load user info:', err);
+            }
+        }
+        
+        async function generateImage(event) {
+            event.preventDefault();
+            
+            if (!currentSession) {
+                showAlert('Please select an account first', 'error');
+                return;
+            }
+            
+            const prompt = document.getElementById('prompt').value;
+            const quality = document.getElementById('quality').value;
+            const ratio = document.getElementById('ratio').value;
+            const num = parseInt(document.getElementById('num').value);
+            
+            // Show loading
+            document.getElementById('generateBtn').disabled = true;
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('result').classList.remove('active');
+            
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({prompt, quality, ratio, num})
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResult(data.result);
+                    showAlert('Generation request submitted successfully!', 'success');
+                    await loadHistory();
+                } else {
+                    showAlert('Generation failed: ' + data.message, 'error');
+                }
+            } catch (err) {
+                showAlert('Request failed: ' + err.message, 'error');
+            } finally {
+                document.getElementById('generateBtn').disabled = false;
+                document.getElementById('loading').classList.remove('active');
+            }
+        }
+        
+        function displayResult(result) {
+            const resultDiv = document.getElementById('result');
+            const taskUuid = result.taskuuid || 'N/A';
+            const taskIds = result.taskIds || [];
+            const workAreaId = result.id || 'N/A';
+            const createTime = result.createTime || 'N/A';
+            
+            let html = '<h3>✅ Generation Result</h3>';
+            html += '<div class="result-item">';
+            html += `<p><strong>Task UUID:</strong> ${taskUuid}</p>`;
+            html += `<p><strong>Work Area ID:</strong> ${workAreaId}</p>`;
+            html += `<p><strong>Task IDs:</strong> ${taskIds.join(', ')}</p>`;
+            html += `<p><strong>Status:</strong> <span class="badge status-i">In Progress</span></p>`;
+            html += `<p><strong>Create Time:</strong> ${createTime}</p>`;
+            html += '</div>';
+            
+            html += '<p style="margin-top: 15px; color: #666; font-size: 13px;">';
+            html += '⚠️ Note: Check V2Fun.ai dashboard for generation status and download result.';
+            html += '</p>';
+            
+            resultDiv.innerHTML = html;
+            resultDiv.classList.add('active');
+        }
+        
+        async function loadHistory() {
+            try {
+                const response = await fetch('/api/generations');
+                const data = await response.json();
+                
+                const historyDiv = document.getElementById('history');
+                
+                if (data.success && data.generations.length > 0) {
+                    let html = '';
+                    data.generations.forEach(gen => {
+                        html += '<div class="history-item">';
+                        html += `<p><strong>${gen.prompt}</strong></p>`;
+                        html += `<p>Email: ${gen.email} | Time: ${gen.timestamp}</p>`;
+                        html += `<p>Task UUID: ${gen.task_uuid || 'N/A'}</p>`;
+                        html += '</div>';
+                    });
+                    historyDiv.innerHTML = html;
+                } else {
+                    historyDiv.innerHTML = '<p style="color: #666; text-align: center;">No generations yet</p>';
+                }
+            } catch (err) {
+                console.error('Failed to load history:', err);
+            }
+        }
+        
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.className = 'alert ' + type + ' active';
+            alertDiv.textContent = message;
+            
+            setTimeout(() => {
+                alertDiv.classList.remove('active');
+            }, 5000);
+        }
+        
+        // Load history on page load
+        window.addEventListener('load', () => {
+            loadHistory();
+        });
+    </script>
+</body>
+</html>

@@ -1,239 +1,220 @@
 # V2Fun.ai API Automation
 
-> Web automation dan API exploration tool untuk V2Fun.ai - AI 3D Model Generator
+> Web automation dan API exploration tool untuk V2Fun.ai - AI Image Generator
 
-**Repository:** https://github.com/apepsiii/Codebudy9router
+**Repository:** https://github.com/apepsiii/Codebudy9router  
+**Version:** 3.0.0  
+**Last Updated:** 2026-08-27
 
 ---
 
-## 📁 Project Structure
+## Current Status
+
+**Phase:** Production Ready
+
+| Feature | Status |
+|---------|--------|
+| Google OAuth Login (multi-account) | Done |
+| API Discovery (31 endpoints) | Done |
+| Image Generation API | Done |
+| CLI Tool | Done |
+| Web UI (Full Stack) | Done |
+| SQLite Database | Done |
+| Image Upload to V2Fun OSS | Done |
+| SSE Real-time Monitoring | Done |
+| Auto-download Results | Done |
+| Token Auto-Refresh (headless) | Done |
+| Bulk Account Registration | Done |
+
+---
+
+## Project Structure
 
 ```
 Codebudy9router/
-├── v2fun_scripts/          # Scripts untuk exploration & automation
-│   ├── capture_v2fun_api.py         # Network capture tool
-│   ├── capture_v2fun_simple.py      # Simplified capture
-│   ├── explore_v2fun.py             # API testing script
-│   ├── explore_v2fun_v2.py          # Token-based testing
-│   ├── v2fun_interactive_discovery.py  # Interactive discovery
-│   └── run_v2fun_discovery.bat      # Windows launcher
+├── v2fun_scripts/
+│   ├── v2fun_google_login.py          # Multi-account Google OAuth login
+│   ├── v2fun_cli.py                   # CLI tool for generation
+│   ├── v2fun_web_v2.py                # Flask web server (main)
+│   ├── database.py                    # SQLite database models
+│   ├── sse_monitor.py                 # SSE real-time monitor
+│   ├── token_manager.py               # JWT token auto-refresh
+│   ├── capture_generation_flow.py     # API network capture tool
+│   ├── run_v2fun_login.bat            # Login launcher
+│   ├── run_capture_generation.bat     # Capture launcher
+│   └── archive/                       # Old/deprecated scripts
 │
-├── v2fun_data/             # Data capture & documentation
-│   ├── v2fun_capture_*.json         # Network captures (4 files)
-│   ├── v2fun_endpoints.txt          # Discovered endpoints
-│   ├── V2FUN_API_DISCOVERY.md       # API findings
-│   ├── V2FUN_DISCOVERY_HOWTO.md     # Discovery instructions
-│   └── V2FUN_MANUAL_GUIDE.md        # Manual inspection guide
+├── v2fun_web_v2/
+│   └── templates/
+│       ├── login.html
+│       ├── register.html
+│       └── dashboard.html
 │
-├── archive/                # Old projects (archived)
-│   ├── codebuddy/          # CodeBuddy automation (80% complete)
-│   └── kiro/               # Kiro token generator (production-ready)
+├── v2fun_data/
+│   ├── v2fun.db                       # SQLite database
+│   ├── v2fun_session_*_latest.json    # Saved login tokens
+│   ├── v2fun_capture_generation_*.json # Network captures
+│   ├── v2fun_generation_api_*.json    # Generation API captures
+│   ├── API_GENERATION_ANALYSIS.md     # API documentation
+│   ├── uploads/                       # Uploaded reference images
+│   ├── generations/                   # Generation results
+│   ├── results/                       # Downloaded images
+│   └── archive/                       # Old docs, captures, tokens
 │
-├── requirements.txt        # Python dependencies
-├── requirements-web.txt    # Web dashboard dependencies
-└── README.md              # This file
+├── account.txt                        # Google accounts (gitignored)
+├── account.txt.example
+├── run_web.bat                        # Web UI launcher
+└── requirements.txt
 ```
 
 ---
 
-## 🎯 Current Status
-
-**Project:** V2Fun.ai API Exploration  
-**Status:** 🔄 In Progress (20% complete)  
-**Phase:** Discovery & API mapping  
-**Last Updated:** 2026-08-26
-
-### What's Done
-- ✅ Network capture tools created (5 scripts)
-- ✅ Initial API endpoint discovery
-- ✅ Documentation framework ready
-- ✅ Project structure reorganized
-
-### What's Next
-- ⏳ Deep API endpoint analysis
-- ⏳ Authentication flow mapping
-- ⏳ API automation implementation
-- ⏳ Cookie/token management
-
----
-
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
-```
-
-**Required packages:**
-- `playwright` - Browser automation
-- `playwright-stealth` - Anti-detection
-- `rich` - Beautiful CLI output
-
-### 2. Install Browser
-
-```bash
 playwright install chromium
 ```
 
-### 3. Run Network Capture
+### 2. Add Google Accounts
 
 ```bash
-# Interactive discovery mode
-python v2fun_scripts/v2fun_interactive_discovery.py
-
-# Simple capture mode
-python v2fun_scripts/capture_v2fun_simple.py
-
-# Windows batch launcher
-v2fun_scripts/run_v2fun_discovery.bat
+cp account.txt.example account.txt
+# Edit with your accounts (email:password format)
 ```
+
+### 3. Login & Extract Tokens
+
+```bash
+python v2fun_scripts/v2fun_google_login.py
+```
+
+### 4. Start Web UI
+
+```bash
+python v2fun_scripts/v2fun_web_v2.py
+# Open: http://localhost:5000
+```
+
+**Web UI Flow:**
+1. Register akun baru
+2. Login
+3. Connect V2Fun session (halaman Connect)
+4. Generate images (halaman Generate)
+5. View gallery & download results (halaman Gallery)
+6. Manage accounts & refresh tokens (halaman Manage Accounts)
 
 ---
 
-## 🔍 Discovered API Endpoints
+## API Reference
 
-Based on network capture analysis:
-
-### Base API URL
+### Base URL
 ```
 https://api.prod.v2fun.ai/
 ```
 
-### Endpoints Found
+### Main Generation Endpoint
 
-1. **Article Slot (Landing Page Content)**
-   ```
-   GET /article/slot/get-by-entrance-code?lan=en
-   ```
-   - Purpose: Get landing page content slots
-   - Method: GET
-   - Language parameter: `lan=en`
+```http
+POST /work/external/generate/image-generate?lan=en
+Authorization: {JWT_TOKEN}
+X-Access-Token: {JWT_TOKEN}
+Content-Type: application/json
+```
 
-2. **Internationalization**
-   ```
-   GET https://v2fun.ai/api/i18n/messages/en
-   ```
-   - Purpose: Get translation messages
-   - Language: English (en)
-
-### Statistics
-- **Total API requests captured:** 91
-- **Total responses received:** 72
-- **Unique endpoints found:** 1 (API endpoint)
-- **Framework detected:** Nuxt.js (SSR)
-
----
-
-## 📊 Network Analysis
-
-### Request Headers Pattern
-```javascript
+**Request Body:**
+```json
 {
-  "sec-ch-ua-platform": "Windows",
-  "referer": "https://v2fun.ai/",
-  "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-  "sec-ch-ua": "Chromium;v=151, Not=A?Brand;v=99",
-  "sec-ch-ua-mobile": "?0"
+  "prompt": "your text prompt",
+  "model": "nano-banana-pro",
+  "ratio": "16:9",
+  "num": 1,
+  "quality": "medium",
+  "referenceImages": ["upload/image/..."]
 }
 ```
 
-### Technologies Detected
-- **Frontend:** Nuxt.js (Vue.js SSR framework)
-- **Assets:** `/_nuxt/` path structure
-- **CDN:** Own domain hosting
-- **Analytics:** Google Analytics + Google Ads tracking
+**Parameters:**
+
+| Field | Options |
+|-------|---------|
+| `model` | nano-banana-pro, nano-banana-2, nano-banana-2-lite, gpt-image-2, qwen-image |
+| `ratio` | 1:1, 16:9, 9:16, 4:3, 3:4 |
+| `quality` | low, medium, high |
+| `num` | 1, 2, 4 |
+
+### Authentication
+
+- Dual JWT header: `Authorization` + `X-Access-Token`
+- Token expires in 3 days
+- No refresh token endpoint - auto-refresh via headless Playwright
+
+### Image Upload Flow
+
+1. `POST /sys/oss/nologin/getAliSTS` - Get Alibaba Cloud OSS credentials
+2. Upload to OSS using STS credentials
+3. Use OSS path as `referenceImages` in generation request
+
+### Status Monitoring (SSE)
+
+- `GET /ums/external/sse?token={JWT}` - Real-time push events
+- Events include progress, status, and result URL
 
 ---
 
-## 📝 Documentation
+## Database Schema
 
-Detailed documentation available in `v2fun_data/`:
-
-- **V2FUN_API_DISCOVERY.md** - API findings and analysis
-- **V2FUN_DISCOVERY_HOWTO.md** - Step-by-step discovery guide
-- **V2FUN_MANUAL_GUIDE.md** - Manual inspection instructions
-
----
-
-## 🔧 Available Tools
-
-### 1. Interactive Discovery
-```bash
-python v2fun_scripts/v2fun_interactive_discovery.py
+```sql
+users (id, email, password_hash, google_email, v2fun_token, credits)
+generations (id, user_id, prompt, model, quality, ratio, status, result_url)
+uploaded_images (id, user_id, filename, file_path)
+sessions (id, user_id, session_token, expires_at)
 ```
-Interactive tool untuk explore API endpoints dengan menu.
-
-### 2. Capture API Calls
-```bash
-python v2fun_scripts/capture_v2fun_api.py
-```
-Capture semua network requests ke file JSON.
-
-### 3. Simple Capture
-```bash
-python v2fun_scripts/capture_v2fun_simple.py
-```
-Simplified version untuk quick capture.
-
-### 4. Explore API
-```bash
-python v2fun_scripts/explore_v2fun.py
-```
-Test discovered API endpoints.
 
 ---
 
-## 🎓 Learning & Insights
+## Technology Stack
 
-### Challenges
-- ⚠️ Limited API endpoint visibility (Nuxt.js SSR)
-- ⚠️ Need to trigger user actions for more endpoints
-- ⚠️ Authentication flow not yet discovered
-
-### Recommendations
-- 💡 Manual browser inspection needed for full flow
-- 💡 Login/signup flow analysis required
-- 💡 Check browser DevTools Network tab for XHR requests
-- 💡 Test API endpoints with different parameters
+| Layer | Technology |
+|-------|-----------|
+| Automation | Python + Playwright + playwright-stealth |
+| Web Backend | Flask + SQLite |
+| Web Frontend | Vanilla JS + CSS (Flat Design) |
+| CLI | argparse + Rich |
+| SSE | sseclient-py |
+| Database | SQLite3 |
 
 ---
 
-## 📦 Archived Projects
+## Roadmap
 
-Old projects moved to `archive/` folder:
+### Phase 6: Batch Generation
+- Read prompts from file
+- Rotate across multiple accounts
+- Progress report
 
-### CodeBuddy Automation Bot
-- **Status:** 80% complete, ready for testing
-- **Purpose:** Automated login/registration to CodeBuddy.ai
-- **Location:** `archive/codebuddy/`
-
-### Kiro Token Generator
-- **Status:** Production-ready
-- **Purpose:** Generate tokens for Kiro.dev via Google OAuth
-- **Location:** `archive/kiro/`
+### Phase 7: API Rate Limiting
+- Request throttling
+- Account rotation on rate limit
 
 ---
 
-## 🤝 Contributing
+## Security
 
-This is a personal learning project for API exploration and automation.
-
----
-
-## ⚠️ Disclaimer
-
-This tool is for educational purposes only. Always respect website Terms of Service and rate limits.
+- `account.txt` and token files are gitignored
+- Passwords stored as SHA-256 hashes
+- Session tokens are random 32-byte strings
+- Tokens auto-refresh before expiry
 
 ---
 
-## 📞 Support
+## Disclaimer
 
-For questions or issues, create an issue on GitHub:  
-https://github.com/apepsiii/Codebudy9router/issues
+This tool is for educational and personal use only. Always respect website Terms of Service and rate limits.
 
 ---
 
-**Last Updated:** 2026-08-26  
-**Version:** 0.2.0 (V2Fun Focus)  
-**Author:** apepsiii
+**Author:** apepsiii  
+**Version:** 3.0.0

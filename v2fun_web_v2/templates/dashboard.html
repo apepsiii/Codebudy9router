@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - V2Fun Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #7C3AED;
+            --color-on-primary: #FFFFFF;
+            --color-secondary: #6366F1;
+            --color-accent: #EC4899;
+            --color-background: #FAF5FF;
+            --color-foreground: #0F172A;
+            --color-muted: #F7F3FD;
+            --color-border: #EFE7FC;
+            --color-destructive: #DC2626;
+            --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+            --space-6: 24px; --space-8: 32px; --space-10: 40px; --space-12: 48px;
+            --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--color-background);
+            color: var(--color-foreground);
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed; top: 0; left: 0; bottom: 0; width: 240px;
+            background: white; border-right: 1px solid var(--color-border);
+            display: flex; flex-direction: column; padding: var(--space-6);
+            z-index: 100;
+        }
+        .sidebar-logo {
+            font-family: 'Space Grotesk', sans-serif; font-size: 22px;
+            font-weight: 700; color: var(--color-primary);
+            margin-bottom: var(--space-8);
+            padding-bottom: var(--space-6);
+            border-bottom: 1px solid var(--color-border);
+        }
+        .nav-item {
+            display: flex; align-items: center; gap: var(--space-3);
+            padding: var(--space-3) var(--space-4); border-radius: var(--radius-md);
+            font-size: 14px; font-weight: 500; color: #64748b;
+            cursor: pointer; transition: background 150ms ease, color 150ms ease;
+            text-decoration: none; margin-bottom: var(--space-1);
+        }
+        .nav-item:hover { background: var(--color-muted); color: var(--color-primary); }
+        .nav-item.active { background: var(--color-muted); color: var(--color-primary); font-weight: 600; }
+        .nav-icon { width: 18px; height: 18px; }
+        .sidebar-bottom {
+            margin-top: auto; padding-top: var(--space-6);
+            border-top: 1px solid var(--color-border);
+        }
+        .user-chip {
+            display: flex; align-items: center; gap: var(--space-3);
+            padding: var(--space-3); border-radius: var(--radius-md);
+        }
+        .user-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--color-primary); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 14px; flex-shrink: 0;
+        }
+        .user-email { font-size: 12px; color: #64748b; word-break: break-all; }
+
+        /* Main content */
+        .main { margin-left: 240px; padding: var(--space-8); min-height: 100vh; }
+        .page { display: none; }
+        .page.active { display: block; }
+        .page-header { margin-bottom: var(--space-8); }
+        .page-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px; font-weight: 700; margin-bottom: var(--space-2);
+        }
+        .page-header p { color: #64748b; font-size: 14px; }
+
+        /* Cards */
+        .card {
+            background: white; border-radius: var(--radius-lg);
+            padding: var(--space-6); border: 1px solid var(--color-border);
+            margin-bottom: var(--space-6);
+        }
+        .card-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px; font-weight: 600; margin-bottom: var(--space-4);
+            color: var(--color-foreground);
+        }
+
+        /* Form elements */
+        .form-group { margin-bottom: var(--space-4); }
+        .form-group label { display: block; margin-bottom: var(--space-2); font-size: 13px; font-weight: 500; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 10px 14px; border: 2px solid var(--color-border);
+            border-radius: var(--radius-md); font-size: 14px; font-family: inherit;
+            transition: border-color 150ms ease; background: white; color: var(--color-foreground);
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: var(--color-primary);
+        }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-4); }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px; border-radius: var(--radius-md); font-size: 14px;
+            font-weight: 600; font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer; transition: opacity 150ms ease, transform 150ms ease;
+            border: none; display: inline-flex; align-items: center; gap: var(--space-2);
+        }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-primary { background: var(--color-primary); color: white; }
+        .btn-accent { background: var(--color-accent); color: white; }
+        .btn-outline {
+            background: transparent; color: var(--color-primary);
+            border: 2px solid var(--color-primary);
+        }
+        .btn-sm { padding: 6px 14px; font-size: 12px; }
+        .btn-full { width: 100%; justify-content: center; }
+
+        /* Alert */
+        .alert {
+            padding: 12px 16px; border-radius: var(--radius-md);
+            margin-bottom: var(--space-4); font-size: 14px; display: none;
+        }
+        .alert.active { display: block; }
+        .alert.success { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
+        .alert.error { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+        .alert.info { background: #E0E7FF; color: #3730A3; border: 1px solid #C7D2FE; }
+
+        /* Upload area */
+        .upload-area {
+            border: 2px dashed var(--color-border); border-radius: var(--radius-md);
+            padding: var(--space-8); text-align: center; cursor: pointer;
+            transition: border-color 150ms ease, background 150ms ease;
+            position: relative;
+        }
+        .upload-area:hover { border-color: var(--color-primary); background: var(--color-muted); }
+        .upload-area input[type="file"] {
+            position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+        }
+        .upload-icon { color: #94a3b8; margin-bottom: var(--space-3); }
+        .upload-area p { color: #64748b; font-size: 14px; }
+        .upload-area span { color: var(--color-primary); font-weight: 500; }
+        .upload-preview {
+            display: none; margin-top: var(--space-4);
+            position: relative; display: inline-block;
+        }
+        .upload-preview img {
+            max-height: 160px; border-radius: var(--radius-md);
+            border: 2px solid var(--color-border);
+        }
+        .upload-preview-remove {
+            position: absolute; top: -8px; right: -8px;
+            width: 24px; height: 24px; background: var(--color-destructive);
+            color: white; border-radius: 50%; border: none; cursor: pointer;
+            font-size: 16px; line-height: 24px; text-align: center;
+        }
+
+        /* Gallery grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--space-4);
+        }
+        .gallery-item {
+            border-radius: var(--radius-md); overflow: hidden;
+            border: 1px solid var(--color-border);
+            transition: transform 150ms ease, box-shadow 150ms ease;
+            background: white;
+        }
+        .gallery-item:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,58,237,0.1); }
+        .gallery-item-image {
+            width: 100%; aspect-ratio: 1; object-fit: cover;
+            background: var(--color-muted);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .gallery-item-image img { width: 100%; height: 100%; object-fit: cover; }
+        .gallery-item-placeholder {
+            width: 100%; aspect-ratio: 1;
+            background: var(--color-muted);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: var(--space-2);
+        }
+        .gallery-item-info { padding: var(--space-3); }
+        .gallery-item-prompt {
+            font-size: 12px; color: var(--color-foreground);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            margin-bottom: var(--space-1);
+        }
+        .gallery-item-meta { font-size: 11px; color: #94a3b8; }
+
+        /* Badge */
+        .badge {
+            display: inline-flex; align-items: center; padding: 2px 8px;
+            border-radius: 99px; font-size: 11px; font-weight: 600;
+        }
+        .badge-pending { background: #FEF3C7; color: #92400E; }
+        .badge-processing { background: #E0E7FF; color: #3730A3; }
+        .badge-done { background: #D1FAE5; color: #065F46; }
+        .badge-failed { background: #FEE2E2; color: #991B1B; }
+
+        /* Spinner */
+        .spinner {
+            border: 3px solid var(--color-muted);
+            border-top: 3px solid var(--color-primary);
+            border-radius: 50%; width: 32px; height: 32px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Connect banner */
+        .connect-banner {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: white; border-radius: var(--radius-lg); padding: var(--space-6);
+            margin-bottom: var(--space-6); display: flex; align-items: center;
+            justify-content: space-between; gap: var(--space-4);
+        }
+        .connect-banner h3 { font-family: 'Space Grotesk', sans-serif; font-size: 16px; margin-bottom: 4px; }
+        .connect-banner p { font-size: 13px; opacity: 0.85; }
+
+        /* Stat cards */
+        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); margin-bottom: var(--space-6); }
+        .stat-card {
+            background: white; border-radius: var(--radius-lg); padding: var(--space-6);
+            border: 1px solid var(--color-border); text-align: center;
+        }
+        .stat-value { font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 700; color: var(--color-primary); }
+        .stat-label { font-size: 13px; color: #64748b; margin-top: 4px; }
+
+        /* V2Fun accounts table */
+        .accounts-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .accounts-table th {
+            text-align: left; padding: var(--space-3) var(--space-4);
+            border-bottom: 2px solid var(--color-border);
+            font-weight: 600; color: #64748b; font-size: 12px; text-transform: uppercase;
+        }
+        .accounts-table td {
+            padding: var(--space-3) var(--space-4);
+            border-bottom: 1px solid var(--color-border);
+        }
+        .accounts-table tr:last-child td { border-bottom: none; }
+        .accounts-table tr:hover td { background: var(--color-muted); }
+
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5); z-index: 200;
+            align-items: center; justify-content: center; padding: var(--space-4);
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: white; border-radius: var(--radius-lg);
+            padding: var(--space-8); width: 100%; max-width: 440px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+        }
+        .modal-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px; font-weight: 600; margin-bottom: var(--space-6);
+        }
+        .modal-footer {
+            display: flex; gap: var(--space-3); justify-content: flex-end;
+            margin-top: var(--space-6);
+        }
+
+        /* Generation loading overlay */
+        .gen-loading {
+            display: none; flex-direction: column; align-items: center;
+            justify-content: center; gap: var(--space-4); padding: var(--space-8);
+        }
+        .gen-loading.active { display: flex; }
+        .gen-loading p { color: #64748b; font-size: 14px; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main { margin-left: 0; padding: var(--space-4); }
+            .form-row { grid-template-columns: 1fr; }
+            .stats-row { grid-template-columns: 1fr; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+    <div class="sidebar-logo">V2Fun</div>
+    <nav>
+        <a class="nav-item active" onclick="showPage('generate')" href="#">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Generate
+        </a>
+        <a class="nav-item" onclick="showPage('gallery')" href="#">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            Gallery
+        </a>
+        <a class="nav-item" onclick="showPage('register')" href="#">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+            </svg>
+            Register Bulk
+        </a>
+        <a class="nav-item" onclick="showPage('manage')" href="#">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065zM15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            Manage Accounts
+        </a>
+    </nav>
+    <div class="sidebar-bottom">
+        <div class="user-chip">
+            <div class="user-avatar" id="sidebarAvatar">?</div>
+            <div>
+                <div style="font-size:13px;font-weight:500;" id="sidebarEmail">Loading...</div>
+                <div class="user-email" id="sidebarCredits">— credits</div>
+            </div>
+        </div>
+        <button class="btn btn-outline btn-sm btn-full" style="margin-top:12px" onclick="logout()">Logout</button>
+    </div>
+</aside>
+
+<!-- Main content -->
+<main class="main">
+
+    <!-- Generate Page -->
+    <div id="page-generate" class="page active">
+        <div class="page-header" style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+                <h1>Generate Image</h1>
+                <p>Create AI-powered images from text prompts</p>
+            </div>
+            <!-- Account selector dropdown -->
+            <div style="display:flex;align-items:center;gap:12px;background:white;padding:8px 12px;border-radius:10px;border:1px solid var(--color-border)">
+                <div style="display:flex;align-items:center;gap:6px">
+                    <span id="accountStatusDot" style="width:8px;height:8px;border-radius:50%;background:#94a3b8;display:inline-block"></span>
+                    <select id="accountSelect" onchange="switchAccount()" style="border:none;font-size:13px;font-weight:500;background:transparent;cursor:pointer;outline:none;max-width:200px">
+                        <option value="">Loading accounts...</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="alert-gen" class="alert"></div>
+
+        <div class="card">
+            <div class="card-title">Generation Settings</div>
+
+            <!-- Reference image upload -->
+            <div class="form-group">
+                <label>Reference Image (Optional)</label>
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="refImageInput" accept="image/*" onchange="handleImageSelect(event)">
+                    <div class="upload-icon">
+                        <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                        </svg>
+                    </div>
+                    <p><span>Click to upload</span> or drag and drop</p>
+                    <p style="font-size:12px;margin-top:4px;color:#94a3b8">PNG, JPG, WEBP up to 16MB</p>
+                </div>
+                <div id="imagePreviewWrap" style="display:none;margin-top:12px;text-align:center">
+                    <div style="position:relative;display:inline-block">
+                        <img id="imagePreview" src="" alt="Preview" style="max-height:160px;border-radius:10px;border:2px solid var(--color-border)">
+                        <button onclick="removeImage()" style="position:absolute;top:-8px;right:-8px;width:24px;height:24px;background:var(--color-destructive);color:white;border-radius:50%;border:none;cursor:pointer;font-size:14px;line-height:24px">×</button>
+                    </div>
+                    <p id="imageFilename" style="font-size:12px;color:#94a3b8;margin-top:8px"></p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="prompt">Prompt *</label>
+                <textarea id="prompt" placeholder="Describe what you want to generate in detail..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="model">Base Model</label>
+                <select id="model">
+                    <option value="nano-banana-pro" selected>nano-banana-pro</option>
+                    <option value="nano-banana-2">nano-banana-2</option>
+                    <option value="nano-banana-2-lite">nano-banana-2-lite</option>
+                    <option value="gpt-image-2">gpt-image-2</option>
+                    <option value="qwen-image">qwen-image</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="quality">Quality</label>
+                    <select id="quality">
+                        <option value="low">Low (Fast)</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High (Slow)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ratio">Image Size</label>
+                    <select id="ratio">
+                        <option value="1:1">1:1 Square</option>
+                        <option value="16:9" selected>16:9 Landscape</option>
+                        <option value="9:16">9:16 Portrait</option>
+                        <option value="4:3">4:3</option>
+                        <option value="3:4">3:4</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="num">Images</label>
+                    <select id="num">
+                        <option value="1" selected>1 image</option>
+                        <option value="2">2 images</option>
+                        <option value="4">4 images</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="gen-loading" class="gen-loading">
+                <div class="spinner"></div>
+                <p>Submitting generation request...</p>
+            </div>
+
+            <button class="btn btn-accent btn-full" id="generateBtn" onclick="generateImage()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                Generate Image
+            </button>
+        </div>
+
+        <!-- Recent results -->
+        <!-- Progress monitor card -->
+        <div class="card" id="progressCard" style="display:none;margin-bottom:24px">
+            <div class="card-title">Generation Progress</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                <span id="progressStatus" style="font-size:14px;color:#64748b">Waiting...</span>
+                <span id="progressText" style="font-size:14px;font-weight:600;color:var(--color-primary)">0%</span>
+            </div>
+            <div style="background:var(--color-muted);border-radius:99px;height:8px;overflow:hidden">
+                <div id="progressBar" style="height:100%;background:var(--color-primary);border-radius:99px;width:0%;transition:width 300ms ease"></div>
+            </div>
+            <div id="progressResult" style="display:none"></div>
+        </div>
+
+        <div class="card" id="recentCard" style="display:none">
+            <div class="card-title">Recent Generations</div>
+            <div id="recentGrid" class="gallery-grid"></div>
+        </div>
+    </div>
+
+    <!-- Gallery Page -->
+    <div id="page-gallery" class="page">
+        <div class="page-header">
+            <h1>Gallery</h1>
+            <p>Your generated images</p>
+        </div>
+        <div class="stats-row" id="statsRow">
+            <div class="stat-card"><div class="stat-value" id="statTotal">0</div><div class="stat-label">Total Generations</div></div>
+            <div class="stat-card"><div class="stat-value" id="statDone">0</div><div class="stat-label">Completed</div></div>
+            <div class="stat-card"><div class="stat-value" id="statPending">0</div><div class="stat-label">Pending</div></div>
+        </div>
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                <div class="card-title" style="margin-bottom:0">All Generations</div>
+                <button class="btn btn-outline btn-sm" onclick="loadGallery()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    Refresh
+                </button>
+            </div>
+            <div id="galleryGrid" class="gallery-grid">
+                <p style="color:#94a3b8;grid-column:1/-1;text-align:center;padding:40px">No generations yet</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accounts Page -->
+    <!-- Register Page (Bulk) -->
+    <div id="page-register" class="page">
+        <div class="page-header">
+            <h1>Register Bulk Accounts</h1>
+            <p>Import multiple akun Google, proses satu per satu, dan lihat hasil JWT</p>
+        </div>
+        <div id="alert-register" class="alert"></div>
+        
+        <!-- Step 1: Import Accounts -->
+        <div class="card">
+            <div class="card-title">Step 1: Import Accounts</div>
+            <p style="font-size:14px;color:#64748b;margin-bottom:16px">
+                Masukkan satu akun per baris dengan format: email:password atau email|password
+            </p>
+            <div class="form-group">
+                <label for="bulkAccounts">Google Accounts</label>
+                <textarea id="bulkAccounts" rows="6" placeholder="user1@gmail.com:password1&#10;user2@gmail.com:password2&#10;user3@gmail.com|password3" style="font-family:monospace;font-size:13px"></textarea>
+            </div>
+            <button class="btn btn-primary" id="importBtn" onclick="importAccounts()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                Import to List
+            </button>
+        </div>
+        
+        <!-- Step 2: Account List & Process -->
+        <div class="card" id="accountListCard" style="display:none">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                <div class="card-title" style="margin-bottom:0">Step 2: Process Accounts</div>
+                <button class="btn btn-accent btn-sm" id="processAllBtn" onclick="processAllAccounts()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Process All Pending
+                </button>
+            </div>
+            <div id="accountListTable">
+                <p style="color:#94a3b8;text-align:center;padding:20px">No accounts imported yet</p>
+            </div>
+        </div>
+        
+        <!-- Step 3: Results -->
+        <div class="card" id="resultsCard" style="display:none">
+            <div class="card-title">Step 3: Results & JWT Tokens</div>
+            <div id="resultsTable"></div>
+        </div>
+    </div>
+
+    <!-- Manage Accounts Page -->
+    <div id="page-manage" class="page">
+        <div class="page-header">
+            <h1>Manage Accounts</h1>
+            <p>Lihat, hapus, dan retry akun V2Fun yang sudah terdaftar</p>
+        </div>
+        <div id="alert-manage" class="alert"></div>
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                <div class="card-title" style="margin-bottom:0">All V2Fun Sessions</div>
+                <button class="btn btn-outline btn-sm" onclick="loadManagedAccounts()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    Refresh
+                </button>
+            </div>
+            <div id="manageTable">
+                <p style="color:#94a3b8;text-align:center;padding:40px">Loading...</p>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- Modal: Add Account -->
+<div id="modalOverlay" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-title">Account Added Successfully</div>
+        <p id="modalMessage" style="color:#64748b;font-size:14px">Your account has been registered and logged in.</p>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="closeModal()">OK</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUser = null;
+    let currentPage = 'generate';
+    let uploadedImagePath = null;  // Will store OSS path
+
+    // Init
+    window.addEventListener('DOMContentLoaded', async () => {
+        await loadUser();
+        await loadSessions();
+        await loadGallery();
+        await loadRecentGenerations();
+    });
+
+    async function loadUser() {
+        const resp = await fetch('/api/me');
+        const data = await resp.json();
+        if (!data.success) {
+            window.location.href = '/login';
+            return;
+        }
+        currentUser = data.user;
+        document.getElementById('sidebarEmail').textContent = currentUser.email;
+        document.getElementById('sidebarCredits').textContent = currentUser.credits + ' credits';
+        document.getElementById('sidebarAvatar').textContent = currentUser.email[0].toUpperCase();
+        
+        // Load account dropdown
+        await loadAccountDropdown();
+    }
+
+    async function loadAccountDropdown() {
+        const resp = await fetch('/api/sessions');
+        const data = await resp.json();
+        const select = document.getElementById('accountSelect');
+        const dot = document.getElementById('accountStatusDot');
+        
+        if (data.sessions && data.sessions.length > 0) {
+            // Check which account is currently connected
+            let currentEmail = null;
+            if (currentUser.has_v2fun_token) {
+                // Find connected email from v2fun-accounts
+                const accResp = await fetch('/api/v2fun-accounts');
+                const accData = await accResp.json();
+                if (accData.success) {
+                    const doneAcc = accData.accounts.find(a => a.status === 'done' && a.jwt_token);
+                    if (doneAcc) currentEmail = doneAcc.email;
+                }
+            }
+            
+            select.innerHTML = '<option value="">-- Select V2Fun Account --</option>' +
+                data.sessions.map(s => `<option value="${s.email}" ${s.email === currentEmail ? 'selected' : ''}>${s.email}</option>`).join('');
+            
+            if (currentEmail) {
+                dot.style.background = '#10b981'; // green
+            } else {
+                dot.style.background = '#94a3b8'; // gray
+            }
+        } else {
+            select.innerHTML = '<option value="">No accounts - Register first</option>';
+            dot.style.background = '#ef4444'; // red
+        }
+    }
+
+    async function switchAccount() {
+        const email = document.getElementById('accountSelect').value;
+        const dot = document.getElementById('accountStatusDot');
+        
+        if (!email) {
+            dot.style.background = '#94a3b8';
+            return;
+        }
+        
+        // Connect to this V2Fun account
+        const resp = await fetch('/api/connect-v2fun', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({v2fun_email: email})
+        });
+        
+        const data = await resp.json();
+        
+        if (data.success) {
+            dot.style.background = '#10b981'; // green
+            showAlert('alert-gen', `Connected to ${email}`, 'success');
+            await loadUser(); // Refresh credits
+        } else {
+            dot.style.background = '#ef4444'; // red
+            showAlert('alert-gen', data.message, 'error');
+        }
+    }
+
+    async function loadSessions() {
+        const resp = await fetch('/api/sessions');
+        const data = await resp.json();
+        const select = document.getElementById('v2funEmailSelect');
+        
+        if (data.sessions && data.sessions.length > 0) {
+            select.innerHTML = '<option value="">-- Select session --</option>' +
+                data.sessions.map(s => `<option value="${s.email}">${s.email}</option>`).join('');
+        } else {
+            select.innerHTML = '<option value="">No sessions found - add an account below</option>';
+        }
+    }
+
+    async function loadGallery() {
+        const resp = await fetch('/api/generations');
+        const data = await resp.json();
+        
+        if (!data.success) return;
+        
+        const gens = data.generations || [];
+        
+        // Update stats
+        document.getElementById('statTotal').textContent = gens.length;
+        document.getElementById('statDone').textContent = gens.filter(g => g.status === 'done').length;
+        document.getElementById('statPending').textContent = gens.filter(g => g.status === 'pending').length;
+        
+        const grid = document.getElementById('galleryGrid');
+        if (gens.length === 0) {
+            grid.innerHTML = '<p style="color:#94a3b8;grid-column:1/-1;text-align:center;padding:40px">No generations yet. Start generating!</p>';
+            return;
+        }
+        
+        grid.innerHTML = gens.map(g => renderGalleryItem(g)).join('');
+    }
+
+    async function loadRecentGenerations() {
+        const resp = await fetch('/api/generations');
+        const data = await resp.json();
+        
+        if (!data.success) return;
+        const gens = (data.generations || []).slice(0, 4);
+        
+        if (gens.length === 0) return;
+        
+        document.getElementById('recentCard').style.display = 'block';
+        document.getElementById('recentGrid').innerHTML = gens.map(g => renderGalleryItem(g)).join('');
+    }
+
+    function renderGalleryItem(g) {
+        const statusBadge = {
+            'pending': '<span class="badge badge-pending">Pending</span>',
+            'processing': '<span class="badge badge-processing">Processing</span>',
+            'done': '<span class="badge badge-done">Done</span>',
+            'failed': '<span class="badge badge-failed">Failed</span>',
+        }[g.status] || '<span class="badge badge-pending">Pending</span>';
+        
+        const imageHtml = g.result_url
+            ? `<img src="${g.result_url}" alt="${g.prompt}" style="width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+               <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;color:#94a3b8;background:var(--color-muted)"><svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>`
+            : g.status === 'pending' || g.status === 'processing'
+                ? `<div style="display:flex;flex-direction:column;align-items:center;gap:8px;color:#94a3b8"><div class="spinner" style="width:24px;height:24px;border-width:2px"></div><span style="font-size:11px">Processing...</span></div>`
+                : `<div style="display:flex;flex-direction:column;align-items:center;gap:8px;color:#94a3b8"><svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg><span style="font-size:11px">Check Dashboard</span></div>`;
+        
+        const date = g.created_at ? new Date(g.created_at).toLocaleDateString() : '';
+        
+        return `
+            <div class="gallery-item">
+                <div style="width:100%;aspect-ratio:1;background:var(--color-muted);display:flex;align-items:center;justify-content:center;overflow:hidden">
+                    ${imageHtml}
+                </div>
+                <div class="gallery-item-info">
+                    <div class="gallery-item-prompt" title="${g.prompt}">${g.prompt}</div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+                        ${statusBadge}
+                        <span class="gallery-item-meta">${date}</span>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    async function handleImageSelect(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = e => {
+            document.getElementById('imagePreview').src = e.target.result;
+            document.getElementById('imagePreviewWrap').style.display = 'block';
+            document.getElementById('imageFilename').textContent = file.name;
+            document.getElementById('uploadArea').style.borderColor = 'var(--color-primary)';
+        };
+        reader.readAsDataURL(file);
+        
+        // Upload to server
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        try {
+            const resp = await fetch('/api/upload-image', { method: 'POST', body: formData });
+            const data = await resp.json();
+            if (data.success) {
+                uploadedImagePath = data.image.oss_path;  // Store OSS path for V2Fun API
+                showAlert('alert-gen', 'Image uploaded successfully!', 'success');
+            } else {
+                showAlert('alert-gen', data.message, 'error');
+            }
+        } catch (err) {
+            showAlert('alert-gen', 'Upload failed: ' + err.message, 'error');
+        }
+    }
+
+    function removeImage() {
+        uploadedImagePath = null;
+        document.getElementById('imagePreviewWrap').style.display = 'none';
+        document.getElementById('imagePreview').src = '';
+        document.getElementById('refImageInput').value = '';
+        document.getElementById('uploadArea').style.borderColor = '';
+    }
+
+    async function generateImage() {
+        const prompt = document.getElementById('prompt').value.trim();
+        if (!prompt) {
+            showAlert('alert-gen', 'Please enter a prompt', 'error');
+            return;
+        }
+        
+        if (!currentUser?.has_v2fun_token) {
+            showAlert('alert-gen', 'Please select a V2Fun account from dropdown (top right)', 'error');
+            return;
+        }
+        
+        const btn = document.getElementById('generateBtn');
+        const loading = document.getElementById('gen-loading');
+        
+        btn.disabled = true;
+        btn.style.display = 'none';
+        loading.classList.add('active');
+        
+        try {
+            const payload = {
+                prompt,
+                model: document.getElementById('model').value,
+                quality: document.getElementById('quality').value,
+                ratio: document.getElementById('ratio').value,
+                num: parseInt(document.getElementById('num').value),
+                reference_images: uploadedImagePath ? [uploadedImagePath] : null
+            };
+            
+            const resp = await fetch('/api/generate', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            
+            const data = await resp.json();
+            
+            if (data.success) {
+                const genId = data.generation_id;
+                showAlert('alert-gen', 'Generation submitted! Monitoring progress...', 'success');
+                document.getElementById('prompt').value = '';
+                removeImage();
+                await loadRecentGenerations();
+                document.getElementById('recentCard').style.display = 'block';
+                
+                // Start SSE monitoring
+                if (genId) {
+                    startProgressMonitor(genId);
+                }
+            } else {
+                showAlert('alert-gen', data.message || 'Generation failed', 'error');
+            }
+        } catch (err) {
+            showAlert('alert-gen', 'Request failed: ' + err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.style.display = 'flex';
+            loading.classList.remove('active');
+        }
+    }
+
+    async function connectV2Fun() {
+        const email = document.getElementById('v2funEmailSelect').value;
+        if (!email) {
+            showAlert('alert-connect', 'Please select a session', 'error');
+            return;
+        }
+        
+        const resp = await fetch('/api/connect-v2fun', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({v2fun_email: email})
+        });
+        
+        const data = await resp.json();
+        showAlert('alert-connect', data.message, data.success ? 'success' : 'error');
+        
+        if (data.success) {
+            await loadUser();
+            document.getElementById('connectBanner').style.display = 'none';
+        }
+    }
+
+    async function loadManagedAccounts() {
+        const resp = await fetch('/api/manage-accounts');
+        const data = await resp.json();
+        
+        // Also fetch token statuses
+        const tokenResp = await fetch('/api/token-status');
+        const tokenData = await tokenResp.json();
+        
+        const tokenMap = {};
+        if (tokenData.success) {
+            tokenData.tokens.forEach(t => tokenMap[t.email] = t);
+        }
+        
+        const div = document.getElementById('manageTable');
+        
+        if (!data.success || !data.accounts || data.accounts.length === 0) {
+            div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:40px">No V2Fun accounts found. Register some first.</p>';
+            return;
+        }
+        
+        div.innerHTML = `
+            <table class="accounts-table">
+                <thead>
+                    <tr><th>#</th><th>Email</th><th>Token</th><th>Remaining</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    ${data.accounts.map((a, i) => {
+                        const t = tokenMap[a.email] || {};
+                        const status = t.status || 'unknown';
+                        const badge = {
+                            'valid': '<span class="badge badge-done">Valid</span>',
+                            'warning': '<span class="badge badge-pending">Expiring</span>',
+                            'critical': '<span class="badge badge-processing">Critical</span>',
+                            'expired': '<span class="badge badge-failed">Expired</span>',
+                            'missing': '<span class="badge badge-failed">Missing</span>',
+                            'unknown': '<span class="badge badge-pending">Unknown</span>'
+                        }[status] || '<span class="badge badge-pending">Unknown</span>';
+                        
+                        return `
+                        <tr>
+                            <td>${i+1}</td>
+                            <td style="font-size:13px">${a.email}</td>
+                            <td>${badge}</td>
+                            <td style="font-size:12px;color:#94a3b8">${t.remaining || 'N/A'}</td>
+                            <td>
+                                <button class="btn btn-outline btn-sm" onclick="refreshToken('${a.email}')" style="margin-right:4px">
+                                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                    Refresh
+                                </button>
+                                <button class="btn btn-outline btn-sm" onclick="retryAccount('${a.email}')" style="margin-right:4px">Retry</button>
+                                <button class="btn btn-outline btn-sm" onclick="deleteAccount('${a.email}')" style="border-color:var(--color-destructive);color:var(--color-destructive)">Delete</button>
+                            </td>
+                        </tr>`;
+                    }).join('')}
+                </tbody>
+            </table>`;
+    }
+
+    async function refreshToken(email) {
+        showAlert('alert-manage', `Refreshing token for ${email}... Running headless login.`, 'info');
+        
+        try {
+            const resp = await fetch('/api/refresh-token', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email})
+            });
+            
+            const data = await resp.json();
+            showAlert('alert-manage', data.message, data.success ? 'success' : 'error');
+            await loadManagedAccounts();
+        } catch (err) {
+            showAlert('alert-manage', 'Refresh failed: ' + err.message, 'error');
+        }
+    }
+
+    async function deleteAccount(email) {
+        if (!confirm(`Delete account ${email}? This cannot be undone.`)) return;
+        
+        const resp = await fetch('/api/delete-account', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({email})
+        });
+        
+        const data = await resp.json();
+        showAlert('alert-manage', data.message, data.success ? 'success' : 'error');
+        await loadManagedAccounts();
+        await loadSessions();
+    }
+
+    async function retryAccount(email) {
+        showAlert('alert-manage', `Retrying ${email}... This may take 1-2 minutes.`, 'info');
+        
+        const resp = await fetch('/api/retry-account', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({email})
+        });
+        
+        const data = await resp.json();
+        showAlert('alert-manage', data.message, data.success ? 'success' : 'error');
+        await loadManagedAccounts();
+        await loadSessions();
+    }
+
+    async function importAccounts() {
+        const accountsText = document.getElementById('bulkAccounts').value.trim();
+        
+        if (!accountsText) {
+            showAlert('alert-register', 'Please enter at least one account', 'error');
+            return;
+        }
+        
+        const btn = document.getElementById('importBtn');
+        btn.disabled = true;
+        btn.textContent = 'Importing...';
+        
+        try {
+            const resp = await fetch('/api/import-accounts', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({accounts: accountsText})
+            });
+            
+            const data = await resp.json();
+            showAlert('alert-register', data.message, data.success ? 'success' : 'error');
+            
+            if (data.success) {
+                document.getElementById('bulkAccounts').value = '';
+                document.getElementById('accountListCard').style.display = 'block';
+                await loadAccountList();
+            }
+        } catch (err) {
+            showAlert('alert-register', 'Import failed: ' + err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Import to List';
+        }
+    }
+
+    async function loadAccountList() {
+        const resp = await fetch('/api/v2fun-accounts');
+        const data = await resp.json();
+        
+        const tableDiv = document.getElementById('accountListTable');
+        
+        if (!data.success || !data.accounts || data.accounts.length === 0) {
+            tableDiv.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px">No accounts imported yet</p>';
+            return;
+        }
+        
+        tableDiv.innerHTML = `
+            <table class="accounts-table">
+                <thead>
+                    <tr><th>#</th><th>Email</th><th>Status</th><th>JWT Token</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                ${data.accounts.map((a, i) => {
+                    const badge = {
+                        'pending': '<span class="badge badge-pending">Pending</span>',
+                        'processing': '<span class="badge badge-processing">Processing</span>',
+                        'done': '<span class="badge badge-done">Done</span>',
+                        'failed': '<span class="badge badge-failed">Failed</span>'
+                    }[a.status] || `<span class="badge badge-pending">${a.status}</span>`;
+                    
+                    return `
+                    <tr id="row-${a.id}">
+                        <td>${i+1}</td>
+                        <td style="font-size:13px">${a.email}</td>
+                        <td>${badge}</td>
+                        <td style="font-size:11px;font-family:monospace;color:#64748b;max-width:200px;overflow:hidden;text-overflow:ellipsis">
+                            ${a.jwt_token || '—'}
+                        </td>
+                        <td>
+                            ${a.status === 'pending' || a.status === 'failed' 
+                                ? `<button class="btn btn-outline btn-sm" onclick="processAccount(${a.id})">Process</button>` 
+                                : ''}
+                            <button class="btn btn-outline btn-sm" onclick="deleteV2FunAccount(${a.id})" style="border-color:var(--color-destructive);color:var(--color-destructive)">Delete</button>
+                        </td>
+                    </tr>`;
+                }).join('')}
+                </tbody>
+            </table>`;
+        
+        // Show results card if any accounts are processed
+        const hasDone = data.accounts.some(a => a.status === 'done');
+        if (hasDone) {
+            document.getElementById('resultsCard').style.display = 'block';
+            loadResultsTable(data.accounts);
+        }
+    }
+
+    async function processAccount(accountId) {
+        const row = document.getElementById(`row-${accountId}`);
+        const statusCell = row.children[2];
+        statusCell.innerHTML = '<span class="badge badge-processing">Processing...</span>';
+        
+        try {
+            const resp = await fetch('/api/process-account', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({account_id: accountId})
+            });
+            
+            const data = await resp.json();
+            showAlert('alert-register', data.message, data.success ? 'success' : 'error');
+            
+            // Reload account list
+            await loadAccountList();
+            await loadSessions();
+        } catch (err) {
+            showAlert('alert-register', 'Process failed: ' + err.message, 'error');
+            await loadAccountList();
+        }
+    }
+
+    async function processAllAccounts() {
+        const btn = document.getElementById('processAllBtn');
+        btn.disabled = true;
+        btn.textContent = 'Processing...';
+        
+        try {
+            // Get all pending account IDs
+            const resp = await fetch('/api/process-all-accounts', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'}
+            });
+            
+            const data = await resp.json();
+            
+            if (!data.success || !data.pending_ids || data.pending_ids.length === 0) {
+                showAlert('alert-register', data.message || 'No pending accounts', 'info');
+                btn.disabled = false;
+                btn.textContent = 'Process All Pending';
+                return;
+            }
+            
+            showAlert('alert-register', `Processing ${data.pending_ids.length} accounts one by one...`, 'info');
+            
+            // Process each account sequentially
+            for (const id of data.pending_ids) {
+                btn.textContent = `Processing ${data.pending_ids.indexOf(id) + 1}/${data.pending_ids.length}...`;
+                await processAccountSilent(id);
+                await new Promise(r => setTimeout(r, 2000)); // 2s delay between accounts
+            }
+            
+            showAlert('alert-register', 'All accounts processed!', 'success');
+            await loadAccountList();
+            await loadSessions();
+        } catch (err) {
+            showAlert('alert-register', 'Batch process failed: ' + err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Process All Pending';
+        }
+    }
+
+    async function processAccountSilent(accountId) {
+        try {
+            await fetch('/api/process-account', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({account_id: accountId})
+            });
+        } catch (err) {
+            console.error('Process failed:', err);
+        }
+    }
+
+    async function deleteV2FunAccount(accountId) {
+        if (!confirm('Delete this account?')) return;
+        
+        await fetch('/api/delete-v2fun-account', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({account_id: accountId})
+        });
+        
+        await loadAccountList();
+    }
+
+    function loadResultsTable(accounts) {
+        const doneAccounts = accounts.filter(a => a.status === 'done');
+        if (doneAccounts.length === 0) {
+            document.getElementById('resultsCard').style.display = 'none';
+            return;
+        }
+        
+        document.getElementById('resultsTable').innerHTML = `
+            <table class="accounts-table">
+                <thead>
+                    <tr><th>#</th><th>Email</th><th>JWT Token</th><th>Expiry</th><th>Use</th></tr>
+                </thead>
+                <tbody>
+                ${doneAccounts.map((a, i) => `
+                    <tr>
+                        <td>${i+1}</td>
+                        <td style="font-size:13px">${a.email}</td>
+                        <td style="font-size:11px;font-family:monospace;color:#64748b">${a.jwt_token || '—'}</td>
+                        <td style="font-size:12px">${a.token_expiry || '—'}</td>
+                        <td><button class="btn btn-primary btn-sm" onclick="connectV2FunByEmail('${a.email}')">Connect</button></td>
+                    </tr>
+                `).join('')}
+                </tbody>
+            </table>`;
+    }
+
+    async function connectV2FunByEmail(email) {
+        try {
+            const resp = await fetch('/api/connect-v2fun', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({v2fun_email: email})
+            });
+            
+            const data = await resp.json();
+            showAlert('alert-register', data.message, data.success ? 'success' : 'error');
+            
+            if (data.success) {
+                await loadUser();
+                showModal('Account connected! You can now generate images.');
+            }
+        } catch (err) {
+            showAlert('alert-register', 'Connect failed: ' + err.message, 'error');
+        }
+    }
+
+    async function logout() {
+        await fetch('/api/logout', { method: 'POST' });
+        window.location.href = '/login';
+    }
+
+    function showPage(name) {
+        currentPage = name;
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('page-' + name).classList.add('active');
+        event.currentTarget.classList.add('active');
+        
+        if (name === 'gallery') loadGallery();
+        if (name === 'manage') loadManagedAccounts();
+    }
+
+    function showAlert(id, message, type) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.className = 'alert ' + type + ' active';
+        el.textContent = message;
+        setTimeout(() => el.classList.remove('active'), 5000);
+    }
+
+    function showModal(message) {
+        document.getElementById('modalMessage').textContent = message;
+        document.getElementById('modalOverlay').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').classList.remove('active');
+    }
+
+    function startProgressMonitor(genId) {
+        const progressCard = document.getElementById('progressCard');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const progressStatus = document.getElementById('progressStatus');
+        const progressResult = document.getElementById('progressResult');
+
+        progressCard.style.display = 'block';
+        progressBar.style.width = '0%';
+        progressText.textContent = '0%';
+        progressStatus.textContent = 'Waiting for server...';
+        progressResult.style.display = 'none';
+
+        const es = new EventSource(`/api/generation-stream/${genId}`);
+
+        es.onmessage = async (e) => {
+            const ev = JSON.parse(e.data);
+
+            if (ev.type === 'progress') {
+                const pct = ev.progress || 0;
+                progressBar.style.width = pct + '%';
+                progressText.textContent = pct + '%';
+                progressStatus.textContent = 'Processing... ' + (ev.status || '');
+            }
+
+            if (ev.type === 'done') {
+                progressBar.style.width = '100%';
+                progressText.textContent = '100%';
+
+                if (ev.status === 'done') {
+                    progressStatus.textContent = 'Generation complete!';
+                    progressResult.style.display = 'block';
+                    const imgUrl = ev.local_url || ev.work_url || '';
+                    if (imgUrl) {
+                        progressResult.innerHTML = `
+                            <img src="${imgUrl}" alt="Generated image"
+                                 style="max-width:100%;border-radius:10px;border:2px solid var(--color-border);margin-top:12px">
+                            <div style="margin-top:10px;display:flex;gap:8px">
+                                <a href="${imgUrl}" target="_blank" class="btn btn-primary btn-sm">
+                                    Open Image
+                                </a>
+                                <a href="${ev.work_url || imgUrl}" download class="btn btn-outline btn-sm">
+                                    Download
+                                </a>
+                            </div>`;
+                    } else {
+                        progressResult.innerHTML = `<p style="color:#64748b;font-size:14px;margin-top:12px">Image URL not available. Check V2Fun dashboard.</p>`;
+                    }
+                    showAlert('alert-gen', 'Generation complete!', 'success');
+                } else {
+                    progressStatus.textContent = 'Generation failed.';
+                    showAlert('alert-gen', 'Generation failed. Please try again.', 'error');
+                }
+
+                await loadRecentGenerations();
+                if (currentPage === 'gallery') loadGallery();
+                es.close();
+            }
+
+            if (ev.type === 'error') {
+                progressStatus.textContent = 'Error: ' + ev.message;
+                showAlert('alert-gen', 'Monitor error: ' + ev.message, 'error');
+                es.close();
+            }
+
+            if (ev.type === 'timeout') {
+                progressStatus.textContent = 'Monitoring timed out. Check Gallery for results.';
+                progressBar.style.width = '100%';
+                progressText.textContent = '—';
+                es.close();
+            }
+        };
+
+        es.onerror = () => {
+            progressStatus.textContent = 'Connection lost. Check Gallery for results.';
+            es.close();
+        };
+    }
+</script>
+</body>
+</html>
