@@ -1,142 +1,269 @@
-# Kiro Token Generator
+# CodeBuddy Automation Bot
 
-Bot otomatis untuk mendapatkan refresh token dari Kiro.dev via Google OAuth.  
-Tersedia dalam 2 mode: **Web Dashboard** (recommended) dan **CLI**.
+> Web automation tool untuk register/login ke CodeBuddy.ai menggunakan akun Gmail dan mengambil cookies/session untuk keperluan pembelajaran.
+
+**Base Project:** Adaptasi dari [Kiro Token Generator](https://github.com/apepsiii/Codebudy9router)
 
 ---
 
-## Quick Start
+## 🚀 Features
+
+- ✅ **Automated Google OAuth Login** - Login otomatis menggunakan Gmail
+- ✅ **Human-like Typing** - Mengetik seperti manusia dengan random delay
+- ✅ **Anti-detection** - Menggunakan playwright-stealth untuk bypass detection
+- ✅ **Multi-worker** - Process multiple accounts parallel
+- ✅ **Cookie Capture** - Automatic cookie extraction setelah login
+- ✅ **Resume Support** - Skip akun yang sudah berhasil
+- ✅ **Manual Mode** - User login manual, bot capture cookies otomatis
+- ✅ **Rich Console Output** - Beautiful CLI dengan progress tracking
+
+---
+
+## 📋 Requirements
+
+- Python 3.8+
+- pip
+
+---
+
+## 🔧 Installation
+
+### 1. Install Dependencies
 
 ```bash
-# Install dependencies
 pip install -r requirements-web.txt
+```
+
+Packages yang diinstall:
+- `playwright` - Browser automation
+- `playwright-stealth` - Anti-detection
+- `rich` - Beautiful CLI output
+- `fastapi` - Web dashboard (optional)
+- `uvicorn` - Web server (optional)
+
+### 2. Install Browser
+
+```bash
 playwright install chromium
-
-# Start web dashboard
-python kiro.py start
-
-# Buka browser
-# http://localhost:8000
 ```
 
 ---
 
-## Web Dashboard
+## 📖 Usage
+
+### Quick Start
 
 ```bash
-python kiro.py start                    # default port 8000
-python kiro.py start --port 3000        # custom port
-python kiro.py start --host 0.0.0.0     # allow external access
-python kiro.py start --reload           # dev mode (auto-restart)
-python kiro.py init                     # inisialisasi database
-python kiro.py version                  # cek versi
+# Process all accounts dengan 2 workers
+python main_codebuddy.py
+
+# Process 10 accounts dengan 4 workers
+python main_codebuddy.py 10 4
+
+# Show browser (non-headless mode)
+python main_codebuddy.py 10 4 --visible
+
+# Manual mode (user login manual, bot capture cookies)
+python main_codebuddy.py --manual --visible
+
+# List processed accounts
+python main_codebuddy.py --list
 ```
 
----
+### File Input
 
-## CLI (main.py)
-
-### Login Mode
-
-```bash
-python main.py                          # semua akun, 2 workers
-python main.py 10                       # 10 akun, 2 workers
-python main.py 10 4                     # 10 akun, 4 workers
-python main.py 10 4 --visible           # browser visible
-python main.py 10 4 -a my_accounts.txt  # custom file akun
-```
-
-### Register Mode
-
-```bash
-python main.py 10 4 --register
-python main.py 10 4 --register --visible
-python main.py 10 4 --register -a registerakun_lain.txt
-```
-
-### Manual Mode
-
-```bash
-python main.py --manual --visible       # login manual, bot capture token
-python main.py 1 1 --manual --visible
-```
-
-### List & Info
-
-```bash
-python main.py --list                   # lihat akun yang sudah diproses
-```
-
-**Format `account.txt` / `registerakun.txt`:**
+Buat file `account.txt` dengan format:
 ```
 email1@gmail.com:password1
 email2@gmail.com:password2
+email3@gmail.com:password3
 ```
 
----
-
-## Inject ke 9Router
-
-### Via Web Dashboard
-
-1. Klik **"Inject to 9Router"**
-2. Isi URL: `http://localhost:20128` atau domain VPS
-3. Isi password (jika ada)
-4. Klik **"Start Injection"**
-
-### Via Terminal (inject_vps.py)
-
-Edit `inject_vps.py` lalu jalankan:
+### Command Options
 
 ```bash
-# Edit ROUTER_URL dan ROUTER_PASSWORD di inject_vps.py
-python inject_vps.py
+python main_codebuddy.py [jumlah] [workers] [options]
+
+Positional Arguments:
+  jumlah              Jumlah akun yang diproses (default: all)
+  workers             Jumlah worker paralel (default: 2)
+
+Options:
+  -a, --accounts FILE    Path file akun (default: account.txt)
+  -o, --output FILE      Path output cookies (default: cookies_codebuddy.json)
+  -d, --delay SECONDS    Delay antar batch (default: 3.0)
+  --visible              Tampilkan browser (default: headless)
+  --register             Mode register (akun baru)
+  --list                 List akun dari account_codebuddy.json
+  --manual               Mode manual (user login, bot capture)
 ```
 
-Script ini inject semua token dari database yang belum diinjected, lalu update status di database otomatis.
+---
 
-### Via CLI (main.py)
+## 🔄 Automation Flow
 
+1. **Navigate** ke `https://www.codebuddy.ai/home`
+2. **Click** tombol "Login"
+3. **Handle** checkbox "I confirm that xxx"
+4. **Click** "Sign up with Google"
+5. **Handle** Service Agreement dialog (conditional)
+6. **Login** dengan Google OAuth:
+   - Input email (human-like typing)
+   - Input password (human-like typing)
+   - Handle GSuite prompt (conditional)
+7. **Return** ke CodeBuddy (klik "Continue/Lanjutkan")
+8. **Navigate** ke `/profile/`
+9. **Capture** cookies
+10. **Save** ke file
+
+---
+
+## 📁 File Structure
+
+```
+Codebudy9router/
+├── main_codebuddy.py           # Main automation script
+├── account.txt                 # Input accounts (email:password)
+├── cookies_codebuddy.json      # Output cookies (JSON)
+├── account_codebuddy.json      # Process log (email → status/cookies)
+├── requirements-web.txt        # Python dependencies
+├── DEV.md                      # Development plan
+├── AGENT.md                    # AI agent instructions
+├── PROJECT.md                  # Kiro project documentation
+└── README.md                   # This file
+```
+
+---
+
+## 📊 Output Files
+
+### 1. `cookies_codebuddy.json`
+Cookies hasil capture per akun:
+```json
+{
+  "user@gmail.com": {
+    "cookies": [...],
+    "profile_url": "https://www.codebuddy.ai/profile/",
+    "timestamp": "2026-08-26 10:30:45"
+  }
+}
+```
+
+### 2. `account_codebuddy.json`
+Log proses per akun:
+```json
+{
+  "user@gmail.com": {
+    "success": true,
+    "cookies": {...},
+    "profile_url": "https://www.codebuddy.ai/profile/",
+    "error": "",
+    "timestamp": "2026-08-26 10:30:45"
+  }
+}
+```
+
+---
+
+## 🎯 Success Criteria
+
+Bot dianggap berhasil jika:
+1. ✅ Login ke CodeBuddy.ai berhasil
+2. ✅ Halaman `/profile/` ter-load dengan benar
+3. ✅ Cookies tersimpan di file
+4. ✅ Cookies valid untuk akses selanjutnya
+5. ✅ Error rate < 10% untuk batch processing
+
+---
+
+## 🐛 Troubleshooting
+
+### Browser tidak ditemukan
 ```bash
-# Inject dari file kiro_tokens.txt
-python main.py --inject-from-file kiro_tokens.txt --router-password YOUR_PASS
-
-# Inject sambil generate token
-python main.py 10 4 --inject-9router --router-password YOUR_PASS
-
-# Custom URL 9router
-python main.py --inject-from-file kiro_tokens.txt \
-  --router-url https://9router.gxa.my.id \
-  --router-password YOUR_PASS
+playwright install chromium
 ```
 
----
-
-## Export
-
+### Syntax Error
 ```bash
-# Export token ke kiro_tokens.txt (via web dashboard)
-# Klik "Export Tokens (.txt)"
-
-# Export ke Excel
-# Klik "Export Excel - All / Success / Failed"
+python -m py_compile main_codebuddy.py
 ```
 
----
+### Cookies tidak ter-capture
+- Pastikan halaman profile berhasil dimuat
+- Coba gunakan `--visible` mode untuk debug
+- Check network connection
 
-## Troubleshooting
-
-| Problem | Solusi |
-|---------|--------|
-| Port sudah dipakai | `python kiro.py start --port 3000` |
-| Database error | `del kiro.db` lalu `python kiro.py init` |
-| Playwright browser tidak ditemukan | `venv\Scripts\playwright.exe install chromium` |
-| Token simulated (bukan asli) | Pastikan playwright terinstall di venv |
-| Inject gagal 403/Cloudflare | Matikan VPN, gunakan `inject_vps.py` (pakai requests) |
-| Inject gagal 401 Unauthorized | Cek password 9router |
+### Akun gagal login
+- Verify email & password correct
+- Check for 2FA/verification
+- Try `--manual` mode
 
 ---
 
-## Dokumentasi Lengkap
+## ⚙️ Configuration
 
-Lihat [PROJECT.md](PROJECT.md) untuk dokumentasi lengkap termasuk API endpoints, struktur database, dan changelog.
+### Browser Settings
+- **Headless:** Default `True`, gunakan `--visible` untuk show browser
+- **Workers:** Default `2`, increase untuk faster processing
+- **Delay:** Default `3.0s` antar batch
+
+### Typing Simulation
+- **Delay per char:** 50-100ms (random)
+- **Delay after action:** 0.3-0.8s (random)
+
+---
+
+## 🔒 Security Notes
+
+- ⚠️ Jangan commit file `account.txt` ke git
+- ⚠️ Cookies bersifat sensitif, jangan share
+- ⚠️ Gunakan untuk pembelajaran saja
+- ⚠️ Respect CodeBuddy.ai Terms of Service
+
+---
+
+## 📝 Development
+
+### Phase Status
+
+- ✅ **Phase 0:** Code Adaptation dari Kiro (1-2 hari)
+- ✅ **Phase 1:** Core Automation (2-3 hari)
+- ⏳ **Phase 2:** Database & Storage (0.5 hari)
+- ⏳ **Phase 3:** CLI Interface (0.5 hari)
+- ⏳ **Phase 4:** Error Handling (0.5 hari)
+- ⏳ **Phase 5:** Web Dashboard (1 hari)
+- ⏳ **Phase 6:** Testing & Optimization (1-2 hari)
+
+**Total Estimasi:** 5-8 hari
+
+### Documentation
+
+- `DEV.md` - Development plan & architecture
+- `AGENT.md` - AI agent instructions
+- `PROJECT.md` - Kiro project reference
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read the development docs first.
+
+---
+
+## 📄 License
+
+For educational purposes only.
+
+---
+
+## 🙏 Credits
+
+- Base project: [Kiro Token Generator](https://github.com/apepsiii/Codebudy9router)
+- Playwright: https://playwright.dev/python/
+- playwright-stealth: https://github.com/AtuboDad/playwright_stealth
+
+---
+
+**Last Updated:** 2026-08-26  
+**Version:** 1.0.0  
+**Status:** 🟢 Phase 1 Complete
