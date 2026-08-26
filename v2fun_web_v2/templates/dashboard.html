@@ -298,6 +298,12 @@
 <aside class="sidebar">
     <div class="sidebar-logo">V2Fun</div>
     <nav>
+        <a class="nav-item" onclick="showPage('dashboard', event)" href="#">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            Dashboard
+        </a>
         <a class="nav-item active" onclick="showPage('generate', event)" href="#">
             <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -337,6 +343,56 @@
 
 <!-- Main content -->
 <main class="main">
+
+    <!-- Dashboard Page -->
+    <div id="page-dashboard" class="page">
+        <div class="page-header">
+            <h1>Dashboard</h1>
+            <p>Monitor usage and free credits across all V2Fun accounts</p>
+        </div>
+
+        <div id="alert-dashboard" class="alert"></div>
+
+        <!-- Summary Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value" id="totalAccounts">0</div>
+                <div class="stat-label">Total Accounts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalFreeRemaining">0</div>
+                <div class="stat-label">Total Free Credits</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalUsed">0</div>
+                <div class="stat-label">Credits Used</div>
+            </div>
+        </div>
+
+        <!-- Accounts Usage Table -->
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-4)">
+                <div class="card-title" style="margin:0">Accounts Usage Monitor</div>
+                <button class="btn btn-primary btn-sm" onclick="refreshDashboard()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right:4px">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Refresh
+                </button>
+            </div>
+            <div id="dashboardTable">
+                <p style="color:#94a3b8;text-align:center;padding:40px">Loading dashboard...</p>
+            </div>
+        </div>
+
+        <!-- Models Breakdown -->
+        <div class="card">
+            <div class="card-title">Credits by Model</div>
+            <div id="modelsBreakdown">
+                <p style="color:#94a3b8;text-align:center;padding:20px">Loading models data...</p>
+            </div>
+        </div>
+    </div>
 
     <!-- Generate Page -->
     <div id="page-generate" class="page active">
@@ -622,7 +678,7 @@
 
 <script>
     let currentUser = null;
-    let currentPage = 'generate';
+    let currentPage = 'dashboard';
     let uploadedImages = [null, null, null];  // Array for up to 3 OSS paths
 
     // Init
@@ -631,6 +687,7 @@
         await loadSessions();
         await loadGallery();
         await loadRecentGenerations();
+        await loadDashboard();
     });
 
     async function loadUser() {
@@ -1409,6 +1466,120 @@
         
         if (name === 'gallery') loadGallery();
         if (name === 'manage') loadManagedAccounts();
+        if (name === 'dashboard') loadDashboard();
+    }
+
+    async function loadDashboard() {
+        const tableDiv = document.getElementById('dashboardTable');
+        const modelsDiv = document.getElementById('modelsBreakdown');
+        
+        if (!tableDiv) return; // Guard
+        
+        tableDiv.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:40px">Loading dashboard...</p>';
+        
+        try {
+            const resp = await fetch('/api/dashboard-usage');
+            const data = await resp.json();
+            
+            if (!data.success) {
+                tableDiv.innerHTML = `<p style="color:#ef4444;text-align:center;padding:20px">${data.message || 'Failed to load dashboard'}</p>`;
+                return;
+            }
+            
+            // Update summary stats
+            document.getElementById('totalAccounts').textContent = data.summary.total_accounts;
+            document.getElementById('totalFreeRemaining').textContent = data.summary.total_free;
+            document.getElementById('totalUsed').textContent = data.summary.total_used;
+            
+            // Render accounts table
+            if (data.accounts.length === 0) {
+                tableDiv.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px">No active accounts found</p>';
+            } else {
+                tableDiv.innerHTML = `
+                    <table class="accounts-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Total Free</th>
+                                <th>Total Used</th>
+                                <th>Usage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.accounts.map((acc, i) => {
+                                const statusBadge = acc.status === 'online' 
+                                    ? '<span class="badge badge-done">Online</span>'
+                                    : '<span class="badge badge-failed">Error</span>';
+                                
+                                const totalCredits = acc.total_free + acc.total_used;
+                                const usagePct = totalCredits > 0 ? (acc.total_used / totalCredits * 100).toFixed(0) : 0;
+                                
+                                return `
+                                    <tr>
+                                        <td>${i+1}</td>
+                                        <td style="font-size:13px">${acc.email}</td>
+                                        <td>${statusBadge}</td>
+                                        <td style="font-weight:600;color:#10b981">${acc.total_free}</td>
+                                        <td style="font-weight:600;color:#ef4444">${acc.total_used}</td>
+                                        <td style="min-width:120px">
+                                            <div style="display:flex;align-items:center;gap:8px">
+                                                <div style="flex:1;background:var(--color-muted);border-radius:99px;height:8px;overflow:hidden">
+                                                    <div style="height:100%;background:var(--color-accent);border-radius:99px;width:${usagePct}%;transition:width 300ms ease"></div>
+                                                </div>
+                                                <span style="font-size:11px;color:#64748b;min-width:35px">${usagePct}%</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            }
+            
+            // Render models breakdown
+            if (data.models.length === 0) {
+                modelsDiv.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px">No model data available</p>';
+            } else {
+                modelsDiv.innerHTML = `
+                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
+                        ${data.models.slice(0, 8).map(m => {
+                            const total = m.total_free + m.total_used;
+                            const usagePct = total > 0 ? (m.total_used / total * 100).toFixed(0) : 0;
+                            const modelName = m.model || m.name || 'Unknown';
+                            
+                            return `
+                                <div style="background:var(--color-muted);padding:16px;border-radius:10px">
+                                    <div style="font-size:13px;font-weight:600;color:var(--color-foreground);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${modelName}">${modelName}</div>
+                                    <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                                        <span style="font-size:11px;color:#64748b">Free:</span>
+                                        <span style="font-size:13px;font-weight:600;color:#10b981">${m.total_free}</span>
+                                    </div>
+                                    <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                                        <span style="font-size:11px;color:#64748b">Used:</span>
+                                        <span style="font-size:13px;font-weight:600;color:#ef4444">${m.total_used}</span>
+                                    </div>
+                                    <div style="background:white;border-radius:99px;height:6px;overflow:hidden">
+                                        <div style="height:100%;background:var(--color-accent);border-radius:99px;width:${usagePct}%;transition:width 300ms ease"></div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+            
+        } catch (err) {
+            tableDiv.innerHTML = `<p style="color:#ef4444;text-align:center;padding:20px">Error: ${err.message}</p>`;
+        }
+    }
+
+    async function refreshDashboard() {
+        showAlert('alert-dashboard', 'Refreshing dashboard...', 'info');
+        await loadDashboard();
+        showAlert('alert-dashboard', 'Dashboard refreshed!', 'success');
     }
 
     function showAlert(id, message, type) {

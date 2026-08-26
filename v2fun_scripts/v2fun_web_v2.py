@@ -984,6 +984,123 @@ def api_quota_status():
     })
 
 
+@app.route('/api/dashboard-usage')
+def api_dashboard_usage():
+    """Get usage dashboard for all v2fun accounts"""
+    user = get_current_user()
+    if not user:
+        return jsonify({"success": False, "message": "Not authenticated"}), 401
+    
+    # Get all v2fun accounts with tokens
+    accounts = get_all_v2fun_accounts(user.get('user_id'))
+    
+    # Filter only accounts with valid tokens (status=done)
+    active_accounts = [a for a in accounts if a.get('status') == 'done' and a.get('jwt_token')]
+    
+    dashboard_data = []
+    total_free_all = 0
+    total_used_all = 0
+    all_models = {}  # model -> {total_free, total_used}
+    
+    for account in active_accounts:
+        token = account.get('jwt_token')
+        if not token:
+            continue
+        
+        client = V2FunClient(token)
+        
+        # Get business config
+        config_resp = client.get_business_config()
+        config_map = {}
+        
+        if config_resp.get("success"):
+            result = config_resp.get("result", {})
+            configs = result if isinstance(result, list) else result.get("list", result.get("records", []))
+            if isinstance(configs, list):
+                for cfg in configs:
+                    cid = str(cfg.get("id", ""))
+                    model = cfg.get("model", "")
+                    name = cfg.get("name", "") or cfg.get("configName", "")
+                    if cid:
+                        config_map[cid] = {"model": model, "name": name}
+        
+        # Get free count
+        free_resp = client.get_free_count()
+        
+        account_data = {
+            "email": account.get('email'),
+            "status": "online",
+            "quotas": [],
+            "total_free": 0,
+            "total_used": 0
+        }
+        
+        if free_resp.get("success"):
+            free_counts = free_resp.get("result", {})
+            
+            for cid, count in free_counts.items():
+                cfg_info = config_map.get(cid, {})
+                model = cfg_info.get("model", "")
+                name = cfg_info.get("name", "")
+                
+                if model or name:
+                    free_remaining = count
+                    free_total = 5
+                    free_used = max(0, free_total - free_remaining)
+                    
+                    account_data["quotas"].append({
+                        "model": model,
+                        "name": name,
+                        "free_remaining": free_remaining,
+                        "free_total": free_total,
+                        "free_used": free_used
+                    })
+                    
+                    account_data["total_free"] += free_remaining
+                    account_data["total_used"] += free_used
+                    
+                    # Aggregate by model
+                    model_key = model or name
+                    if model_key not in all_models:
+                        all_models[model_key] = {"total_free": 0, "total_used": 0, "name": name}
+                    all_models[model_key]["total_free"] += free_remaining
+                    all_models[model_key]["total_used"] += free_used
+            
+            total_free_all += account_data["total_free"]
+            total_used_all += account_data["total_used"]
+        else:
+            account_data["status"] = "error"
+            account_data["error"] = free_resp.get("message", "Failed to fetch quota")
+        
+        dashboard_data.append(account_data)
+    
+    # Sort accounts by total_free descending
+    dashboard_data.sort(key=lambda x: x["total_free"], reverse=True)
+    
+    # Convert all_models dict to list
+    models_list = [
+        {
+            "model": k,
+            "name": v["name"],
+            "total_free": v["total_free"],
+            "total_used": v["total_used"]
+        }
+        for k, v in all_models.items()
+    ]
+    models_list.sort(key=lambda x: x["total_free"], reverse=True)
+    
+    return jsonify({
+        "success": True,
+        "accounts": dashboard_data,
+        "summary": {
+            "total_accounts": len(active_accounts),
+            "total_free": total_free_all,
+            "total_used": total_used_all
+        },
+        "models": models_list
+    })
+
+
 @app.route('/api/export-data')
 def api_export_data():
     """Export all data: users, v2fun_accounts, session tokens, account.txt"""
