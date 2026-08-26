@@ -1,0 +1,12 @@
+{
+  "requests": [],
+  "responses": [],
+  "important_data": {
+    "registration": {},
+    "login": {},
+    "chat": {},
+    "image_generation": {},
+    "models": {},
+    "endpoints": []
+  }
+}
