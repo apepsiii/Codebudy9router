@@ -107,6 +107,21 @@ def init_db():
         )
     """)
     
+    # Quota snapshots table (cached quota data for fast dashboard loading)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS quota_snapshots (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL,
+            total_free INTEGER DEFAULT 0,
+            total_used INTEGER DEFAULT 0,
+            quota_json TEXT,
+            status TEXT DEFAULT 'online',
+            error_message TEXT,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(email)
+        )
+    """)
+    
     conn.commit()
     conn.close()
     print("Database initialized successfully!")
@@ -616,6 +631,61 @@ def delete_session(session_token: str):
     
     conn.commit()
     conn.close()
+
+
+def update_quota_snapshot(email: str, total_free: int, total_used: int, quota_json: str, status: str = 'online', error_message: str = None):
+    """Update or insert quota snapshot for an account"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        INSERT INTO quota_snapshots (email, total_free, total_used, quota_json, status, error_message, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(email) DO UPDATE SET
+            total_free = excluded.total_free,
+            total_used = excluded.total_used,
+            quota_json = excluded.quota_json,
+            status = excluded.status,
+            error_message = excluded.error_message,
+            updated_at = CURRENT_TIMESTAMP
+    """, (email, total_free, total_used, quota_json, status, error_message))
+    
+    conn.commit()
+    conn.close()
+
+
+def get_all_quota_snapshots():
+    """Get all quota snapshots from database"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        SELECT email, total_free, total_used, quota_json, status, error_message, updated_at
+        FROM quota_snapshots
+        ORDER BY total_free DESC
+    """)
+    
+    rows = cursor.fetchall()
+    conn.close()
+    
+    return [dict(row) for row in rows]
+
+
+def get_quota_snapshot(email: str):
+    """Get quota snapshot for a specific account"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        SELECT email, total_free, total_used, quota_json, status, error_message, updated_at
+        FROM quota_snapshots
+        WHERE email = ?
+    """, (email,))
+    
+    row = cursor.fetchone()
+    conn.close()
+    
+    return dict(row) if row else None
 
 
 if __name__ == "__main__":

@@ -28,7 +28,8 @@ from v2fun_scripts.database import (
     delete_session,
     import_v2fun_account, get_pending_accounts, get_all_v2fun_accounts,
     update_v2fun_account_status, delete_v2fun_account, get_v2fun_account_by_id,
-    sync_v2fun_sessions_to_db, upsert_v2fun_account_from_session
+    sync_v2fun_sessions_to_db, upsert_v2fun_account_from_session,
+    update_quota_snapshot, get_all_quota_snapshots, get_quota_snapshot
 )
 from v2fun_scripts.sse_monitor import SSEMonitor
 from v2fun_scripts.token_manager import (
@@ -986,10 +987,87 @@ def api_quota_status():
 
 @app.route('/api/dashboard-usage')
 def api_dashboard_usage():
-    """Get usage dashboard for all v2fun accounts"""
+    """Get usage dashboard for all v2fun accounts (from cache)"""
     user = get_current_user()
     if not user:
         return jsonify({"success": False, "message": "Not authenticated"}), 401
+    
+    # Get cached quota snapshots from database (fast!)
+    snapshots = get_all_quota_snapshots()
+    
+    dashboard_data = []
+    total_free_all = 0
+    total_used_all = 0
+    all_models = {}  # model -> {total_free, total_used}
+    
+    for snap in snapshots:
+        import json
+        quotas = []
+        
+        try:
+            if snap.get('quota_json'):
+                quotas = json.loads(snap['quota_json'])
+        except:
+            pass
+        
+        account_data = {
+            "email": snap['email'],
+            "status": snap.get('status', 'online'),
+            "quotas": quotas,
+            "total_free": snap.get('total_free', 0),
+            "total_used": snap.get('total_used', 0),
+            "error": snap.get('error_message'),
+            "updated_at": snap.get('updated_at')
+        }
+        
+        # Aggregate by model
+        for q in quotas:
+            model = q.get('model', '')
+            name = q.get('name', '')
+            model_key = model or name
+            
+            if model_key:
+                if model_key not in all_models:
+                    all_models[model_key] = {"total_free": 0, "total_used": 0, "name": name}
+                all_models[model_key]["total_free"] += q.get('free_remaining', 0)
+                all_models[model_key]["total_used"] += q.get('free_used', 0)
+        
+        total_free_all += account_data["total_free"]
+        total_used_all += account_data["total_used"]
+        dashboard_data.append(account_data)
+    
+    # Convert all_models dict to list
+    models_list = [
+        {
+            "model": k,
+            "name": v["name"],
+            "total_free": v["total_free"],
+            "total_used": v["total_used"]
+        }
+        for k, v in all_models.items()
+    ]
+    models_list.sort(key=lambda x: x["total_free"], reverse=True)
+    
+    return jsonify({
+        "success": True,
+        "accounts": dashboard_data,
+        "summary": {
+            "total_accounts": len(snapshots),
+            "total_free": total_free_all,
+            "total_used": total_used_all
+        },
+        "models": models_list
+    })
+
+
+@app.route('/api/refresh-dashboard-cache', methods=['POST'])
+def api_refresh_dashboard_cache():
+    """Refresh quota cache by fetching real-time data from V2Fun API"""
+    user = get_current_user()
+    if not user:
+        return jsonify({"success": False, "message": "Not authenticated"}), 401
+    
+    import json
     
     # Get all v2fun accounts with tokens
     accounts = get_all_v2fun_accounts(user.get('user_id'))
@@ -997,16 +1075,17 @@ def api_dashboard_usage():
     # Filter only accounts with valid tokens (status=done)
     active_accounts = [a for a in accounts if a.get('status') == 'done' and a.get('jwt_token')]
     
-    dashboard_data = []
-    total_free_all = 0
-    total_used_all = 0
-    all_models = {}  # model -> {total_free, total_used}
+    if len(active_accounts) == 0:
+        return jsonify({"success": False, "message": "No active V2Fun accounts found"})
+    
+    updated_count = 0
     
     for account in active_accounts:
         token = account.get('jwt_token')
         if not token:
             continue
         
+        email = account.get('email')
         client = V2FunClient(token)
         
         # Get business config
@@ -1027,16 +1106,12 @@ def api_dashboard_usage():
         # Get free count
         free_resp = client.get_free_count()
         
-        account_data = {
-            "email": account.get('email'),
-            "status": "online",
-            "quotas": [],
-            "total_free": 0,
-            "total_used": 0
-        }
-        
         if free_resp.get("success"):
             free_counts = free_resp.get("result", {})
+            
+            total_free = 0
+            total_used = 0
+            quotas = []
             
             for cid, count in free_counts.items():
                 cfg_info = config_map.get(cid, {})
@@ -1048,7 +1123,7 @@ def api_dashboard_usage():
                     free_total = 5
                     free_used = max(0, free_total - free_remaining)
                     
-                    account_data["quotas"].append({
+                    quotas.append({
                         "model": model,
                         "name": name,
                         "free_remaining": free_remaining,
@@ -1056,48 +1131,35 @@ def api_dashboard_usage():
                         "free_used": free_used
                     })
                     
-                    account_data["total_free"] += free_remaining
-                    account_data["total_used"] += free_used
-                    
-                    # Aggregate by model
-                    model_key = model or name
-                    if model_key not in all_models:
-                        all_models[model_key] = {"total_free": 0, "total_used": 0, "name": name}
-                    all_models[model_key]["total_free"] += free_remaining
-                    all_models[model_key]["total_used"] += free_used
+                    total_free += free_remaining
+                    total_used += free_used
             
-            total_free_all += account_data["total_free"]
-            total_used_all += account_data["total_used"]
+            # Save to database
+            update_quota_snapshot(
+                email=email,
+                total_free=total_free,
+                total_used=total_used,
+                quota_json=json.dumps(quotas),
+                status='online',
+                error_message=None
+            )
+            updated_count += 1
         else:
-            account_data["status"] = "error"
-            account_data["error"] = free_resp.get("message", "Failed to fetch quota")
-        
-        dashboard_data.append(account_data)
-    
-    # Sort accounts by total_free descending
-    dashboard_data.sort(key=lambda x: x["total_free"], reverse=True)
-    
-    # Convert all_models dict to list
-    models_list = [
-        {
-            "model": k,
-            "name": v["name"],
-            "total_free": v["total_free"],
-            "total_used": v["total_used"]
-        }
-        for k, v in all_models.items()
-    ]
-    models_list.sort(key=lambda x: x["total_free"], reverse=True)
+            # Save error status
+            update_quota_snapshot(
+                email=email,
+                total_free=0,
+                total_used=0,
+                quota_json='[]',
+                status='error',
+                error_message=free_resp.get("message", "Failed to fetch quota")
+            )
     
     return jsonify({
         "success": True,
-        "accounts": dashboard_data,
-        "summary": {
-            "total_accounts": len(active_accounts),
-            "total_free": total_free_all,
-            "total_used": total_used_all
-        },
-        "models": models_list
+        "message": f"Updated {updated_count}/{len(active_accounts)} accounts",
+        "updated": updated_count,
+        "total": len(active_accounts)
     })
 
 
