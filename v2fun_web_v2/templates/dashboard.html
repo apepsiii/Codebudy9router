@@ -361,31 +361,45 @@
         <div class="card">
             <div class="card-title">Generation Settings</div>
 
-            <!-- Reference image upload -->
+            <!-- Reference image upload (up to 3) -->
             <div class="form-group">
-                <label>Reference Image (Optional)</label>
-                <div class="upload-area" id="uploadArea">
-                    <input type="file" id="refImageInput" accept="image/*" onchange="handleImageSelect(event)">
-                    <div class="upload-icon">
-                        <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
-                        </svg>
+                <label>Reference Images (Optional - Max 3)</label>
+                <div id="imageGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px">
+                    <!-- Slot 1 -->
+                    <div class="upload-slot" id="slot-0" style="border:2px dashed var(--color-border);border-radius:10px;aspect-ratio:1;position:relative;cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center;transition:border-color 150ms ease,background 150ms ease">
+                        <input type="file" class="slot-input" data-slot="0" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
+                        <div class="slot-placeholder" style="text-align:center;color:#94a3b8">
+                            <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin:0 auto 4px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                            <span style="font-size:11px">Image 1</span>
+                        </div>
                     </div>
-                    <p><span>Click to upload</span> or drag and drop</p>
-                    <p style="font-size:12px;margin-top:4px;color:#94a3b8">PNG, JPG, WEBP up to 16MB</p>
-                </div>
-                <div id="imagePreviewWrap" style="display:none;margin-top:12px;text-align:center">
-                    <div style="position:relative;display:inline-block">
-                        <img id="imagePreview" src="" alt="Preview" style="max-height:160px;border-radius:10px;border:2px solid var(--color-border)">
-                        <button onclick="removeImage()" style="position:absolute;top:-8px;right:-8px;width:24px;height:24px;background:var(--color-destructive);color:white;border-radius:50%;border:none;cursor:pointer;font-size:14px;line-height:24px">×</button>
+                    <!-- Slot 2 -->
+                    <div class="upload-slot" id="slot-1" style="border:2px dashed var(--color-border);border-radius:10px;aspect-ratio:1;position:relative;cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center;transition:border-color 150ms ease,background 150ms ease">
+                        <input type="file" class="slot-input" data-slot="1" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
+                        <div class="slot-placeholder" style="text-align:center;color:#94a3b8">
+                            <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin:0 auto 4px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                            <span style="font-size:11px">Image 2</span>
+                        </div>
                     </div>
-                    <p id="imageFilename" style="font-size:12px;color:#94a3b8;margin-top:8px"></p>
+                    <!-- Slot 3 -->
+                    <div class="upload-slot" id="slot-2" style="border:2px dashed var(--color-border);border-radius:10px;aspect-ratio:1;position:relative;cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center;transition:border-color 150ms ease,background 150ms ease">
+                        <input type="file" class="slot-input" data-slot="2" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
+                        <div class="slot-placeholder" style="text-align:center;color:#94a3b8">
+                            <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin:0 auto 4px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                            <span style="font-size:11px">Image 3</span>
+                        </div>
+                    </div>
                 </div>
+                <p style="font-size:12px;margin-top:6px;color:#94a3b8">PNG, JPG, WEBP up to 16MB each</p>
             </div>
 
             <div class="form-group">
                 <label for="prompt">Prompt *</label>
-                <textarea id="prompt" placeholder="Describe what you want to generate in detail..."></textarea>
+                <textarea id="prompt" placeholder="Describe what you want to generate in detail..." oninput="updateCharCount()"></textarea>
+                <div style="display:flex;justify-content:space-between;margin-top:4px">
+                    <span style="font-size:11px;color:#94a3b8">Max 5000 characters</span>
+                    <span id="charCount" style="font-size:11px;color:#94a3b8;font-weight:500">0 / 5000</span>
+                </div>
             </div>
 
             <div class="form-group">
@@ -536,9 +550,35 @@
     <div id="page-manage" class="page">
         <div class="page-header">
             <h1>Manage Accounts</h1>
-            <p>Lihat, hapus, dan retry akun V2Fun yang sudah terdaftar</p>
+            <p>Lihat, hapus, retry akun V2Fun, dan import/export data</p>
         </div>
         <div id="alert-manage" class="alert"></div>
+        
+        <!-- Import/Export Data -->
+        <div class="card">
+            <div class="card-title">Backup & Migration</div>
+            <p style="font-size:14px;color:#64748b;margin-bottom:16px">
+                Export semua data (database, tokens, account.txt) ke file ZIP untuk migrasi ke mesin lain.
+            </p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
+                <button class="btn btn-primary" onclick="exportData()">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Export Data (ZIP)
+                </button>
+                <label class="btn btn-outline" style="cursor:pointer">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Import Data
+                    <input type="file" accept=".zip" style="display:none" onchange="importData(event)">
+                </label>
+            </div>
+            <div id="import-loading" style="display:none;margin-top:12px;color:#64748b;font-size:14px">
+                <div style="display:flex;align-items:center;gap:8px">
+                    <div class="spinner" style="width:16px;height:16px;border-width:2px"></div>
+                    Importing data...
+                </div>
+            </div>
+        </div>
+        
         <div class="card">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
                 <div class="card-title" style="margin-bottom:0">All V2Fun Sessions</div>
@@ -569,7 +609,7 @@
 <script>
     let currentUser = null;
     let currentPage = 'generate';
-    let uploadedImagePath = null;  // Will store OSS path
+    let uploadedImages = [null, null, null];  // Array for up to 3 OSS paths
 
     // Init
     window.addEventListener('DOMContentLoaded', async () => {
@@ -736,44 +776,95 @@
             </div>`;
     }
 
-    async function handleImageSelect(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        
-        // Show preview
-        const reader = new FileReader();
-        reader.onload = e => {
-            document.getElementById('imagePreview').src = e.target.result;
-            document.getElementById('imagePreviewWrap').style.display = 'block';
-            document.getElementById('imageFilename').textContent = file.name;
-            document.getElementById('uploadArea').style.borderColor = 'var(--color-primary)';
-        };
-        reader.readAsDataURL(file);
-        
-        // Upload to server
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        try {
-            const resp = await fetch('/api/upload-image', { method: 'POST', body: formData });
-            const data = await resp.json();
-            if (data.success) {
-                uploadedImagePath = data.image.oss_path;  // Store OSS path for V2Fun API
-                showAlert('alert-gen', 'Image uploaded successfully!', 'success');
-            } else {
-                showAlert('alert-gen', data.message, 'error');
+    // Handle multiple image uploads (up to 3 slots)
+    document.addEventListener('change', async function(e) {
+        if (e.target.classList.contains('slot-input')) {
+            const slotIdx = parseInt(e.target.dataset.slot);
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const slot = document.getElementById(`slot-${slotIdx}`);
+            
+            // Show loading state
+            slot.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%"><div class="spinner" style="width:24px;height:24px;border-width:2px"></div></div>';
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = ev => {
+                slot.innerHTML = `
+                    <img src="${ev.target.result}" alt="Preview" style="width:100%;height:100%;object-fit:cover">
+                    <button onclick="removeSlotImage(${slotIdx})" style="position:absolute;top:4px;right:4px;width:20px;height:20px;background:var(--color-destructive);color:white;border-radius:50%;border:none;cursor:pointer;font-size:12px;line-height:20px;z-index:10">×</button>
+                    <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.6);color:white;font-size:9px;padding:2px 4px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${file.name}</div>`;
+                slot.style.borderColor = 'var(--color-primary)';
+                slot.style.borderStyle = 'solid';
+            };
+            reader.readAsDataURL(file);
+            
+            // Upload to server
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const resp = await fetch('/api/upload-image', { method: 'POST', body: formData });
+                
+                if (!resp.ok && resp.status !== 400) {
+                    showAlert('alert-gen', `Upload error (HTTP ${resp.status})`, 'error');
+                    resetSlot(slotIdx);
+                    return;
+                }
+                
+                const data = await resp.json();
+                if (data.success) {
+                    uploadedImages[slotIdx] = data.image.oss_path;
+                    showAlert('alert-gen', `Image ${slotIdx + 1} uploaded!`, 'success');
+                } else {
+                    const errorCode = data.error_code || '';
+                    let msg = data.message || 'Upload failed';
+                    
+                    if (errorCode === 'AUTH_EXPIRED') {
+                        msg = 'V2Fun token expired. Please select account again.';
+                        document.getElementById('accountStatusDot').style.background = '#ef4444';
+                    } else if (errorCode === 'FILE_TOO_LARGE') {
+                        msg = 'Image too large (max 16MB). Use smaller image.';
+                    } else if (errorCode === 'TIMEOUT') {
+                        msg = 'Upload timed out. Try again.';
+                    } else if (errorCode === 'STS_FAILED') {
+                        msg = 'Cannot get upload credentials. Check your V2Fun connection.';
+                    }
+                    
+                    showAlert('alert-gen', msg, 'error');
+                    resetSlot(slotIdx);
+                }
+            } catch (err) {
+                showAlert('alert-gen', `Network error: ${err.message}. Check internet connection.`, 'error');
+                resetSlot(slotIdx);
             }
-        } catch (err) {
-            showAlert('alert-gen', 'Upload failed: ' + err.message, 'error');
         }
+    });
+
+    function resetSlot(idx) {
+        const slot = document.getElementById(`slot-${idx}`);
+        slot.innerHTML = `
+            <div class="slot-placeholder" style="text-align:center;color:#94a3b8">
+                <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin:0 auto 4px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                <span style="font-size:11px">Image ${idx + 1}</span>
+            </div>`;
+        slot.style.borderColor = 'var(--color-border)';
+        slot.style.borderStyle = 'dashed';
     }
 
-    function removeImage() {
-        uploadedImagePath = null;
-        document.getElementById('imagePreviewWrap').style.display = 'none';
-        document.getElementById('imagePreview').src = '';
-        document.getElementById('refImageInput').value = '';
-        document.getElementById('uploadArea').style.borderColor = '';
+    function removeSlotImage(idx) {
+        uploadedImages[idx] = null;
+        resetSlot(idx);
+        // Re-add input
+        const slot = document.getElementById(`slot-${idx}`);
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.className = 'slot-input';
+        input.dataset.slot = idx;
+        input.accept = 'image/*';
+        input.style.cssText = 'position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%';
+        slot.appendChild(input);
     }
 
     async function generateImage() {
@@ -802,7 +893,9 @@
                 quality: document.getElementById('quality').value,
                 ratio: document.getElementById('ratio').value,
                 num: parseInt(document.getElementById('num').value),
-                reference_images: uploadedImagePath ? [uploadedImagePath] : null
+                reference_images: uploadedImages.filter(img => img !== null).length > 0 
+                    ? uploadedImages.filter(img => img !== null) 
+                    : null
             };
             
             const resp = await fetch('/api/generate', {
@@ -811,22 +904,46 @@
                 body: JSON.stringify(payload)
             });
             
+            // Handle HTTP errors
+            if (!resp.ok && resp.status !== 400) {
+                showAlert('alert-gen', `Server error (${resp.status}). Please try again.`, 'error');
+                return;
+            }
+            
             const data = await resp.json();
             
             if (data.success) {
                 const genId = data.generation_id;
                 showAlert('alert-gen', 'Generation submitted! Monitoring progress...', 'success');
                 document.getElementById('prompt').value = '';
-                removeImage();
+                uploadedImages = [null, null, null];
+                [0, 1, 2].forEach(idx => resetSlot(idx));
                 await loadRecentGenerations();
                 document.getElementById('recentCard').style.display = 'block';
                 
-                // Start SSE monitoring
                 if (genId) {
                     startProgressMonitor(genId);
                 }
             } else {
-                showAlert('alert-gen', data.message || 'Generation failed', 'error');
+                // Handle specific error codes
+                const errorCode = data.error_code || '';
+                let msg = data.message || 'Generation failed';
+                
+                if (errorCode === 'AUTH_EXPIRED') {
+                    msg = 'V2Fun token expired. Please select account again from dropdown.';
+                    // Reset account status dot
+                    document.getElementById('accountStatusDot').style.background = '#ef4444';
+                } else if (errorCode === 'RATE_LIMITED') {
+                    msg = 'Too many requests. Please wait a moment before trying again.';
+                } else if (errorCode === 'TIMEOUT') {
+                    msg = 'Request timed out. V2Fun server may be slow. Try again.';
+                } else if (errorCode === 'CONNECTION') {
+                    msg = 'Cannot connect to V2Fun. Check your internet connection.';
+                } else if (errorCode === 'SERVER_ERROR') {
+                    msg = 'V2Fun server error. Try again later.';
+                }
+                
+                showAlert('alert-gen', msg, 'error');
             }
         } catch (err) {
             showAlert('alert-gen', 'Request failed: ' + err.message, 'error');
@@ -915,6 +1032,63 @@
                     }).join('')}
                 </tbody>
             </table>`;
+    }
+
+    async function exportData() {
+        showAlert('alert-manage', 'Preparing export...', 'info');
+        try {
+            const resp = await fetch('/api/export-data');
+            if (!resp.ok) {
+                showAlert('alert-manage', 'Export failed', 'error');
+                return;
+            }
+            const blob = await resp.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = resp.headers.get('Content-Disposition')?.split('filename=')[1]?.replace(/"/g,'') || 'v2fun_backup.zip';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            showAlert('alert-manage', 'Export successful! ZIP file downloaded.', 'success');
+        } catch (err) {
+            showAlert('alert-manage', 'Export failed: ' + err.message, 'error');
+        }
+    }
+
+    async function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const loading = document.getElementById('import-loading');
+        loading.style.display = 'block';
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('import_db', 'true');
+        
+        try {
+            const resp = await fetch('/api/import-data', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await resp.json();
+            
+            if (data.success) {
+                showAlert('alert-manage', data.message, 'success');
+                await loadManagedAccounts();
+                await loadAccountDropdown();
+                await loadSessions();
+            } else {
+                showAlert('alert-manage', data.message, 'error');
+            }
+        } catch (err) {
+            showAlert('alert-manage', 'Import failed: ' + err.message, 'error');
+        } finally {
+            loading.style.display = 'none';
+            event.target.value = '';
+        }
     }
 
     async function refreshToken(email) {
@@ -1218,6 +1392,21 @@
 
     function closeModal() {
         document.getElementById('modalOverlay').classList.remove('active');
+    }
+
+    function updateCharCount() {
+        const textarea = document.getElementById('prompt');
+        const counter = document.getElementById('charCount');
+        const count = textarea.value.length;
+        counter.textContent = `${count} / 5000`;
+        
+        if (count > 4900) {
+            counter.style.color = '#ef4444'; // red
+        } else if (count > 4000) {
+            counter.style.color = '#f59e0b'; // amber
+        } else {
+            counter.style.color = '#94a3b8'; // gray
+        }
     }
 
     function startProgressMonitor(genId) {

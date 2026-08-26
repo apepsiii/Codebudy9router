@@ -7,7 +7,7 @@ Usage:
     Open: http://localhost:5000
 """
 
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, send_from_directory, Response
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, send_from_directory, Response, send_file
 import json
 import os
 import sys
@@ -72,6 +72,14 @@ def get_current_user():
     return user_data
 
 
+class V2FunAPIError(Exception):
+    """Custom exception for V2Fun API errors"""
+    def __init__(self, message, status_code=None, error_code=None):
+        super().__init__(message)
+        self.status_code = status_code
+        self.error_code = error_code
+
+
 class V2FunClient:
     def __init__(self, token: str):
         self.base_url = "https://api.prod.v2fun.ai"
@@ -84,18 +92,59 @@ class V2FunClient:
             "Referer": "https://v2fun.ai/"
         }
     
+    def _handle_response(self, response, action="API call"):
+        """Centralized response handler with detailed error info"""
+        # Check for auth errors
+        if response.status_code == 401:
+            return {"success": False, "message": "Token expired or invalid. Please reconnect V2Fun account.", "error_code": "AUTH_EXPIRED"}
+        
+        if response.status_code == 403:
+            return {"success": False, "message": "Access forbidden. Account may be banned or restricted.", "error_code": "FORBIDDEN"}
+        
+        if response.status_code == 429:
+            return {"success": False, "message": "Rate limited. Too many requests. Please wait.", "error_code": "RATE_LIMITED"}
+        
+        if response.status_code >= 500:
+            return {"success": False, "message": f"V2Fun server error ({response.status_code}). Try again later.", "error_code": "SERVER_ERROR"}
+        
+        if response.status_code != 200:
+            # Try to get error message from response body
+            try:
+                error_data = response.json()
+                msg = error_data.get("message") or error_data.get("error") or str(error_data)
+                return {"success": False, "message": f"{action} failed: {msg}", "error_code": "API_ERROR"}
+            except:
+                return {"success": False, "message": f"{action} failed with status {response.status_code}", "error_code": "HTTP_ERROR"}
+        
+        # Success - parse JSON
+        try:
+            return response.json()
+        except ValueError:
+            return {"success": False, "message": f"Invalid JSON response from server", "error_code": "PARSE_ERROR"}
+    
     def generate_image(self, prompt: str, **kwargs):
         """Generate image with V2Fun API"""
+        if not prompt or not prompt.strip():
+            return {"success": False, "message": "Prompt cannot be empty", "error_code": "VALIDATION"}
+        
+        if len(prompt) > 5000:
+            return {"success": False, "message": "Prompt too long (max 5000 characters)", "error_code": "VALIDATION"}
+        
         payload = {
-            "prompt": prompt,
+            "prompt": prompt.strip(),
             "model": kwargs.get("model", "nano-banana-pro"),
             "ratio": kwargs.get("ratio", "16:9"),
             "num": kwargs.get("num", 1),
             "quality": kwargs.get("quality", "medium")
         }
         
-        if kwargs.get("reference_images"):
-            payload["referenceImages"] = kwargs["reference_images"]
+        ref_imgs = kwargs.get("reference_images")
+        if ref_imgs:
+            if not isinstance(ref_imgs, list):
+                return {"success": False, "message": "reference_images must be an array", "error_code": "VALIDATION"}
+            if len(ref_imgs) > 3:
+                return {"success": False, "message": "Maximum 3 reference images allowed", "error_code": "VALIDATION"}
+            payload["referenceImages"] = ref_imgs
         
         try:
             response = requests.post(
@@ -104,12 +153,14 @@ class V2FunClient:
                 json=payload,
                 timeout=30
             )
-            
-            response.raise_for_status()
-            return response.json()
-                
+            return self._handle_response(response, "Image generation")
+        
+        except requests.exceptions.Timeout:
+            return {"success": False, "message": "Generation request timed out. V2Fun may be slow, try again.", "error_code": "TIMEOUT"}
+        except requests.exceptions.ConnectionError:
+            return {"success": False, "message": "Cannot connect to V2Fun server. Check internet connection.", "error_code": "CONNECTION"}
         except requests.exceptions.RequestException as e:
-            return {"success": False, "message": str(e)}
+            return {"success": False, "message": f"Network error: {str(e)}", "error_code": "NETWORK"}
     
     def get_balance(self):
         """Get user credit balance"""
@@ -119,10 +170,11 @@ class V2FunClient:
                 headers=self.headers,
                 timeout=10
             )
-            response.raise_for_status()
-            return response.json()
-        except Exception as e:
-            return {"success": False, "message": str(e)}
+            return self._handle_response(response, "Get balance")
+        except requests.exceptions.Timeout:
+            return {"success": False, "message": "Balance check timed out", "error_code": "TIMEOUT"}
+        except requests.exceptions.RequestException as e:
+            return {"success": False, "message": f"Network error: {str(e)}", "error_code": "NETWORK"}
     
     def get_user_info(self):
         """Get user login info"""
@@ -132,10 +184,11 @@ class V2FunClient:
                 headers=self.headers,
                 timeout=10
             )
-            response.raise_for_status()
-            return response.json()
-        except Exception as e:
-            return {"success": False, "message": str(e)}
+            return self._handle_response(response, "Get user info")
+        except requests.exceptions.Timeout:
+            return {"success": False, "message": "User info request timed out", "error_code": "TIMEOUT"}
+        except requests.exceptions.RequestException as e:
+            return {"success": False, "message": f"Network error: {str(e)}", "error_code": "NETWORK"}
     
     def get_upload_credentials(self):
         """Get Alibaba Cloud OSS STS credentials from V2Fun"""
@@ -146,49 +199,118 @@ class V2FunClient:
                 json={},
                 timeout=10
             )
-            response.raise_for_status()
-            return response.json()
-        except Exception as e:
-            return {"success": False, "message": str(e)}
+            return self._handle_response(response, "Get upload credentials")
+        except requests.exceptions.Timeout:
+            return {"success": False, "message": "Upload credentials request timed out", "error_code": "TIMEOUT"}
+        except requests.exceptions.RequestException as e:
+            return {"success": False, "message": f"Network error: {str(e)}", "error_code": "NETWORK"}
     
-    def upload_to_oss(self, file_path: str, mime_type: str = "image/jpeg"):
-        """Upload file to Alibaba Cloud OSS using STS credentials from V2Fun"""
-        # Step 1: Get STS credentials
-        sts_resp = self.get_upload_credentials()
-        if not sts_resp.get("success"):
-            return {"success": False, "message": "Failed to get upload credentials"}
+    def upload_to_oss(self, file_path: str, mime_type: str = "image/jpeg", max_retries: int = 2):
+        """Upload file to Alibaba Cloud OSS with retry mechanism"""
         
-        sts = sts_resp.get("result", {})
-        oss_host = sts.get("ossHost")  # e.g. https://external-v2fun-data-hk-1.oss-accelerate.aliyuncs.com
-        oss_path = sts.get("path")     # e.g. upload/image/2026/08/26/20260826150013a15830.jpg
+        # Validate file
+        if not os.path.exists(file_path):
+            return {"success": False, "message": "File not found", "error_code": "FILE_NOT_FOUND"}
         
-        # Step 2: Upload to OSS using POST form
-        with open(file_path, "rb") as f:
-            files = {
-                "file": (os.path.basename(file_path), f, mime_type)
-            }
-            form_data = {
-                "OSSAccessKeyId": sts.get("accessKeyId"),
-                "policy": sts.get("policy"),
-                "Signature": sts.get("signature"),
-                "key": oss_path,
-                "x-oss-security-token": sts.get("securityToken"),
-                "success_action_status": "200"
-            }
+        file_size = os.path.getsize(file_path)
+        if file_size == 0:
+            return {"success": False, "message": "File is empty", "error_code": "FILE_EMPTY"}
+        
+        if file_size > 16 * 1024 * 1024:  # 16MB
+            return {"success": False, "message": "File too large (max 16MB)", "error_code": "FILE_TOO_LARGE"}
+        
+        last_error = None
+        
+        for attempt in range(max_retries + 1):
+            try:
+                # Step 1: Get STS credentials (retry each time)
+                sts_resp = self.get_upload_credentials()
+                if not sts_resp.get("success"):
+                    last_error = sts_resp.get("message", "Failed to get credentials")
+                    if attempt < max_retries:
+                        import time
+                        time.sleep(2)
+                        continue
+                    return {"success": False, "message": f"Upload credentials failed: {last_error}", "error_code": "STS_FAILED"}
+                
+                sts = sts_resp.get("result", {})
+                oss_host = sts.get("ossHost")
+                oss_path = sts.get("path")
+                
+                if not oss_host or not oss_path:
+                    return {"success": False, "message": "Invalid OSS credentials received", "error_code": "STS_INVALID"}
+                
+                # Step 2: Upload to OSS
+                with open(file_path, "rb") as f:
+                    files = {
+                        "file": (os.path.basename(file_path), f, mime_type)
+                    }
+                    form_data = {
+                        "OSSAccessKeyId": sts.get("accessKeyId"),
+                        "policy": sts.get("policy"),
+                        "Signature": sts.get("signature"),
+                        "key": oss_path,
+                        "x-oss-security-token": sts.get("securityToken"),
+                        "success_action_status": "200"
+                    }
+                    
+                    upload_resp = requests.post(
+                        oss_host,
+                        data=form_data,
+                        files=files,
+                        timeout=30
+                    )
+                    
+                    if upload_resp.status_code == 200:
+                        return {"success": True, "oss_path": oss_path}
+                    else:
+                        # Parse OSS error
+                        try:
+                            error_xml = upload_resp.text
+                            if "InvalidAccessKeyId" in error_xml:
+                                last_error = "OSS credentials expired"
+                            elif "AccessDenied" in error_xml:
+                                last_error = "OSS access denied"
+                            else:
+                                last_error = f"OSS error: {upload_resp.status_code}"
+                        except:
+                            last_error = f"OSS upload failed: {upload_resp.status_code}"
+                        
+                        if attempt < max_retries:
+                            import time
+                            time.sleep(2)
+                            continue
+                        
+                        return {"success": False, "message": last_error, "error_code": "OSS_UPLOAD_FAILED"}
+                
+            except requests.exceptions.Timeout:
+                last_error = "OSS upload timed out"
+                if attempt < max_retries:
+                    import time
+                    time.sleep(2)
+                    continue
+                return {"success": False, "message": last_error, "error_code": "TIMEOUT"}
             
-            upload_resp = requests.post(
-                oss_host,
-                data=form_data,
-                files=files,
-                timeout=30
-            )
+            except requests.exceptions.ConnectionError:
+                last_error = "Cannot connect to OSS server"
+                if attempt < max_retries:
+                    import time
+                    time.sleep(2)
+                    continue
+                return {"success": False, "message": last_error, "error_code": "CONNECTION"}
             
-            if upload_resp.status_code == 200:
-                return {"success": True, "oss_path": oss_path}
-            else:
-                return {"success": False, "message": f"OSS upload failed: {upload_resp.status_code} - {upload_resp.text[:200]}"}
+            except IOError as e:
+                return {"success": False, "message": f"File read error: {str(e)}", "error_code": "FILE_READ_ERROR"}
+            
+            except Exception as e:
+                last_error = str(e)
+                if attempt < max_retries:
+                    import time
+                    time.sleep(2)
+                    continue
+                return {"success": False, "message": f"Upload error: {last_error}", "error_code": "UNKNOWN"}
         
-        return {"success": False, "message": "Upload failed"}
+        return {"success": False, "message": f"Upload failed after {max_retries + 1} attempts: {last_error}", "error_code": "RETRY_EXHAUSTED"}
 
 
 @app.route('/')
@@ -208,29 +330,14 @@ def login_page():
 
 @app.route('/register')
 def register_page():
-    """Registration page"""
-    return render_template('register.html')
+    """Registration disabled - admin invite only"""
+    return redirect(url_for('login_page'))
 
 
 @app.route('/api/register', methods=['POST'])
 def api_register():
-    """Register new user"""
-    data = request.json
-    email = data.get('email')
-    password = data.get('password')
-    
-    if not email or not password:
-        return jsonify({"success": False, "message": "Email and password required"})
-    
-    if len(password) < 6:
-        return jsonify({"success": False, "message": "Password must be at least 6 characters"})
-    
-    user_id = create_user(email, password)
-    
-    if user_id:
-        return jsonify({"success": True, "message": "Registration successful! Please login."})
-    else:
-        return jsonify({"success": False, "message": "Email already exists"})
+    """Registration disabled - admin must create users via CLI"""
+    return jsonify({"success": False, "message": "Registration is disabled. Contact admin to create account."})
 
 
 @app.route('/api/login', methods=['POST'])
@@ -347,7 +454,7 @@ def api_upload_image():
         return jsonify({"success": False, "message": "Not authenticated"}), 401
     
     if not user.get('v2fun_token'):
-        return jsonify({"success": False, "message": "Please connect V2Fun account first"})
+        return jsonify({"success": False, "message": "Please select a V2Fun account first (dropdown top-right)"})
     
     if 'file' not in request.files:
         return jsonify({"success": False, "message": "No file uploaded"})
@@ -358,7 +465,18 @@ def api_upload_image():
         return jsonify({"success": False, "message": "No file selected"})
     
     if not allowed_file(file.filename):
-        return jsonify({"success": False, "message": "File type not allowed"})
+        return jsonify({"success": False, "message": "File type not allowed. Use PNG, JPG, JPEG, GIF, or WEBP"})
+    
+    # Check file size (Flask MAX_CONTENT_LENGTH handles this, but double-check)
+    file.seek(0, 2)  # Seek to end
+    file_size_stream = file.tell()
+    file.seek(0)  # Reset
+    
+    if file_size_stream > 16 * 1024 * 1024:
+        return jsonify({"success": False, "message": "File too large (max 16MB)"})
+    
+    if file_size_stream == 0:
+        return jsonify({"success": False, "message": "File is empty"})
     
     # Save locally first
     original_filename = secure_filename(file.filename)
@@ -366,7 +484,11 @@ def api_upload_image():
     filename = f"{timestamp}_{original_filename}"
     file_path = app.config['UPLOAD_FOLDER'] / filename
     
-    file.save(str(file_path))
+    try:
+        file.save(str(file_path))
+    except Exception as e:
+        return jsonify({"success": False, "message": f"Failed to save file: {str(e)}"})
+    
     file_size = os.path.getsize(file_path)
     
     # Save to local database
@@ -379,7 +501,7 @@ def api_upload_image():
         file.content_type
     )
     
-    # Upload to V2Fun OSS
+    # Upload to V2Fun OSS (with retry mechanism built into client)
     client = V2FunClient(user['v2fun_token'])
     mime = file.content_type or "image/jpeg"
     oss_result = client.upload_to_oss(str(file_path), mime)
@@ -387,18 +509,31 @@ def api_upload_image():
     if oss_result.get("success"):
         return jsonify({
             "success": True,
-            "message": "Image uploaded to V2Fun OSS successfully!",
+            "message": "Image uploaded successfully!",
             "image": {
                 "id": image_id,
                 "filename": filename,
                 "url": f"/uploads/{filename}",
-                "oss_path": oss_result["oss_path"]  # This is what V2Fun API needs
+                "oss_path": oss_result["oss_path"]
             }
         })
     else:
+        # Clean up local file if OSS upload failed
+        try:
+            os.remove(str(file_path))
+        except:
+            pass
+        
+        error_code = oss_result.get("error_code", "UNKNOWN")
+        
+        # If token expired, return specific message
+        if error_code == "AUTH_EXPIRED":
+            return jsonify({"success": False, "message": "V2Fun token expired. Please select account again.", "error_code": "AUTH_EXPIRED"})
+        
         return jsonify({
             "success": False,
-            "message": f"OSS upload failed: {oss_result.get('message', 'Unknown error')}"
+            "message": oss_result.get("message", "Upload failed"),
+            "error_code": error_code
         })
 
 
@@ -410,46 +545,67 @@ def api_generate():
         return jsonify({"success": False, "message": "Not authenticated"}), 401
     
     if not user.get('v2fun_token'):
-        return jsonify({"success": False, "message": "Please connect your V2Fun account first"})
+        return jsonify({"success": False, "message": "Please select a V2Fun account first (dropdown top-right)"})
     
     data = request.json
-    prompt = data.get('prompt')
+    if not data:
+        return jsonify({"success": False, "message": "No data provided"})
+    
+    prompt = data.get('prompt', '').strip()
     
     if not prompt:
         return jsonify({"success": False, "message": "Prompt is required"})
     
+    if len(prompt) > 5000:
+        return jsonify({"success": False, "message": "Prompt too long (max 5000 characters)"})
+    
+    # Validate reference images
+    ref_imgs = data.get("reference_images")
+    if ref_imgs and not isinstance(ref_imgs, list):
+        return jsonify({"success": False, "message": "reference_images must be an array"})
+    if ref_imgs and len(ref_imgs) > 3:
+        return jsonify({"success": False, "message": "Maximum 3 reference images allowed"})
+    
     client = V2FunClient(user['v2fun_token'])
     
-    result = client.generate_image(
-        prompt=prompt,
-        model=data.get("model", "nano-banana-pro"),
-        quality=data.get("quality", "medium"),
-        ratio=data.get("ratio", "16:9"),
-        num=data.get("num", 1),
-        reference_images=data.get("reference_images")
-    )
+    try:
+        result = client.generate_image(
+            prompt=prompt,
+            model=data.get("model", "nano-banana-pro"),
+            quality=data.get("quality", "medium"),
+            ratio=data.get("ratio", "16:9"),
+            num=data.get("num", 1),
+            reference_images=ref_imgs
+        )
+    except Exception as e:
+        return jsonify({"success": False, "message": f"Unexpected error: {str(e)}", "error_code": "UNEXPECTED"})
     
     if result.get("success"):
-        # Save to database
         result_data = result.get("result", {})
         task_uuid = result_data.get("taskuuid")
-        generation_id = create_generation(
-            user['user_id'],
-            prompt,
-            model=data.get("model"),
-            quality=data.get("quality"),
-            ratio=data.get("ratio"),
-            num=data.get("num"),
-            task_uuid=task_uuid,
-            work_area_id=result_data.get("id"),
-            task_ids=json.dumps(result_data.get("taskIds", []))
-        )
         
-        result["generation_id"] = generation_id
+        if not task_uuid:
+            return jsonify({"success": False, "message": "Generation submitted but no task UUID returned", "error_code": "NO_TASK_UUID"})
         
-        # Start SSE monitor in background
-        if task_uuid:
+        try:
+            generation_id = create_generation(
+                user['user_id'],
+                prompt,
+                model=data.get("model"),
+                quality=data.get("quality"),
+                ratio=data.get("ratio"),
+                num=data.get("num"),
+                task_uuid=task_uuid,
+                work_area_id=result_data.get("id"),
+                task_ids=json.dumps(result_data.get("taskIds", []))
+            )
+            
+            result["generation_id"] = generation_id
+            
+            # Start SSE monitor in background
             start_monitor(user['user_id'], user['v2fun_token'], generation_id, task_uuid)
+        except Exception as e:
+            return jsonify({"success": False, "message": f"Database error: {str(e)}", "error_code": "DB_ERROR"})
     
     return jsonify(result)
 
@@ -688,6 +844,176 @@ def api_delete_v2fun_account():
     delete_v2fun_account(account_id)
     
     return jsonify({"success": True, "message": "Account deleted"})
+
+
+@app.route('/api/export-data')
+def api_export_data():
+    """Export all data: users, v2fun_accounts, session tokens, account.txt"""
+    user = get_current_user()
+    if not user:
+        return jsonify({"success": False, "message": "Not authenticated"}), 401
+    
+    import zipfile
+    import io
+    import tempfile
+    
+    # Create in-memory zip
+    memory_file = io.BytesIO()
+    
+    with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
+        # Export database
+        db_path = Path("v2fun_data/v2fun.db")
+        if db_path.exists():
+            zf.write(str(db_path), "v2fun.db")
+        
+        # Export session files (tokens)
+        v2fun_data = Path("v2fun_data")
+        for session_file in v2fun_data.glob("v2fun_session_*_latest.json"):
+            zf.write(str(session_file), f"sessions/{session_file.name}")
+        
+        # Export account.txt
+        account_file = Path("account.txt")
+        if account_file.exists():
+            zf.write(str(account_file), "account.txt")
+        
+        # Export v2fun_accounts from DB as JSON
+        from v2fun_scripts.database import get_db
+        conn = get_db()
+        cursor = conn.cursor()
+        
+        # Export users (without password hashes for security - just emails)
+        cursor.execute("SELECT id, email, google_email, credits, created_at FROM users")
+        users = [dict(row) for row in cursor.fetchall()]
+        
+        # Export v2fun_accounts (with tokens - needed for migration)
+        cursor.execute("SELECT id, email, password, status, jwt_token, token_expiry, created_at FROM v2fun_accounts")
+        v2fun_accounts = [dict(row) for row in cursor.fetchall()]
+        
+        conn.close()
+        
+        export_meta = {
+            "export_date": datetime.now().isoformat(),
+            "exported_by": user.get('email'),
+            "users": users,
+            "v2fun_accounts": v2fun_accounts
+        }
+        
+        zf.writestr("export_meta.json", json.dumps(export_meta, indent=2, ensure_ascii=False, default=str))
+    
+    memory_file.seek(0)
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    return send_file(
+        memory_file,
+        mimetype='application/zip',
+        as_attachment=True,
+        download_name=f'v2fun_backup_{timestamp}.zip'
+    )
+
+
+@app.route('/api/import-data', methods=['POST'])
+def api_import_data():
+    """Import data from backup zip file"""
+    user = get_current_user()
+    if not user:
+        return jsonify({"success": False, "message": "Not authenticated"}), 401
+    
+    if 'file' not in request.files:
+        return jsonify({"success": False, "message": "No file uploaded"})
+    
+    file = request.files['file']
+    
+    if not file.filename.endswith('.zip'):
+        return jsonify({"success": False, "message": "Please upload a .zip backup file"})
+    
+    import zipfile
+    import tempfile
+    import shutil
+    
+    # Save to temp file
+    temp_path = Path(tempfile.gettempdir()) / f"v2fun_import_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip"
+    file.save(str(temp_path))
+    
+    results = {"sessions": 0, "accounts": 0, "db": False, "account_txt": False}
+    
+    try:
+        with zipfile.ZipFile(str(temp_path), 'r') as zf:
+            # Read export meta
+            meta = None
+            if "export_meta.json" in zf.namelist():
+                meta = json.loads(zf.read("export_meta.json"))
+            
+            # Import session files (tokens)
+            v2fun_data = Path("v2fun_data")
+            v2fun_data.mkdir(parents=True, exist_ok=True)
+            
+            for name in zf.namelist():
+                if name.startswith("sessions/") and name.endswith(".json"):
+                    session_name = name.replace("sessions/", "")
+                    dest = v2fun_data / session_name
+                    with open(dest, 'wb') as f:
+                        f.write(zf.read(name))
+                    results["sessions"] += 1
+            
+            # Import account.txt
+            if "account.txt" in zf.namelist():
+                with open("account.txt", 'wb') as f:
+                    f.write(zf.read("account.txt"))
+                results["account_txt"] = True
+            
+            # Import v2fun_accounts into database
+            if meta and meta.get("v2fun_accounts"):
+                from v2fun_scripts.database import get_db
+                conn = get_db()
+                cursor = conn.cursor()
+                
+                for acc in meta["v2fun_accounts"]:
+                    try:
+                        cursor.execute("""
+                            INSERT OR REPLACE INTO v2fun_accounts 
+                            (id, email, password, status, jwt_token, token_expiry, created_at, processed_at)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                        """, (
+                            acc.get('id'),
+                            acc.get('email'),
+                            acc.get('password'),
+                            acc.get('status', 'pending'),
+                            acc.get('jwt_token'),
+                            acc.get('token_expiry'),
+                            acc.get('created_at')
+                        ))
+                        results["accounts"] += 1
+                    except Exception as e:
+                        print(f"Import account error: {e}")
+                
+                conn.commit()
+                conn.close()
+            
+            # Import database (overwrite - careful!)
+            if "v2fun.db" in zf.namelist() and request.form.get('import_db') == 'true':
+                db_path = Path("v2fun_data/v2fun.db")
+                # Backup current DB first
+                if db_path.exists():
+                    backup_path = db_path.parent / f"v2fun.db.backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                    shutil.copy2(str(db_path), str(backup_path))
+                
+                with open(db_path, 'wb') as f:
+                    f.write(zf.read("v2fun.db"))
+                results["db"] = True
+        
+        return jsonify({
+            "success": True,
+            "message": f"Import complete! Sessions: {results['sessions']}, Accounts: {results['accounts']}, DB: {'Yes' if results['db'] else 'No'}, account.txt: {'Yes' if results['account_txt'] else 'No'}",
+            "results": results
+        })
+    
+    except zipfile.BadZipFile:
+        return jsonify({"success": False, "message": "Invalid or corrupted zip file"})
+    except Exception as e:
+        return jsonify({"success": False, "message": f"Import failed: {str(e)}"})
+    finally:
+        if temp_path.exists():
+            temp_path.unlink()
 
 
 @app.route('/api/manage-accounts')
