@@ -113,7 +113,14 @@ def init_db():
 
 
 def import_v2fun_account(email: str, password: str, user_id: int = None) -> bool:
-    """Import a V2Fun account to database (without processing)"""
+    """Import a V2Fun account to database (without processing).
+    
+    Returns True if a new account was inserted.
+    Returns False for duplicates (already exists) — WITHOUT destroying existing
+    tokens or resetting a 'done' account back to 'pending'.
+    
+    Only resets to 'pending' if the existing account status is 'failed' (retry).
+    """
     conn = get_db()
     cursor = conn.cursor()
     
@@ -127,15 +134,30 @@ def import_v2fun_account(email: str, password: str, user_id: int = None) -> bool
         conn.close()
         return True
     except sqlite3.IntegrityError:
-        # Account already exists, update to pending if was failed
+        # Account already exists. Only reset to 'pending' if it was 'failed'
+        # so we allow retry. NEVER touch a 'done' account — it has a valid
+        # token and we must preserve it (prevents duplicate import wiping
+        # successful logins).
         cursor.execute("""
             UPDATE v2fun_accounts 
             SET password = ?, status = 'pending', error_message = NULL
             WHERE email = ? AND status = 'failed'
         """, (password, email))
+        reset_count = cursor.rowcount
+        
+        # If user_id was provided and the existing row has no owner, claim it
+        if user_id:
+            cursor.execute("""
+                UPDATE v2fun_accounts
+                SET user_id = ?
+                WHERE email = ? AND user_id IS NULL
+            """, (user_id, email))
+        
         conn.commit()
         conn.close()
-        return cursor.rowcount > 0
+        # Return True only if we actually reset a failed account (retry case).
+        # For 'done'/'pending' duplicates, return False (skipped).
+        return reset_count > 0
     except Exception as e:
         print(f"Import error: {e}")
         conn.close()
@@ -143,7 +165,12 @@ def import_v2fun_account(email: str, password: str, user_id: int = None) -> bool
 
 
 def get_pending_accounts(user_id: int = None) -> list:
-    """Get all pending V2Fun accounts"""
+    """Get all pending V2Fun accounts.
+    
+    Pending accounts are returned for the requesting user's owned accounts
+    OR unowned accounts (user_id IS NULL). Accounts owned by OTHER users
+    are not returned (they belong to that user's import queue).
+    """
     conn = get_db()
     cursor = conn.cursor()
     
@@ -168,7 +195,14 @@ def get_pending_accounts(user_id: int = None) -> list:
 
 
 def get_all_v2fun_accounts(user_id: int = None) -> list:
-    """Get all V2Fun accounts regardless of status"""
+    """Get all V2Fun accounts regardless of status.
+    
+    Returns:
+    - If user_id given: accounts owned by this user + unowned accounts (user_id IS NULL)
+      + accounts with status='done' (so everyone can connect to any successfully
+      logged-in V2Fun account, since the token is shared via session files).
+    - If user_id is None (admin view): all accounts.
+    """
     conn = get_db()
     cursor = conn.cursor()
     
@@ -177,7 +211,7 @@ def get_all_v2fun_accounts(user_id: int = None) -> list:
             SELECT id, email, status, jwt_token, token_expiry, 
                    error_message, created_at, processed_at
             FROM v2fun_accounts
-            WHERE user_id = ? OR user_id IS NULL
+            WHERE user_id = ? OR user_id IS NULL OR status = 'done'
             ORDER BY created_at DESC
         """, (user_id,))
     else:
@@ -239,6 +273,112 @@ def get_v2fun_account_by_id(account_id: int) -> dict:
     if account:
         return dict(account)
     return None
+
+
+def upsert_v2fun_account_from_session(email: str, jwt_token: str,
+                                       token_expiry: str = None,
+                                       user_id: int = None) -> bool:
+    """Insert or update a V2Fun account from a saved session file.
+    
+    This is used to recover accounts that have valid tokens on disk but
+    were lost from the database (e.g. due to a previous bad import).
+    NEVER overwrites an existing 'done' account with a NULL token.
+    """
+    if not email or not jwt_token:
+        return False
+    
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    try:
+        # Try insert first
+        cursor.execute("""
+            INSERT INTO v2fun_accounts (email, password, user_id, status, jwt_token, token_expiry, processed_at)
+            VALUES (?, ?, ?, 'done', ?, ?, CURRENT_TIMESTAMP)
+        """, (email, "", user_id, jwt_token, token_expiry))
+        conn.commit()
+        conn.close()
+        return True
+    except sqlite3.IntegrityError:
+        # Account exists — update token/status only if it's better than current
+        cursor.execute("""
+            UPDATE v2fun_accounts
+            SET jwt_token = ?, token_expiry = ?, status = 'done',
+                error_message = NULL, processed_at = CURRENT_TIMESTAMP
+            WHERE email = ? AND (jwt_token IS NULL OR jwt_token = '' OR status != 'done')
+        """, (jwt_token, token_expiry, email))
+        
+        # Claim ownership if unowned
+        if user_id:
+            cursor.execute("""
+                UPDATE v2fun_accounts
+                SET user_id = ?
+                WHERE email = ? AND user_id IS NULL
+            """, (user_id, email))
+        
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"Upsert session error: {e}")
+        conn.close()
+        return False
+
+
+def sync_v2fun_sessions_to_db(user_id: int = None) -> int:
+    """Scan v2fun_data/ for session files and sync them into the database.
+    
+    This recovers accounts that have valid tokens on disk but are missing
+    from the v2fun_accounts table (caused by the old duplicate-import bug
+    that wiped successful accounts).
+    
+    Returns the number of accounts synced.
+    """
+    import json
+    from pathlib import Path
+    
+    v2fun_data = Path("v2fun_data")
+    if not v2fun_data.exists():
+        return 0
+    
+    synced = 0
+    for session_file in v2fun_data.glob("v2fun_session_*_latest.json"):
+        try:
+            with open(session_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            
+            email = data.get("email")
+            if not email:
+                continue
+            
+            tokens = data.get("tokens", {})
+            token = tokens.get("cookie_token") or tokens.get("localStorage_access_token")
+            
+            if not token:
+                continue
+            
+            # Get expiry from JWT if possible
+            expiry_str = None
+            try:
+                import base64
+                parts = token.split(".")
+                if len(parts) >= 2:
+                    payload = parts[1] + "=" * (4 - len(parts[1]) % 4)
+                    decoded = json.loads(base64.b64decode(payload))
+                    exp = decoded.get("exp")
+                    if exp:
+                        from datetime import datetime
+                        expiry_str = datetime.fromtimestamp(exp).isoformat()
+            except Exception:
+                pass
+            
+            if upsert_v2fun_account_from_session(email, token, expiry_str, user_id):
+                synced += 1
+        except Exception as e:
+            print(f"Sync error for {session_file.name}: {e}")
+            continue
+    
+    return synced
 
 
 def hash_password(password: str) -> str:

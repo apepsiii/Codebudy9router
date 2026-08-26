@@ -27,7 +27,8 @@ from v2fun_scripts.database import (
     create_session as create_db_session, verify_session as verify_db_session,
     delete_session,
     import_v2fun_account, get_pending_accounts, get_all_v2fun_accounts,
-    update_v2fun_account_status, delete_v2fun_account, get_v2fun_account_by_id
+    update_v2fun_account_status, delete_v2fun_account, get_v2fun_account_by_id,
+    sync_v2fun_sessions_to_db, upsert_v2fun_account_from_session
 )
 from v2fun_scripts.sse_monitor import SSEMonitor
 from v2fun_scripts.token_manager import (
@@ -187,6 +188,46 @@ class V2FunClient:
             return self._handle_response(response, "Get user info")
         except requests.exceptions.Timeout:
             return {"success": False, "message": "User info request timed out", "error_code": "TIMEOUT"}
+        except requests.exceptions.RequestException as e:
+            return {"success": False, "message": f"Network error: {str(e)}", "error_code": "NETWORK"}
+    
+    # All known configIds from V2Fun (captured from network analysis)
+    V2FUN_CONFIG_IDS = [
+        "2048727132348956673", "2027223916544393217", "1999059275770777602",
+        "1999058822540242946", "2072232369544179713", "2048727897058656258",
+        "2027224098833039361", "1999364117728792578", "1999345578888335362",
+        "2072232439534530561", "2005566311005237249", "2037420722827362306",
+        "2005578171616145409", "2005584046959439873", "2005584317174652929",
+        "2005586377985830913", "2005888354655268866", "2037418377902362625",
+        "2005887778982850561"
+    ]
+    
+    def get_free_count(self):
+        """Get free generation count per model from V2Fun"""
+        try:
+            response = requests.post(
+                f"{self.base_url}/work/get-free-cnt?lan=en",
+                headers=self.headers,
+                json={"configIds": self.V2FUN_CONFIG_IDS},
+                timeout=10
+            )
+            return self._handle_response(response, "Get free count")
+        except requests.exceptions.Timeout:
+            return {"success": False, "message": "Free count request timed out", "error_code": "TIMEOUT"}
+        except requests.exceptions.RequestException as e:
+            return {"success": False, "message": f"Network error: {str(e)}", "error_code": "NETWORK"}
+    
+    def get_business_config(self):
+        """Get business config to map configIds to model names"""
+        try:
+            response = requests.get(
+                f"{self.base_url}/work/config/business-config/list?lan=en",
+                headers=self.headers,
+                timeout=10
+            )
+            return self._handle_response(response, "Get business config")
+        except requests.exceptions.Timeout:
+            return {"success": False, "message": "Config request timed out", "error_code": "TIMEOUT"}
         except requests.exceptions.RequestException as e:
             return {"success": False, "message": f"Network error: {str(e)}", "error_code": "NETWORK"}
     
@@ -440,8 +481,18 @@ def api_connect_v2fun():
     if not token:
         return jsonify({"success": False, "message": "No token found in session"})
     
-    # Update user
-    update_user_token(user['user_id'], token)
+    # Update user record with the selected V2Fun token
+    uid = user.get('user_id') or user.get('id')
+    if not uid:
+        return jsonify({"success": False, "message": "User ID missing from session"})
+    update_user_token(uid, token)
+    
+    # Also keep the v2fun_accounts table in sync so the account shows as
+    # 'done' with a valid token (prevents it from disappearing from the list)
+    from v2fun_scripts.token_manager import get_token_expiry
+    expiry = get_token_expiry(token)
+    expiry_str = expiry.isoformat() if expiry else None
+    upsert_v2fun_account_from_session(v2fun_email, token, expiry_str, uid)
     
     return jsonify({"success": True, "message": "V2Fun account connected successfully!"})
 
@@ -682,7 +733,7 @@ def api_import_accounts():
     
     return jsonify({
         "success": True,
-        "message": f"Imported {imported} accounts ({duplicates} duplicates skipped)",
+        "message": f"Imported {imported} new account(s). {duplicates} duplicate(s) skipped (already imported — existing tokens are preserved).",
         "imported": imported,
         "duplicates": duplicates,
         "total": len(accounts)
@@ -695,6 +746,11 @@ def api_v2fun_accounts():
     user = get_current_user()
     if not user:
         return jsonify({"success": False, "message": "Not authenticated"}), 401
+    
+    # Sync session files on disk into the database first, so that accounts
+    # which were successfully logged in (token on disk) but lost from the DB
+    # are recovered automatically. Bind them to the current user if unowned.
+    sync_v2fun_sessions_to_db(user.get('user_id'))
     
     accounts = get_all_v2fun_accounts(user.get('user_id'))
     
@@ -755,11 +811,19 @@ def api_process_account():
     # No valid token - proceed with login
     update_v2fun_account_status(account_id, 'processing')
     
-    # Write temp account file
-    temp_account_file = Path("v2fun_data/temp_account.txt")
-    temp_account_file.write_text(f"{account['email']}:{account['password']}", encoding="utf-8")
+    # Backup original account.txt and write only this account
+    account_file = Path("account.txt")
+    backup_file = Path("account.txt.bak")
     
     try:
+        # Backup original
+        if account_file.exists():
+            import shutil
+            shutil.copy2(str(account_file), str(backup_file))
+        
+        # Write only this account to account.txt
+        account_file.write_text(f"{account['email']}:{account['password']}", encoding="utf-8")
+        
         import subprocess
         result = subprocess.run(
             ["python", "v2fun_scripts/v2fun_google_login.py"],
@@ -790,10 +854,13 @@ def api_process_account():
                 "token_expiry": expiry.isoformat() if expiry else None
             })
         else:
-            update_v2fun_account_status(account_id, 'failed', error_message="Login automation failed")
+            error_msg = "Login automation failed"
+            if result.stderr:
+                error_msg += f": {result.stderr[:200]}"
+            update_v2fun_account_status(account_id, 'failed', error_message=error_msg)
             return jsonify({
                 "success": False,
-                "message": f"Processing failed for {account['email']}",
+                "message": f"Processing failed for {account['email']}. {error_msg}",
                 "status": "failed"
             })
     
@@ -804,8 +871,11 @@ def api_process_account():
         update_v2fun_account_status(account_id, 'failed', error_message=str(e))
         return jsonify({"success": False, "message": f"Error: {str(e)}"})
     finally:
-        if temp_account_file.exists():
-            temp_account_file.unlink()
+        # Restore original account.txt
+        if backup_file.exists():
+            import shutil
+            shutil.copy2(str(backup_file), str(account_file))
+            backup_file.unlink()
 
 
 @app.route('/api/process-all-accounts', methods=['POST'])
@@ -844,6 +914,74 @@ def api_delete_v2fun_account():
     delete_v2fun_account(account_id)
     
     return jsonify({"success": True, "message": "Account deleted"})
+
+
+@app.route('/api/quota-status')
+def api_quota_status():
+    """Get quota status (free generation count) for connected V2Fun account"""
+    user = get_current_user()
+    if not user:
+        return jsonify({"success": False, "message": "Not authenticated"}), 401
+    
+    if not user.get('v2fun_token'):
+        return jsonify({"success": False, "message": "No V2Fun account connected"})
+    
+    client = V2FunClient(user['v2fun_token'])
+    
+    # Get business config to map configId -> model name
+    config_resp = client.get_business_config()
+    config_map = {}  # configId -> {model, name, type}
+    
+    if config_resp.get("success"):
+        result = config_resp.get("result", {})
+        configs = result if isinstance(result, list) else result.get("list", result.get("records", []))
+        if isinstance(configs, list):
+            for cfg in configs:
+                cid = str(cfg.get("id", ""))
+                model = cfg.get("model", "")
+                name = cfg.get("name", "") or cfg.get("configName", "")
+                gen_type = cfg.get("type", "") or cfg.get("generateType", "")
+                if cid:
+                    config_map[cid] = {"model": model, "name": name, "type": gen_type}
+    
+    # Get free count
+    free_resp = client.get_free_count()
+    
+    if not free_resp.get("success"):
+        return jsonify({"success": False, "message": free_resp.get("message", "Failed to get quota")})
+    
+    free_counts = free_resp.get("result", {})
+    
+    # Build quota list with model names
+    quotas = []
+    for cid, count in free_counts.items():
+        cfg_info = config_map.get(cid, {})
+        model = cfg_info.get("model", "")
+        name = cfg_info.get("name", "")
+        gen_type = cfg_info.get("type", "")
+        
+        # Only include items that have model info or are image-related
+        if model or name:
+            quotas.append({
+                "config_id": cid,
+                "model": model,
+                "name": name,
+                "type": gen_type,
+                "free_remaining": count,
+                "free_total": 5,
+                "free_used": 5 - count
+            })
+    
+    # Sort: most remaining first
+    quotas.sort(key=lambda x: x["free_remaining"], reverse=True)
+    
+    return jsonify({
+        "success": True,
+        "email": user.get('email'),
+        "quotas": quotas,
+        "total_free": sum(q["free_remaining"] for q in quotas),
+        "total_used": sum(q["free_used"] for q in quotas)
+    })
 
 
 @app.route('/api/export-data')
@@ -1080,33 +1218,53 @@ def api_retry_account():
     if not email:
         return jsonify({"success": False, "message": "Email required"})
     
-    # Read password from account.txt if exists
+    # Try to find password from v2fun_accounts DB first, then account.txt
     password = None
-    account_file = Path("account.txt")
-    if account_file.exists():
-        with open(account_file, "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if line.startswith('#') or not line:
-                    continue
-                if '|' in line:
-                    parts = line.split('|', 1)
-                elif ':' in line:
-                    parts = line.split(':', 1)
-                else:
-                    continue
-                if parts[0].strip() == email:
-                    password = parts[1].strip()
-                    break
+    
+    # Check DB
+    from v2fun_scripts.database import get_db
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT password FROM v2fun_accounts WHERE email = ?", (email,))
+    row = cursor.fetchone()
+    conn.close()
+    
+    if row:
+        password = row[0]
+    
+    # Fallback: check account.txt
+    if not password:
+        account_file = Path("account.txt")
+        if account_file.exists():
+            with open(account_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith('#') or not line:
+                        continue
+                    if '|' in line:
+                        parts = line.split('|', 1)
+                    elif ':' in line:
+                        parts = line.split(':', 1)
+                    else:
+                        continue
+                    if parts[0].strip() == email:
+                        password = parts[1].strip()
+                        break
     
     if not password:
-        return jsonify({"success": False, "message": "Password not found in account.txt for this email"})
+        return jsonify({"success": False, "message": "Password not found for this email"})
     
-    # Write temp account file
-    temp_account_file = Path("v2fun_data/temp_account.txt")
-    temp_account_file.write_text(f"{email}:{password}", encoding="utf-8")
+    # Backup account.txt and write only this account
+    account_file = Path("account.txt")
+    backup_file = Path("account.txt.bak")
     
     try:
+        import shutil
+        if account_file.exists():
+            shutil.copy2(str(account_file), str(backup_file))
+        
+        account_file.write_text(f"{email}:{password}", encoding="utf-8")
+        
         import subprocess
         result = subprocess.run(
             ["python", "v2fun_scripts/v2fun_google_login.py"],
@@ -1119,14 +1277,20 @@ def api_retry_account():
         if session_file.exists():
             return jsonify({"success": True, "message": f"Retry successful for {email}"})
         else:
-            return jsonify({"success": False, "message": "Retry failed. Check credentials."})
+            error_msg = "Retry failed"
+            if result.stderr:
+                error_msg += f": {result.stderr[:200]}"
+            return jsonify({"success": False, "message": error_msg})
     except subprocess.TimeoutExpired:
         return jsonify({"success": False, "message": "Automation timed out"})
     except Exception as e:
         return jsonify({"success": False, "message": f"Error: {str(e)}"})
     finally:
-        if temp_account_file.exists():
-            temp_account_file.unlink()
+        # Restore original account.txt
+        import shutil
+        if backup_file.exists():
+            shutil.copy2(str(backup_file), str(account_file))
+            backup_file.unlink()
 
 
 @app.route('/api/token-status')
@@ -1475,6 +1639,13 @@ def result_file(filename):
 if __name__ == '__main__':
     # Initialize database
     init_db()
+    
+    # Recover V2Fun accounts from session files on disk into the database.
+    # This fixes the old bug where duplicate imports wiped successful accounts
+    # from the DB even though their tokens were still saved on disk.
+    recovered = sync_v2fun_sessions_to_db()
+    if recovered > 0:
+        print(f"[+] Recovered {recovered} V2Fun account(s) from session files into database.")
     
     print("="*80)
     print("V2Fun.ai Web UI V2 - Enhanced")

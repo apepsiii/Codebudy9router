@@ -298,25 +298,25 @@
 <aside class="sidebar">
     <div class="sidebar-logo">V2Fun</div>
     <nav>
-        <a class="nav-item active" onclick="showPage('generate')" href="#">
+        <a class="nav-item active" onclick="showPage('generate', event)" href="#">
             <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
             Generate
         </a>
-        <a class="nav-item" onclick="showPage('gallery')" href="#">
+        <a class="nav-item" onclick="showPage('gallery', event)" href="#">
             <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
             </svg>
             Gallery
         </a>
-        <a class="nav-item" onclick="showPage('register')" href="#">
+        <a class="nav-item" onclick="showPage('register', event)" href="#">
             <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
             </svg>
             Register Bulk
         </a>
-        <a class="nav-item" onclick="showPage('manage')" href="#">
+        <a class="nav-item" onclick="showPage('manage', event)" href="#">
             <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065zM15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
             </svg>
@@ -453,6 +453,20 @@
                 </svg>
                 Generate Image
             </button>
+        </div>
+
+        <!-- Quota Monitor -->
+        <div class="card" id="quotaCard" style="display:none">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+                <div class="card-title" style="margin-bottom:0">Quota Monitor</div>
+                <button class="btn btn-outline btn-sm" onclick="loadQuota()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    Refresh
+                </button>
+            </div>
+            <div id="quotaContent">
+                <p style="color:#94a3b8;text-align:center;padding:20px">Loading quota...</p>
+            </div>
         </div>
 
         <!-- Recent results -->
@@ -620,19 +634,28 @@
     });
 
     async function loadUser() {
-        const resp = await fetch('/api/me');
-        const data = await resp.json();
-        if (!data.success) {
-            window.location.href = '/login';
-            return;
+        try {
+            const resp = await fetch('/api/me');
+            const data = await resp.json();
+            if (!data.success) {
+                window.location.href = '/login';
+                return;
+            }
+            currentUser = data.user;
+            const emailEl = document.getElementById('sidebarEmail');
+            const creditsEl = document.getElementById('sidebarCredits');
+            const avatarEl = document.getElementById('sidebarAvatar');
+            if (emailEl) emailEl.textContent = currentUser.email;
+            if (creditsEl) creditsEl.textContent = currentUser.credits + ' credits';
+            if (avatarEl) avatarEl.textContent = currentUser.email[0].toUpperCase();
+            
+            // Load account dropdown
+            await loadAccountDropdown();
+            // Load quota monitor (non-blocking, don't fail if error)
+            loadQuota().catch(err => console.error('Quota load error:', err));
+        } catch (err) {
+            console.error('loadUser error:', err);
         }
-        currentUser = data.user;
-        document.getElementById('sidebarEmail').textContent = currentUser.email;
-        document.getElementById('sidebarCredits').textContent = currentUser.credits + ' credits';
-        document.getElementById('sidebarAvatar').textContent = currentUser.email[0].toUpperCase();
-        
-        // Load account dropdown
-        await loadAccountDropdown();
     }
 
     async function loadAccountDropdown() {
@@ -641,30 +664,29 @@
         const select = document.getElementById('accountSelect');
         const dot = document.getElementById('accountStatusDot');
         
+        if (!select) return; // Guard
+        
         if (data.sessions && data.sessions.length > 0) {
             // Check which account is currently connected
             let currentEmail = null;
-            if (currentUser.has_v2fun_token) {
-                // Find connected email from v2fun-accounts
-                const accResp = await fetch('/api/v2fun-accounts');
-                const accData = await accResp.json();
-                if (accData.success) {
-                    const doneAcc = accData.accounts.find(a => a.status === 'done' && a.jwt_token);
-                    if (doneAcc) currentEmail = doneAcc.email;
-                }
+            if (currentUser?.has_v2fun_token) {
+                try {
+                    const accResp = await fetch('/api/v2fun-accounts');
+                    const accData = await accResp.json();
+                    if (accData.success) {
+                        const doneAcc = accData.accounts.find(a => a.status === 'done' && a.jwt_token);
+                        if (doneAcc) currentEmail = doneAcc.email;
+                    }
+                } catch (e) { /* ignore */ }
             }
             
             select.innerHTML = '<option value="">-- Select V2Fun Account --</option>' +
                 data.sessions.map(s => `<option value="${s.email}" ${s.email === currentEmail ? 'selected' : ''}>${s.email}</option>`).join('');
             
-            if (currentEmail) {
-                dot.style.background = '#10b981'; // green
-            } else {
-                dot.style.background = '#94a3b8'; // gray
-            }
+            if (dot) dot.style.background = currentEmail ? '#10b981' : '#94a3b8';
         } else {
             select.innerHTML = '<option value="">No accounts - Register first</option>';
-            dot.style.background = '#ef4444'; // red
+            if (dot) dot.style.background = '#ef4444'; // red
         }
     }
 
@@ -689,7 +711,7 @@
         if (data.success) {
             dot.style.background = '#10b981'; // green
             showAlert('alert-gen', `Connected to ${email}`, 'success');
-            await loadUser(); // Refresh credits
+            await loadUser(); // Refresh credits + quota
         } else {
             dot.style.background = '#ef4444'; // red
             showAlert('alert-gen', data.message, 'error');
@@ -977,6 +999,9 @@
     }
 
     async function loadManagedAccounts() {
+        const div = document.getElementById('manageTable');
+        if (!div) return; // Guard: only run if manage page is visible
+        
         const resp = await fetch('/api/manage-accounts');
         const data = await resp.json();
         
@@ -988,8 +1013,6 @@
         if (tokenData.success) {
             tokenData.tokens.forEach(t => tokenMap[t.email] = t);
         }
-        
-        const div = document.getElementById('manageTable');
         
         if (!data.success || !data.accounts || data.accounts.length === 0) {
             div.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:40px">No V2Fun accounts found. Register some first.</p>';
@@ -1062,7 +1085,8 @@
         if (!file) return;
         
         const loading = document.getElementById('import-loading');
-        loading.style.display = 'block';
+        const alertEl = document.getElementById('alert-manage');
+        if (loading) loading.style.display = 'block';
         
         const formData = new FormData();
         formData.append('file', file);
@@ -1076,17 +1100,20 @@
             const data = await resp.json();
             
             if (data.success) {
-                showAlert('alert-manage', data.message, 'success');
-                await loadManagedAccounts();
-                await loadAccountDropdown();
-                await loadSessions();
+                if (alertEl) showAlert('alert-manage', data.message, 'success');
+                // Only refresh if elements exist
+                if (document.getElementById('manageTable')) await loadManagedAccounts();
+                if (document.getElementById('accountSelect')) await loadAccountDropdown();
+                if (document.getElementById('v2funEmailSelect')) await loadSessions();
+                // Reload user to refresh credits
+                await loadUser();
             } else {
-                showAlert('alert-manage', data.message, 'error');
+                if (alertEl) showAlert('alert-manage', data.message, 'error');
             }
         } catch (err) {
-            showAlert('alert-manage', 'Import failed: ' + err.message, 'error');
+            if (alertEl) showAlert('alert-manage', 'Import failed: ' + err.message, 'error');
         } finally {
-            loading.style.display = 'none';
+            if (loading) loading.style.display = 'none';
             event.target.value = '';
         }
     }
@@ -1366,12 +1393,19 @@
         window.location.href = '/login';
     }
 
-    function showPage(name) {
+    function showPage(name, event) {
         currentPage = name;
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById('page-' + name).classList.add('active');
-        event.currentTarget.classList.add('active');
+        const pageEl = document.getElementById('page-' + name);
+        if (pageEl) pageEl.classList.add('active');
+        // Mark the clicked nav item active; fall back to finding it by data attr
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
+        } else {
+            const navItem = document.querySelector(`.nav-item[onclick*="'${name}'"]`);
+            if (navItem) navItem.classList.add('active');
+        }
         
         if (name === 'gallery') loadGallery();
         if (name === 'manage') loadManagedAccounts();
@@ -1392,6 +1426,81 @@
 
     function closeModal() {
         document.getElementById('modalOverlay').classList.remove('active');
+    }
+
+    async function loadQuota() {
+        const card = document.getElementById('quotaCard');
+        const content = document.getElementById('quotaContent');
+        if (!card || !content) return;
+        
+        // Only show if user has v2fun token
+        if (!currentUser?.has_v2fun_token) {
+            card.style.display = 'none';
+            return;
+        }
+        
+        card.style.display = 'block';
+        content.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px">Loading quota...</p>';
+        
+        try {
+            const resp = await fetch('/api/quota-status');
+            const data = await resp.json();
+            
+            if (!data.success) {
+                content.innerHTML = `<p style="color:#ef4444;text-align:center;padding:12px">${data.message || 'Failed to load quota'}</p>`;
+                return;
+            }
+            
+            const quotas = data.quotas || [];
+            if (quotas.length === 0) {
+                content.innerHTML = '<p style="color:#94a3b8;text-align:center;padding:12px">No quota data available</p>';
+                return;
+            }
+            
+            // Summary
+            let html = `
+                <div style="display:flex;gap:12px;margin-bottom:16px">
+                    <div style="flex:1;background:var(--color-muted);padding:12px;border-radius:8px;text-align:center">
+                        <div style="font-size:24px;font-weight:700;color:var(--color-primary)">${data.total_free}</div>
+                        <div style="font-size:11px;color:#64748b">Total Free Remaining</div>
+                    </div>
+                    <div style="flex:1;background:var(--color-muted);padding:12px;border-radius:8px;text-align:center">
+                        <div style="font-size:24px;font-weight:700;color:var(--color-accent)">${data.total_used}</div>
+                        <div style="font-size:11px;color:#64748b">Total Used</div>
+                    </div>
+                </div>
+                <table class="accounts-table">
+                    <thead>
+                        <tr><th>Model</th><th>Name</th><th>Used</th><th>Remaining</th><th>Progress</th></tr>
+                    </thead>
+                    <tbody>`;
+            
+            for (const q of quotas) {
+                const pct = q.free_total > 0 ? (q.free_used / q.free_total) * 100 : 0;
+                const barColor = q.free_remaining > 0 ? 'var(--color-primary)' : 'var(--color-destructive)';
+                const model = q.model || '—';
+                const name = q.name || '—';
+                
+                html += `
+                    <tr>
+                        <td style="font-size:12px;font-weight:500">${model}</td>
+                        <td style="font-size:12px;color:#64748b">${name}</td>
+                        <td style="font-size:12px">${q.free_used}/${q.free_total}</td>
+                        <td style="font-size:12px;font-weight:600;color:${q.free_remaining > 0 ? '#10b981' : '#ef4444'}">${q.free_remaining}</td>
+                        <td style="min-width:80px">
+                            <div style="background:var(--color-muted);border-radius:99px;height:6px;overflow:hidden">
+                                <div style="height:100%;background:${barColor};border-radius:99px;width:${pct}%;transition:width 300ms ease"></div>
+                            </div>
+                        </td>
+                    </tr>`;
+            }
+            
+            html += '</tbody></table>';
+            content.innerHTML = html;
+            
+        } catch (err) {
+            content.innerHTML = `<p style="color:#ef4444;text-align:center;padding:12px">Error: ${err.message}</p>`;
+        }
     }
 
     function updateCharCount() {
