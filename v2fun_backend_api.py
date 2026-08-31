@@ -324,62 +324,92 @@ def generate_image():
         "model": "nano-banana-pro"
     }
     """
-    data = request.json
-    
-    if not data or not data.get('prompt'):
+    try:
+        data = request.json
+        
+        if not data or not data.get('prompt'):
+            return jsonify({
+                "success": False,
+                "error": "Prompt is required"
+            }), 400
+        
+        prompt = data.get('prompt')
+        model = data.get('model', MODEL_PRIORITY[0])  # Default to best model
+        quality = data.get('quality', 'medium')
+        ratio = data.get('ratio', '16:9')
+        
+        # Validate model
+        if model not in MODEL_PRIORITY:
+            model = MODEL_PRIORITY[0]
+        
+        # Get next account (round-robin)
+        account = account_pool.get_next_account()
+        
+        if not account:
+            return jsonify({
+                "success": False,
+                "error": "No available accounts. Please login some accounts first."
+            }), 503
+        
+        # Create job
+        job_id = str(uuid.uuid4())
+        
+        with jobs_lock:
+            jobs[job_id] = {
+                "id": job_id,
+                "prompt": prompt,
+                "status": "queued",
+                "account": account['email'],
+                "model": model,
+                "quality": quality,
+                "ratio": ratio,
+                "created_at": datetime.now().isoformat(),
+                "started_at": None,
+                "completed_at": None,
+                "result": None,
+                "error": None
+            }
+        
+        # Start background worker
+        thread = threading.Thread(
+            target=process_generation_job,
+            args=(job_id, prompt, account, model, quality, ratio),
+            daemon=True
+        )
+        thread.start()
+        
+        # Send Telegram notification
+        msg = f"🚀 *New Generation Started*\n"
+        msg += f"Job ID: `{job_id}`\n"
+        msg += f"Prompt: {prompt[:50]}...\n"
+        msg += f"Model: {model}\n"
+        msg += f"Account: {account['email']}"
+        send_telegram_notification(
+            msg,
+            data.get('telegram_token'),
+            data.get('telegram_chat_id')
+        )
+        
         return jsonify({
-            "success": False,
-            "error": "Prompt is required"
-        }), 400
-    
-    prompt = data.get('prompt')
-    model = data.get('model', MODEL_PRIORITY[0])  # Default to best model
-    quality = data.get('quality', 'medium')
-    ratio = data.get('ratio', '16:9')
-    
-    # Validate model
-    if model not in MODEL_PRIORITY:
-        model = MODEL_PRIORITY[0]
-    
-    # Get next account (round-robin)
-    account = account_pool.get_next_account()
-    
-    if not account:
-        return jsonify({
-            "success": False,
-            "error": "No available accounts. Please login some accounts first."
-        }), 503
-    
-    # Create job
-    job_id = str(uuid.uuid4())
-    
-    with jobs_lock:
-        jobs[job_id] = {
-            "id": job_id,
-            "prompt": prompt,
+            "success": True,
+            "job_id": job_id,
             "status": "queued",
             "account": account['email'],
             "model": model,
             "quality": quality,
-            "ratio": ratio,
-            "created_at": datetime.now().isoformat(),
-            "started_at": None,
-            "completed_at": None,
-            "result": None,
-            "error": None
-        }
+            "ratio": ratio
+        })
     
-    # Start background worker
-    thread = threading.Thread(
-        target=process_generation_job,
-        args=(job_id, prompt, account, model, quality, ratio),
-        daemon=True
-    )
-    thread.start()
-    
-    # Send Telegram notification
-    msg = f"🚀 *New Generation Started*\n"
-    msg += f"Job ID: `{job_id}`\n"
+    except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"[ERROR] Generate endpoint exception: {error_trace}")
+        
+        return jsonify({
+            "success": False,
+            "error": f"Internal server error: {str(e)}",
+            "trace": error_trace if app.debug else None
+        }), 500
     msg += f"Prompt: {prompt[:50]}...\n"
     msg += f"Model: {model}\n"
     msg += f"Account: {account['email']}"
