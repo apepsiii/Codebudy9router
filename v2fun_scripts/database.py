@@ -57,6 +57,7 @@ def init_db():
             status TEXT DEFAULT 'pending',
             result_url TEXT,
             thumbnail_url TEXT,
+            local_path TEXT,
             error_message TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -526,7 +527,8 @@ def create_generation(user_id: int, prompt: str, **kwargs) -> int:
 
 
 def update_generation_status(generation_id: int, status: str, result_url: str = None, 
-                             thumbnail_url: str = None, error_message: str = None):
+                             thumbnail_url: str = None, error_message: str = None,
+                             local_path: str = None):
     """Update generation status"""
     conn = get_db()
     cursor = conn.cursor()
@@ -534,9 +536,9 @@ def update_generation_status(generation_id: int, status: str, result_url: str = 
     cursor.execute("""
         UPDATE generations
         SET status = ?, result_url = ?, thumbnail_url = ?, 
-            error_message = ?, updated_at = CURRENT_TIMESTAMP
+            error_message = ?, local_path = ?, updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
-    """, (status, result_url, thumbnail_url, error_message, generation_id))
+    """, (status, result_url, thumbnail_url, error_message, local_path, generation_id))
     
     conn.commit()
     conn.close()
@@ -549,7 +551,7 @@ def get_user_generations(user_id: int, limit: int = 20) -> list:
     
     cursor.execute("""
         SELECT id, prompt, model, quality, ratio, num, status, 
-               result_url, thumbnail_url, task_uuid, created_at
+               result_url, thumbnail_url, local_path, task_uuid, created_at
         FROM generations
         WHERE user_id = ?
         ORDER BY created_at DESC

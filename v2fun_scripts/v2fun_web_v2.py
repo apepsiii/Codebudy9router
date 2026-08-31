@@ -1748,30 +1748,8 @@ def auto_refresh_if_needed(user_data: dict) -> dict:
 
 def start_monitor(user_id: int, token: str, generation_id: int, task_uuid: str):
     """Start monitoring for generation completion (SSE + polling fallback)"""
-    def download_image(url: str) -> str:
-        """Download generated image to local storage"""
-        if not url:
-            return None
-        try:
-            resp = requests.get(url, timeout=30)
-            resp.raise_for_status()
-            results_dir = Path("v2fun_data/results")
-            results_dir.mkdir(parents=True, exist_ok=True)
-            # Detect extension from URL
-            ext = ".png"
-            if ".jpg" in url or ".jpeg" in url:
-                ext = ".jpg"
-            elif ".webp" in url:
-                ext = ".webp"
-            filename = f"gen_{generation_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}{ext}"
-            filepath = results_dir / filename
-            with open(filepath, 'wb') as f:
-                f.write(resp.content)
-            return f"/results/{filename}"
-        except Exception as e:
-            print(f"Download failed: {e}")
-            return None
-
+    from v2fun_scripts.image_downloader import download_image as dl_image
+    
     def push_event(ev):
         if generation_id not in pending_events:
             pending_events[generation_id] = []
@@ -1790,9 +1768,29 @@ def start_monitor(user_id: int, token: str, generation_id: int, task_uuid: str):
         status = event.get("status", "")
         work_url = event.get("work_url") or event.get("thumb")
         db_status = "done" if status in ("C", "COMPLETED", "DONE", "SUCCESS") else "failed"
-        local_url = download_image(work_url) if work_url else None
-        update_generation_status(generation_id, db_status, work_url, work_url)
-        push_event({"type": "done", "status": db_status, "work_url": work_url, "local_url": local_url})
+        
+        # Download image to local storage
+        local_path = None
+        if work_url and db_status == "done":
+            # Get prompt from database for filename
+            conn = get_db()
+            cursor = conn.cursor()
+            cursor.execute("SELECT prompt FROM generations WHERE id = ?", (generation_id,))
+            row = cursor.fetchone()
+            conn.close()
+            
+            prompt = row['prompt'] if row else ""
+            local_path = dl_image(work_url, generation_id, prompt)
+        
+        # Update database with result URL and local path
+        update_generation_status(generation_id, db_status, work_url, work_url, local_path=local_path)
+        
+        push_event({
+            "type": "done", 
+            "status": db_status, 
+            "work_url": work_url, 
+            "local_path": local_path
+        })
         active_monitors.pop(user_id, None)
 
     def on_error(tid, error):
@@ -1875,13 +1873,22 @@ def start_monitor(user_id: int, token: str, generation_id: int, task_uuid: str):
                                                 if full_url and not full_url.startswith("http"):
                                                     full_url = f"https://asset.v2fun.ai/{full_url}"
                                                 
-                                                local_url = download_image(full_url)
-                                                update_generation_status(generation_id, "done", full_url, thumb if thumb else full_url)
+                                                # Download to local storage
+                                                from v2fun_scripts.image_downloader import download_image as dl_image
+                                                conn = get_db()
+                                                cursor = conn.cursor()
+                                                cursor.execute("SELECT prompt FROM generations WHERE id = ?", (generation_id,))
+                                                row = cursor.fetchone()
+                                                conn.close()
+                                                prompt = row['prompt'] if row else ""
+                                                local_path = dl_image(full_url, generation_id, prompt)
+                                                
+                                                update_generation_status(generation_id, "done", full_url, thumb if thumb else full_url, local_path=local_path)
                                                 push_event({
                                                     "type": "done",
                                                     "status": "done",
                                                     "work_url": full_url,
-                                                    "local_url": local_url
+                                                    "local_path": local_path
                                                 })
                                                 active_monitors.pop(user_id, None)
                                                 return
