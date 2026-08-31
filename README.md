@@ -3,18 +3,17 @@
 > Web automation dan API exploration tool untuk V2Fun.ai - AI Image Generator
 
 **Repository:** https://github.com/apepsiii/Codebudy9router  
-**Version:** 3.2.0  
-**Last Updated:** 2026-08-31 06:00 WIB
+**Version:** 3.3.0  
+**Last Updated:** 2026-08-31 14:36 WIB
 
 **Latest Updates:**
-- ✅ **NEW: Backend API for Hermes Agent integration** (round-robin, model priority)
+- ✅ **NEW: Integrations Menu** - UGC Generator API configuration in dashboard
+- ✅ **NEW: Auto-download Images** - Generated images saved to local storage
+- ✅ Backend API for Hermes Agent integration (round-robin, model priority)
 - ✅ REST API with Telegram notifications
-- ✅ Batch generation support
-- ✅ V2Fun CLI documentation added (terminal-based image generation)
-- ✅ Token refresh mechanism analyzed and documented
-- ✅ Confirmed: V2Fun.ai does NOT have refresh token endpoint
-- ✅ Fixed GSuite welcome screen handler ("Welcome to your new account")
-- ✅ Added admin account management tools (create_admin.py, manage_users.py)
+- ✅ Fixed static Flask secret key for Gunicorn multi-worker
+- ✅ Persist selected V2Fun email in session
+- ✅ Admin account management tools (create_admin.py, manage_users.py)
 
 ---
 
@@ -25,22 +24,23 @@
 | Feature | Status |
 |---------|--------|
 | Google OAuth Login (multi-account) | ✅ Done |
-| **GSuite Welcome Screen Handler** | ✅ **Fixed** |
+| GSuite Welcome Screen Handler | ✅ Done |
 | API Discovery (31 endpoints) | ✅ Done |
 | Image Generation API | ✅ Done |
-| **Backend API for Hermes Agent** | ✅ **New** |
-| **Round-Robin Account Selection** | ✅ **New** |
-| **Model Priority System** | ✅ **New** |
+| **Integrations Menu (UGC Generator)** | ✅ **New** |
+| **Auto-download to Local Storage** | ✅ **New** |
+| Backend API for Hermes Agent | ✅ Done |
+| Round-Robin Account Selection | ✅ Done |
+| Model Priority System | ✅ Done |
 | CLI Tool | ✅ Done |
 | Web UI (Full Stack) | ✅ Done |
-| **Admin Account Management** | ✅ **New** |
+| Admin Account Management | ✅ Done |
 | SQLite Database | ✅ Done |
 | Image Upload to V2Fun OSS | ✅ Done |
 | SSE Real-time Monitoring | ✅ Done |
-| Auto-download Results | ✅ Done |
 | Token Auto-Refresh (headless) | ✅ Done |
 | Bulk Account Registration | ✅ Done |
-| **Telegram Notifications** | ✅ **New** |
+| Telegram Notifications | ✅ Done |
 
 ---
 
@@ -49,49 +49,68 @@
 ```
 Codebudy9router/
 ├── v2fun_scripts/
-│   ├── v2fun_google_login.py          # Multi-account Google OAuth login (with GSuite fix)
+│   ├── v2fun_google_login.py          # Multi-account Google OAuth login
 │   ├── v2fun_cli.py                   # CLI tool for generation
 │   ├── v2fun_web_v2.py                # Flask web server (main)
 │   ├── database.py                    # SQLite database models
+│   ├── image_downloader.py            # Auto-download images to local
 │   ├── sse_monitor.py                 # SSE real-time monitor
 │   ├── token_manager.py               # JWT token auto-refresh
-│   ├── capture_generation_flow.py     # API network capture tool
-│   ├── run_v2fun_login.bat            # Login launcher
-│   ├── run_capture_generation.bat     # Capture launcher
 │   └── archive/                       # Old/deprecated scripts
-│
-├── create_admin.py                    # Create admin account CLI tool
-├── manage_users.py                    # User management CLI (list/create/reset)
-│
-├── ADMIN_GUIDE.md                     # Admin account management guide
-├── GSUITE_WELCOME_FIX.md             # GSuite welcome screen fix documentation
-├── GSUITE_FLOW_DIAGRAM.md            # Visual flow diagrams
-├── CHANGELOG.md                       # Version history
-├── CHEATSHEET.md                      # Quick commands reference
-├── SUMMARY.md                         # Complete project summary
-├── AGENTS.md                          # Project overview for AI agents
 │
 ├── v2fun_web_v2/
 │   └── templates/
-│       ├── login.html
-│       ├── register.html
-│       └── dashboard.html
+│       ├── login.html                 # Login page
+│       ├── register.html              # Register page
+│       └── dashboard.html             # Main dashboard (with Integrations)
 │
 ├── v2fun_data/
 │   ├── v2fun.db                       # SQLite database
 │   ├── v2fun_session_*_latest.json    # Saved login tokens
-│   ├── v2fun_capture_generation_*.json # Network captures
-│   ├── v2fun_generation_api_*.json    # Generation API captures
-│   ├── API_GENERATION_ANALYSIS.md     # API documentation
-│   ├── uploads/                       # Uploaded reference images
-│   ├── generations/                   # Generation results
-│   ├── results/                       # Downloaded images
-│   └── archive/                       # Old docs, captures, tokens
+│   ├── uploads/                       # User uploaded reference images
+│   ├── results/                       # Auto-downloaded generated images
+│   ├── generations/                   # Generation metadata
+│   └── archive/                       # Old captures, tokens
+│
+├── hermes-integration/                # UGC Generator API client
+│   ├── UGC_API_INTEGRATION_GUIDE.md   # Integration documentation
+│   ├── ugc_generator_client.py        # Python client library
+│   ├── content_with_visuals.py        # Content + visuals generation
+│   └── ugc_api_config.yaml            # Config template
+│
+├── docs/                              # 📁 Documentation (organized)
+│   ├── guides/                        # User guides & tutorials
+│   │   ├── ADMIN_GUIDE.md
+│   │   ├── CHEATSHEET.md
+│   │   └── V2FUN_CLI_GUIDE.md
+│   ├── api/                           # API documentation
+│   │   ├── BACKEND_API_QUICKREF.md
+│   │   └── V2FUN_BACKEND_API_GUIDE.md
+│   ├── technical/                     # Technical docs
+│   │   ├── TOKEN_REFRESH_ANALYSIS.md
+│   │   ├── TOKEN_REFRESH_QUICKREF.md
+│   │   ├── GSUITE_FLOW_DIAGRAM.md
+│   │   └── GSUITE_WELCOME_FIX.md
+│   └── archive/                       # Old summaries
+│       ├── SUMMARY.md
+│       ├── SESSION_SUMMARY_20260826.md
+│       └── CLEANUP_SUMMARY.md
+│
+├── create_admin.py                    # Create admin account CLI
+├── manage_users.py                    # User management CLI
+├── v2fun_backend_api.py               # Backend API for Hermes
+├── test_backend_api.py                # API test script
+│
+├── AGENTS.md                          # Project overview for AI agents
+├── AGENTS-DEPLOY.md                   # Deployment guide
+├── CHANGELOG.md                       # Version history
+├── README.md                          # This file
 │
 ├── account.txt                        # Google accounts (gitignored)
-├── account.txt.example
+├── account.txt.example                # Account format example
 ├── run_web.bat                        # Web UI launcher
-└── requirements.txt
+├── run_backend_api.bat                # Backend API launcher
+└── requirements.txt                   # Python dependencies
 ```
 
 ---
@@ -269,15 +288,32 @@ The automation now handles GSuite "Welcome to your new account" popup automatica
 
 ## Documentation
 
-- **V2FUN_BACKEND_API_GUIDE.md** - Backend API for Hermes integration (NEW)
-- **V2FUN_CLI_GUIDE.md** - CLI tool complete guide
+### 📚 Organized Documentation Structure
+
+All documentation is now organized in the `docs/` folder:
+
+#### 📖 User Guides (`docs/guides/`)
+- **ADMIN_GUIDE.md** - Admin account management & user creation
 - **CHEATSHEET.md** - Quick commands reference
-- **SUMMARY.md** - Complete project summary
-- **ADMIN_GUIDE.md** - Admin account management
-- **GSUITE_WELCOME_FIX.md** - Technical details of GSuite fix
-- **GSUITE_FLOW_DIAGRAM.md** - Visual flow diagrams
+- **V2FUN_CLI_GUIDE.md** - CLI tool complete guide
+
+#### 🔌 API Documentation (`docs/api/`)
+- **BACKEND_API_QUICKREF.md** - Backend API quick reference
+- **V2FUN_BACKEND_API_GUIDE.md** - Backend API for Hermes integration
+
+#### 🔧 Technical Documentation (`docs/technical/`)
 - **TOKEN_REFRESH_ANALYSIS.md** - Token refresh mechanism analysis
 - **TOKEN_REFRESH_QUICKREF.md** - Token refresh quick reference
+- **GSUITE_FLOW_DIAGRAM.md** - Visual flow diagrams
+- **GSUITE_WELCOME_FIX.md** - GSuite welcome screen fix details
+
+#### 📦 Archive (`docs/archive/`)
+- **SUMMARY.md** - Complete project summary
+- **SESSION_SUMMARY_20260826.md** - Session history
+- **CLEANUP_SUMMARY.md** - Cleanup documentation
+
+#### 🔗 Integration Guides
+- **hermes-integration/UGC_API_INTEGRATION_GUIDE.md** - UGC Generator API integration
 - **CHANGELOG.md** - Version history
 - **AGENTS.md** - Project overview for AI agents
 
