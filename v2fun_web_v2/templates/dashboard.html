@@ -724,9 +724,13 @@
         if (!select) return; // Guard
         
         if (data.sessions && data.sessions.length > 0) {
-            // Check which account is currently connected
-            let currentEmail = null;
-            if (currentUser?.has_v2fun_token) {
+            // Use the V2Fun email the user selected (saved in server session)
+            // instead of searching for the first "done" account (which always
+            // picks the first one in DB order, ignoring the user's choice).
+            let currentEmail = currentUser?.selected_v2fun_email || null;
+            // If we don't have a selection yet but the user has a token, fall
+            // back to matching the token in the accounts list
+            if (!currentEmail && currentUser?.has_v2fun_token) {
                 try {
                     const accResp = await fetch('/api/v2fun-accounts');
                     const accData = await accResp.json();

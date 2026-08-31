@@ -45,7 +45,10 @@ pending_events: dict = {}
 app = Flask(__name__, 
             template_folder='../v2fun_web_v2/templates',
             static_folder='../v2fun_web_v2/static')
-app.secret_key = secrets.token_hex(32)
+# Use a STATIC secret key so Gunicorn workers can share/decode the same session
+# cookies. A random key per-process (secrets.token_hex) breaks multi-worker setups
+# because each worker signs cookies with a different key.
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'v2fun-stable-secret-key-change-in-production-2026')
 app.config['UPLOAD_FOLDER'] = Path('v2fun_data/uploads')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
@@ -447,7 +450,8 @@ def api_me():
         "user": {
             "email": user['email'],
             "credits": credits,
-            "has_v2fun_token": bool(user.get('v2fun_token'))
+            "has_v2fun_token": bool(user.get('v2fun_token')),
+            "selected_v2fun_email": session.get('selected_v2fun_email')
         }
     })
 
@@ -487,14 +491,18 @@ def api_connect_v2fun():
     if not uid:
         return jsonify({"success": False, "message": "User ID missing from session"})
     update_user_token(uid, token)
-    
+
     # Also keep the v2fun_accounts table in sync so the account shows as
     # 'done' with a valid token (prevents it from disappearing from the list)
     from v2fun_scripts.token_manager import get_token_expiry
     expiry = get_token_expiry(token)
     expiry_str = expiry.isoformat() if expiry else None
     upsert_v2fun_account_from_session(v2fun_email, token, expiry_str, uid)
-    
+
+    # Remember which V2Fun account the user selected so the dropdown stays
+    # on this account instead of jumping back to the first "done" account.
+    session['selected_v2fun_email'] = v2fun_email
+
     return jsonify({"success": True, "message": "V2Fun account connected successfully!"})
 
 
