@@ -1,0 +1,58 @@
+# UGC API Configuration
+
+# Your backend API details
+api_base_url: "https://your-backend-api.com"
+api_key: "your_api_key_here"
+
+# Timeout settings
+timeout_seconds: 60
+
+# Default generation settings
+defaults:
+  scene_type: "lifestyle_indoor"
+  style: "ugc_casual"
+  aspect_ratio: "1:1"
+  num_images: 1
+  
+# Available scene types for photos
+scene_types:
+  - lifestyle_indoor
+  - lifestyle_outdoor
+  - unboxing
+  - on_feet
+  - flat_lay
+  - review_setup
+  - comparison
+
+# Available styles
+styles:
+  - ugc_casual
+  - ugc_professional
+  - influencer_style
+  - authentic_raw
+
+# Video concepts by platform
+video_concepts:
+  tiktok:
+    - pov_unboxing
+    - life_hack
+    - before_after
+    - day_in_life
+  instagram:
+    - aesthetic_lifestyle
+    - honest_review
+    - styling_tips
+    - product_showcase
+  youtube:
+    - detailed_review
+    - comparison
+    - tutorial
+    - first_impressions
+
+# Aspect ratios by platform
+aspect_ratios:
+  instagram: "4:5"
+  tiktok: "9:16"
+  youtube: "16:9"
+  blog: "16:9"
+  twitter: "1:1"

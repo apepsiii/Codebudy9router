@@ -101,6 +101,14 @@ class V2FunGoogleLogin:
         """Handle Google OAuth login flow in popup window"""
         self.print_step("Starting Google OAuth login...", "progress")
         
+        # Prevent popup from closing prematurely by listening to beforeunload
+        try:
+            await popup.evaluate("""() => {
+                window.preventEarlyClose = true;
+            }""")
+        except:
+            pass
+        
         try:
             await popup.wait_for_load_state("domcontentloaded")
             await asyncio.sleep(2)
@@ -230,8 +238,126 @@ class V2FunGoogleLogin:
                 await popup.keyboard.press("Enter")
                 self.print_step("Pressed Enter to submit password", "success")
             
-            # Wait for potential 2FA or consent screen
+            # Wait for potential 2FA, consent screen, or welcome screen
             await asyncio.sleep(8)
+            
+            # Check for "Welcome to your new account" or GSuite onboarding
+            try:
+                # Check if we're on a welcome/onboarding page
+                page_content = await popup.content()
+                
+                welcome_indicators = [
+                    "Welcome to your new account",
+                    "welcome to your account",
+                    "Get started with",
+                    "Mulai dengan"
+                ]
+                
+                is_welcome_page = any(indicator.lower() in page_content.lower() for indicator in welcome_indicators)
+                
+                if is_welcome_page:
+                    self.print_step("Detected GSuite welcome screen", "info")
+                    
+                    # Try multiple selectors for "I understand" or similar buttons
+                    understand_selectors = [
+                        'button:has-text("I understand")',
+                        'button:has-text("Understand")',
+                        'button:has-text("Got it")',
+                        'button:has-text("Next")',
+                        'button:has-text("Continue")',
+                        'button:has-text("Saya mengerti")',
+                        'button:has-text("Mengerti")',
+                        'button:has-text("Lanjutkan")',
+                        '[role="button"]:has-text("I understand")',
+                        '[role="button"]:has-text("Understand")',
+                        '[role="button"]:has-text("Got it")',
+                        'button[type="button"]',
+                        'div[role="button"]'
+                    ]
+                    
+                    clicked = False
+                    for selector in understand_selectors:
+                        try:
+                            element_count = await popup.locator(selector).count()
+                            if element_count > 0:
+                                # Get the first visible button
+                                await popup.click(selector, timeout=5000)
+                                self.print_step(f"Clicked welcome button: {selector}", "success")
+                                clicked = True
+                                await asyncio.sleep(3)
+                                break
+                        except Exception as e:
+                            continue
+                    
+                    if not clicked:
+                        self.print_step("Could not find welcome button, trying generic button", "warning")
+                        
+                        # Take screenshot for debugging
+                        try:
+                            screenshot_path = f"v2fun_data/debug_welcome_screen_{self.email.replace('@', '_at_').replace('.', '_')}.png"
+                            await popup.screenshot(path=screenshot_path)
+                            self.print_step(f"Screenshot saved: {screenshot_path}", "info")
+                        except:
+                            pass
+                        
+                        # Try to click any visible button as fallback
+                        try:
+                            await popup.evaluate("""() => {
+                                const buttons = document.querySelectorAll('button');
+                                for (let btn of buttons) {
+                                    if (btn.offsetParent !== null) {
+                                        btn.click();
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }""")
+                            self.print_step("Clicked generic button via JavaScript", "success")
+                            await asyncio.sleep(3)
+                        except Exception as e:
+                            self.print_step(f"Could not click any button: {str(e)[:50]}", "warning")
+                            
+                            # Last resort: try pressing Enter
+                            try:
+                                await popup.keyboard.press("Enter")
+                                self.print_step("Pressed Enter as fallback", "info")
+                                await asyncio.sleep(3)
+                            except:
+                                pass
+                    
+                    # Additional wait after handling welcome screen
+                    await asyncio.sleep(3)
+            except Exception as e:
+                self.print_step(f"Welcome screen check: {str(e)[:80]}", "info")
+            
+            # Check for "Welcome to your new account" popup / GSuite welcome screen
+            try:
+                welcome_selectors = [
+                    'button:has-text("I understand")',
+                    'button:has-text("Understand")',
+                    'button:has-text("Got it")',
+                    'button:has-text("Saya mengerti")',
+                    'button:has-text("Mengerti")',
+                    '[role="button"]:has-text("I understand")',
+                    '[role="button"]:has-text("Understand")'
+                ]
+                
+                welcome_clicked = False
+                for selector in welcome_selectors:
+                    try:
+                        if await popup.locator(selector).count() > 0:
+                            await popup.click(selector, timeout=5000)
+                            self.print_step("Clicked: Welcome screen (I understand)", "success")
+                            welcome_clicked = True
+                            await asyncio.sleep(3)
+                            break
+                    except:
+                        continue
+                
+                if welcome_clicked:
+                    self.print_step("GSuite welcome screen handled", "success")
+            except Exception as e:
+                self.print_step("No GSuite welcome screen", "info")
             
             # Check for consent/continue button
             try:
@@ -255,16 +381,41 @@ class V2FunGoogleLogin:
             except Exception as e:
                 self.print_step("No consent screen (already authorized)", "info")
             
-            # Wait for popup to close (redirect back to V2Fun)
+            # Wait for redirect back to V2Fun (check URL change)
             self.print_step("Waiting for OAuth completion...", "progress")
             try:
-                await popup.wait_for_event("close", timeout=30000)
-                self.print_step("OAuth popup closed", "success")
-            except:
-                self.print_step("Popup still open, checking main page...", "info")
-                # Close popup manually if still open
+                # Wait for URL to change to v2fun.ai (indicates successful OAuth)
+                max_wait = 30  # 30 seconds max
+                for i in range(max_wait):
+                    current_url = popup.url
+                    if "v2fun.ai" in current_url or popup.is_closed():
+                        self.print_step("OAuth redirect detected", "success")
+                        break
+                    await asyncio.sleep(1)
+                
+                # Wait a bit more to ensure token is set
+                if not popup.is_closed():
+                    await asyncio.sleep(3)
+                    self.print_step("Waiting for token synchronization...", "progress")
+                
+                # Now wait for popup to close naturally or close it
                 try:
-                    await popup.close()
+                    await popup.wait_for_event("close", timeout=10000)
+                    self.print_step("OAuth popup closed naturally", "success")
+                except:
+                    self.print_step("Popup still open, closing manually...", "info")
+                    try:
+                        if not popup.is_closed():
+                            await popup.close()
+                            self.print_step("Popup closed manually", "success")
+                    except Exception as e:
+                        self.print_step(f"Popup already closed: {str(e)[:50]}", "info")
+            except Exception as e:
+                self.print_step(f"OAuth completion check: {str(e)[:80]}", "warning")
+                # Try to close popup if still open
+                try:
+                    if not popup.is_closed():
+                        await popup.close()
                 except:
                     pass
             

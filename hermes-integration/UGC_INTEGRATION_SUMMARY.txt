@@ -1,0 +1,334 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                                                                               ║
+║  🎨 UGC VISUAL GENERATOR - INTEGRATION COMPLETE                              ║
+║  Content Ideas + AI-Generated Photos & Storyboards                           ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+✅ SYSTEM READY!
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 📦 YANG SUDAH DIBUATIN                                                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+1. UGC_API_INTEGRATION_GUIDE.md
+   → Complete API specification untuk backend kamu
+   → Request/response format
+   → Authentication methods
+   → Tech stack recommendations
+   → Cost estimates
+
+2. ugc_generator_client.py
+   → Python client library (ready to use)
+   → Support untuk photo & video storyboard generation
+   → Error handling & retries
+   → Health check
+   → Async job polling
+
+3. content_with_visuals.py
+   → Integration: Content Ideas + Visual Generation
+   → Auto-generate storyboards untuk video content
+   → Auto-generate photos untuk posts
+   → Save to database with visual asset URLs
+
+4. ugc_api_config.yaml
+   → Configuration template
+   → Scene types, styles, aspect ratios
+   → Platform-specific settings
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 🔄 WORKFLOW BARU                                                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+BEFORE (Content Ideas Only):
+  1. Input product info
+  2. Generate 9 content ideas
+  3. Save to database
+  4. Manually create visuals
+
+AFTER (With UGC Visual Generator):
+  1. Input product info
+  2. Generate 9 content ideas
+  3. ✨ Auto-generate visual assets:
+     - TikTok/Reels → 5-scene storyboard with images
+     - Instagram Posts → UGC-style photo
+     - Blog → Featured image
+  4. Save to database WITH image URLs
+  5. Ready to produce! (visual reference sudah ada)
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 🎯 YANG KAMU PERLU SETUP DI BACKEND                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+ENDPOINTS:
+  POST /api/generate-ugc-photo
+    → Input: product info, scene type, style
+    → Output: image URL(s)
+  
+  POST /api/generate-video-storyboard
+    → Input: product info, video concept, duration
+    → Output: 5 scene images + descriptions
+  
+  GET /api/jobs/{job_id}
+    → Check async job status
+  
+  GET /health
+    → Health check
+
+AUTHENTICATION:
+  Authorization: Bearer YOUR_API_KEY
+
+IMAGE GENERATION:
+  Option 1: Replicate API (easiest, pay-per-use)
+  Option 2: ComfyUI backend (own GPU)
+  Option 3: Diffusers + inference server
+
+STORAGE:
+  - S3/R2 for images
+  - PostgreSQL for metadata
+  - Redis for job queue
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 🚀 CARA PAKAI (SETELAH BACKEND READY)                                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+1. SETUP CONFIG
+   Edit ugc_api_config.yaml:
+   ```yaml
+   api_base_url: "https://your-api.com"
+   api_key: "sk_your_key_here"
+   ```
+
+2. SET ENV VARS (Alternative)
+   ```bash
+   export UGC_API_URL="https://your-api.com"
+   export UGC_API_KEY="sk_your_key_here"
+   ```
+
+3. TEST CLIENT
+   ```bash
+   python ugc_generator_client.py https://your-api.com sk_key_123
+   ```
+
+4. GENERATE CONTENT WITH VISUALS
+   ```bash
+   python content_with_visuals.py
+   ```
+   
+   Atau via env vars:
+   ```bash
+   UGC_API_URL="https://your-api.com" \
+   UGC_API_KEY="sk_key_123" \
+   python content_with_visuals.py
+   ```
+
+5. RESULT
+   - 9 content ideas generated
+   - Visual assets auto-created
+   - All saved to database
+   - Ready to produce!
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 📋 PROMPT TEMPLATES (INCLUDED)                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Scene Types:
+  • lifestyle_indoor    - Natural home setting, casual use
+  • lifestyle_outdoor   - Outdoor real environment
+  • unboxing           - Opening package moment
+  • on_feet            - Wearing/using product
+  • flat_lay           - Instagram aesthetic top-down
+  • review_setup       - Desk/table reviewer style
+
+Styles:
+  • ugc_casual         - Authentic, smartphone photo
+  • ugc_professional   - Planned but still UGC feel
+  • influencer_style   - More polished, Instagram aesthetic
+  • authentic_raw      - Very casual, candid moment
+
+All prompts designed to produce UGC-style results:
+  ✅ Smartphone camera quality
+  ✅ Natural lighting
+  ✅ Real environments
+  ✅ Authentic moments
+  ❌ NO professional studio
+  ❌ NO commercial feel
+  ❌ NO watermarks
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 💡 EXAMPLE OUTPUT                                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Input:
+  Product: Sandal Baim Unisex
+  Scene: unboxing
+  Style: ugc_casual
+
+Generated Prompt:
+  "Unboxing moment photo of Sandal Baim Unisex, UGC style.
+   Scene: Hands opening package on wooden table.
+   Lighting: Natural indoor light, authentic colors.
+   Angle: Top-down, smartphone perspective.
+   Quality: iPhone camera, real unboxing moment.
+   NO professional product photography."
+
+Output:
+  Image URL: https://cdn.your-api.com/images/abc123.jpg
+  Seed: 42
+  Size: 1024x1024
+
+For Video Storyboard (TikTok 30s):
+  Scene 1 (0-3s): Close-up hands opening package
+  Scene 2 (3-8s): First reaction, surprised face
+  Scene 3 (8-15s): Hands holding sandal, showing features
+  Scene 4 (15-25s): Person wearing sandal, walking
+  Scene 5 (25-30s): Person pointing to sandal, happy
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 🔐 SECURITY NOTES                                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Client Side (Hermes):
+  ✅ API key stored in config file (gitignore it!)
+  ✅ HTTPS only
+  ✅ Timeout handling
+  ✅ Error handling & retries
+  ✅ Rate limit aware
+
+Backend Side (Your API):
+  ⚠️  API key validation
+  ⚠️  Rate limiting (10 req/min per key recommended)
+  ⚠️  Input sanitization (prevent prompt injection)
+  ⚠️  Cost limits per user
+  ⚠️  Request size limits
+  ⚠️  CORS configuration
+  ⚠️  Logging & monitoring
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 💰 COST ESTIMATES                                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Using Replicate SDXL:
+  Per image: ~$0.002-0.01
+  Storyboard (5 images): ~$0.01-0.05
+  100 products/month: ~$1-5/month
+
+Own GPU Server (A10G):
+  Instance: ~$0.50-1.00/hour
+  24/7: ~$360-720/month
+  Break-even: ~7,000-36,000 images/month
+
+Recommendation:
+  Start: Replicate (MVP, low volume)
+  Scale: Own GPU (high volume, cost optimization)
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 🧪 TESTING WITHOUT BACKEND                                                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Kamu bisa test content generation tanpa visual dulu:
+
+```bash
+# Generate ideas only (no visuals)
+python content_ideation.py interactive
+
+# Or use existing tool
+python content_with_visuals.py
+# (Just don't set UGC_API_URL - will skip visuals)
+```
+
+Setelah backend ready:
+```bash
+# Generate ideas WITH visuals
+UGC_API_URL="https://your-api.com" \
+UGC_API_KEY="sk_key" \
+python content_with_visuals.py
+```
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 📊 INTEGRATION SUMMARY                                                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+FROM HERMES SIDE (✅ DONE):
+  ✅ Python client library
+  ✅ Prompt templates (6 scene types)
+  ✅ Integration with content ideation
+  ✅ Database storage for image URLs
+  ✅ Error handling & retries
+  ✅ CLI tools
+  ✅ Configuration management
+  ✅ Documentation
+
+FROM YOUR BACKEND SIDE (⏳ TODO):
+  [ ] FastAPI/Express backend
+  [ ] API endpoints (2 endpoints)
+  [ ] API key authentication
+  [ ] Image generation (Replicate/ComfyUI/Own)
+  [ ] S3/R2 storage
+  [ ] Job queue (optional for async)
+  [ ] Rate limiting
+  [ ] Monitoring
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 🎯 NEXT STEPS                                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+1. READ DOCUMENTATION
+   cat /home/ubuntu/UGC_API_INTEGRATION_GUIDE.md
+   (Complete API spec + implementation guide)
+
+2. BUILD YOUR BACKEND
+   Follow guide untuk setup:
+   - FastAPI + Replicate (easiest MVP)
+   - Or ComfyUI + own GPU (more control)
+
+3. TEST CLIENT
+   python ugc_generator_client.py <url> <key>
+
+4. INTEGRATE & USE
+   python content_with_visuals.py
+
+5. ITERATE & OPTIMIZE
+   - Add more scene types
+   - Tune prompts
+   - Optimize costs
+   - Add custom LoRAs
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📁 FILES CREATED:
+
+  /home/ubuntu/
+    ├── UGC_API_INTEGRATION_GUIDE.md    (Complete backend guide)
+    ├── ugc_generator_client.py         (Python client library)
+    ├── content_with_visuals.py         (Integration tool)
+    ├── ugc_api_config.yaml             (Config template)
+    └── [existing affiliate tracker files...]
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🎉 INTEGRATION READY!
+
+Yang aku provide dari Hermes side:
+  ✅ Client library yang clean & robust
+  ✅ Prompt engineering untuk UGC-style
+  ✅ Integration dengan content ideation
+  ✅ Database storage
+  ✅ Complete documentation
+
+Yang kamu perlu build:
+  ⏳ Backend API (2 endpoints)
+  ⏳ Image generation integration
+  ⏳ Storage & CDN
+
+Timeline estimate:
+  MVP (Replicate): 1-2 days
+  Production (Own GPU): 1 week
+
+Questions? Review UGC_API_INTEGRATION_GUIDE.md untuk detail lengkap! 🚀
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Generated: 2026-08-31T05:53:28.480Z
+System: Affiliate Tracker + Content Ideation + UGC Visual Generator
+Location: /home/ubuntu/

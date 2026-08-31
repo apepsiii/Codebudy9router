@@ -3,7 +3,12 @@
 **Project:** V2Fun.ai API Exploration & Automation  
 **Repository:** https://github.com/apepsiii/Codebudy9router  
 **Focus:** API Discovery, Authentication, Image Generation Automation, Web UI  
-**Last Updated:** 2026-08-27
+**Last Updated:** 2026-08-27 12:15 WIB
+
+**Latest Updates:**
+- ✅ Fixed GSuite welcome screen handler ("Welcome to your new account")
+- ✅ Added admin account management tools (create_admin.py, manage_users.py)
+- ✅ Enhanced OAuth popup handling with multiple fallback mechanisms
 
 ---
 
@@ -48,6 +53,10 @@ Codebudy9router/
 │   ├── token_manager.py               # JWT token auto-refresh
 │   ├── capture_generation_flow.py     # API network capture tool
 │   ├── run_v2fun_login.bat            # Login automation launcher
+│
+├── create_admin.py                    # Create admin account CLI tool
+├── manage_users.py                    # User management CLI (list/create/reset)
+├── ADMIN_GUIDE.md                     # Admin account management guide
 │   ├── run_capture_generation.bat     # Capture tool launcher
 │   └── archive/                       # Old/deprecated scripts
 │

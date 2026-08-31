@@ -29,7 +29,8 @@ from v2fun_scripts.database import (
     import_v2fun_account, get_pending_accounts, get_all_v2fun_accounts,
     update_v2fun_account_status, delete_v2fun_account, get_v2fun_account_by_id,
     sync_v2fun_sessions_to_db, upsert_v2fun_account_from_session,
-    update_quota_snapshot, get_all_quota_snapshots, get_quota_snapshot
+    update_quota_snapshot, get_all_quota_snapshots, get_quota_snapshot,
+    save_integration, get_integration, get_all_integrations, delete_integration, toggle_integration
 )
 from v2fun_scripts.sse_monitor import SSEMonitor
 from v2fun_scripts.token_manager import (
@@ -1567,6 +1568,141 @@ def api_refresh_token():
             "success": False,
             "message": f"Refresh failed. Current status: {status}",
             "new_status": new_status
+        })
+
+
+# ============================================================================
+# INTEGRATIONS API
+# ============================================================================
+
+@app.route('/api/integrations', methods=['GET'])
+def api_get_integrations():
+    """Get all integrations for current user"""
+    user = get_current_user()
+    if not user:
+        return jsonify({"success": False, "message": "Not authenticated"}), 401
+    
+    user_id = user.get('user_id') or user.get('id')
+    integrations = get_all_integrations(user_id)
+    
+    # Mask API keys (show only last 4 chars)
+    for integration in integrations:
+        api_key = integration.get('api_key', '')
+        if len(api_key) > 8:
+            integration['api_key_masked'] = '*' * (len(api_key) - 4) + api_key[-4:]
+        else:
+            integration['api_key_masked'] = '****'
+    
+    return jsonify({"success": True, "integrations": integrations})
+
+
+@app.route('/api/integrations/<service_name>', methods=['GET'])
+def api_get_integration(service_name):
+    """Get specific integration for current user"""
+    user = get_current_user()
+    if not user:
+        return jsonify({"success": False, "message": "Not authenticated"}), 401
+    
+    user_id = user.get('user_id') or user.get('id')
+    integration = get_integration(user_id, service_name)
+    
+    if not integration:
+        return jsonify({"success": False, "message": "Integration not found"}), 404
+    
+    return jsonify({"success": True, "integration": integration})
+
+
+@app.route('/api/integrations', methods=['POST'])
+def api_save_integration():
+    """Save or update integration settings"""
+    user = get_current_user()
+    if not user:
+        return jsonify({"success": False, "message": "Not authenticated"}), 401
+    
+    data = request.json
+    service_name = data.get('service_name', '').strip()
+    base_url = data.get('base_url', '').strip()
+    api_key = data.get('api_key', '').strip()
+    
+    if not service_name or not base_url or not api_key:
+        return jsonify({"success": False, "message": "Service name, base URL, and API key are required"})
+    
+    # Validate URL format
+    if not base_url.startswith(('http://', 'https://')):
+        return jsonify({"success": False, "message": "Base URL must start with http:// or https://"})
+    
+    user_id = user.get('user_id') or user.get('id')
+    save_integration(user_id, service_name, base_url, api_key)
+    
+    return jsonify({"success": True, "message": f"{service_name} integration saved successfully"})
+
+
+@app.route('/api/integrations/<service_name>', methods=['DELETE'])
+def api_delete_integration(service_name):
+    """Delete integration settings"""
+    user = get_current_user()
+    if not user:
+        return jsonify({"success": False, "message": "Not authenticated"}), 401
+    
+    user_id = user.get('user_id') or user.get('id')
+    delete_integration(user_id, service_name)
+    
+    return jsonify({"success": True, "message": f"{service_name} integration deleted"})
+
+
+@app.route('/api/integrations/<service_name>/toggle', methods=['POST'])
+def api_toggle_integration(service_name):
+    """Enable or disable integration"""
+    user = get_current_user()
+    if not user:
+        return jsonify({"success": False, "message": "Not authenticated"}), 401
+    
+    data = request.json
+    is_active = data.get('is_active', True)
+    
+    user_id = user.get('user_id') or user.get('id')
+    toggle_integration(user_id, service_name, is_active)
+    
+    status = "enabled" if is_active else "disabled"
+    return jsonify({"success": True, "message": f"{service_name} integration {status}"})
+
+
+@app.route('/api/integrations/<service_name>/test', methods=['POST'])
+def api_test_integration(service_name):
+    """Test integration connection"""
+    user = get_current_user()
+    if not user:
+        return jsonify({"success": False, "message": "Not authenticated"}), 401
+    
+    user_id = user.get('user_id') or user.get('id')
+    integration = get_integration(user_id, service_name)
+    
+    if not integration:
+        return jsonify({"success": False, "message": "Integration not found"}), 404
+    
+    try:
+        # Test health endpoint
+        response = requests.get(
+            f"{integration['base_url'].rstrip('/')}/health",
+            headers={'Authorization': f"Bearer {integration['api_key']}"},
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            return jsonify({
+                "success": True, 
+                "message": "Connection successful",
+                "response": response.json() if response.headers.get('content-type', '').startswith('application/json') else None
+            })
+        else:
+            return jsonify({
+                "success": False, 
+                "message": f"Connection failed with status {response.status_code}"
+            })
+    except requests.exceptions.RequestException as e:
+        return jsonify({
+            "success": False, 
+            "message": f"Connection error: {str(e)}"
         })
 
 

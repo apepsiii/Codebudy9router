@@ -122,6 +122,22 @@ def init_db():
         )
     """)
     
+    # Integrations table (API keys for external services like UGC generator)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS integrations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            service_name TEXT NOT NULL,
+            base_url TEXT NOT NULL,
+            api_key TEXT NOT NULL,
+            is_active INTEGER DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            UNIQUE(user_id, service_name)
+        )
+    """)
+    
     conn.commit()
     conn.close()
     print("Database initialized successfully!")
@@ -686,6 +702,88 @@ def get_quota_snapshot(email: str):
     conn.close()
     
     return dict(row) if row else None
+
+
+def save_integration(user_id: int, service_name: str, base_url: str, api_key: str):
+    """Save or update integration settings for a user"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        INSERT INTO integrations (user_id, service_name, base_url, api_key, updated_at)
+        VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT(user_id, service_name) DO UPDATE SET
+            base_url = excluded.base_url,
+            api_key = excluded.api_key,
+            updated_at = CURRENT_TIMESTAMP
+    """, (user_id, service_name, base_url, api_key))
+    
+    conn.commit()
+    conn.close()
+
+
+def get_integration(user_id: int, service_name: str):
+    """Get integration settings for a user and service"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        SELECT id, service_name, base_url, api_key, is_active, created_at, updated_at
+        FROM integrations
+        WHERE user_id = ? AND service_name = ?
+    """, (user_id, service_name))
+    
+    row = cursor.fetchone()
+    conn.close()
+    
+    return dict(row) if row else None
+
+
+def get_all_integrations(user_id: int):
+    """Get all integrations for a user"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        SELECT id, service_name, base_url, api_key, is_active, created_at, updated_at
+        FROM integrations
+        WHERE user_id = ?
+        ORDER BY service_name
+    """, (user_id,))
+    
+    rows = cursor.fetchall()
+    conn.close()
+    
+    return [dict(row) for row in rows]
+
+
+def delete_integration(user_id: int, service_name: str):
+    """Delete integration settings"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        DELETE FROM integrations
+        WHERE user_id = ? AND service_name = ?
+    """, (user_id, service_name))
+    
+    conn.commit()
+    conn.close()
+
+
+def toggle_integration(user_id: int, service_name: str, is_active: bool):
+    """Enable or disable an integration"""
+    conn = get_db()
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+        UPDATE integrations
+        SET is_active = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = ? AND service_name = ?
+    """, (1 if is_active else 0, user_id, service_name))
+    
+    conn.commit()
+    conn.close()
 
 
 if __name__ == "__main__":
