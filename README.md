@@ -3,23 +3,25 @@
 > Web automation dan API exploration tool untuk V2Fun.ai - AI Image Generator
 
 **Repository:** https://github.com/apepsiii/Codebudy9router  
-**Version:** 3.3.0  
-**Last Updated:** 2026-08-31 14:36 WIB
+**Version:** 3.4.0 (Enhanced Backend API v2.0.0)  
+**Last Updated:** 2026-08-31 16:26 WIB
 
 **Latest Updates:**
-- ✅ **NEW: Integrations Menu** - UGC Generator API configuration in dashboard
-- ✅ **NEW: Auto-download Images** - Generated images saved to local storage
-- ✅ Backend API for Hermes Agent integration (round-robin, model priority)
-- ✅ REST API with Telegram notifications
-- ✅ Fixed static Flask secret key for Gunicorn multi-worker
-- ✅ Persist selected V2Fun email in session
-- ✅ Admin account management tools (create_admin.py, manage_users.py)
+- 🔥 **NEW: Backend API v2.0.0 Enhancements** - Model fallback, high quality default, gallery management
+- ✅ **NEW: Model Fallback Mechanism** - Auto-retry with alternative models on quota errors
+- ✅ **NEW: Default Quality High** - Better image quality by default
+- ✅ **NEW: Gallery Management** - View, manage, and delete generated images
+- ✅ **NEW: Real-time SSE Progress** - Live progress tracking via Server-Sent Events
+- ✅ **NEW: Image Download & Serving** - Auto-download and serve images locally
+- ✅ Integrations Menu - UGC Generator API configuration
+- ✅ Backend API for Hermes Agent (round-robin, model priority)
+- ✅ Admin account management tools
 
 ---
 
 ## Current Status
 
-**Phase:** Production Ready
+**Phase:** Production Ready (Backend v2.0.0 Enhanced)
 
 | Feature | Status |
 |---------|--------|
@@ -27,20 +29,24 @@
 | GSuite Welcome Screen Handler | ✅ Done |
 | API Discovery (31 endpoints) | ✅ Done |
 | Image Generation API | ✅ Done |
-| **Integrations Menu (UGC Generator)** | ✅ **New** |
-| **Auto-download to Local Storage** | ✅ **New** |
-| Backend API for Hermes Agent | ✅ Done |
+| **Model Fallback Mechanism** | ✅ **New** |
+| **Gallery Management** | ✅ **New** |
+| **Real-time SSE Progress** | ✅ **New** |
+| **Enhanced Job Tracking** | ✅ **New** |
+| Integrations Menu (UGC Generator) | ✅ Done |
+| Auto-download to Local Storage | ✅ Done |
+| Backend API for Hermes Agent | ✅ Enhanced |
 | Round-Robin Account Selection | ✅ Done |
 | Model Priority System | ✅ Done |
 | CLI Tool | ✅ Done |
-| Web UI (Full Stack) | ✅ Done |
+| Web UI (Full Stack) | ✅ Enhanced |
 | Admin Account Management | ✅ Done |
 | SQLite Database | ✅ Done |
 | Image Upload to V2Fun OSS | ✅ Done |
-| SSE Real-time Monitoring | ✅ Done |
+| SSE Real-time Monitoring | ✅ Enhanced |
 | Token Auto-Refresh (headless) | ✅ Done |
 | Bulk Account Registration | ✅ Done |
-| Telegram Notifications | ✅ Done |
+| Telegram Notifications | ✅ Enhanced |
 
 ---
 
@@ -345,6 +351,29 @@ All documentation is now organized in the `docs/` folder:
 
 ---
 
+## 📚 Documentation
+
+### Quick Links
+- **[Quick Start Guide](QUICK_START.md)** - Get started with the Enhanced API
+- **[Complete Documentation](docs/)** - All documentation organized by category
+- **[Backend Enhancements](docs/backend-enhancements/)** - v2.0.0 enhancement details
+- **[Changelog](CHANGELOG.md)** - Version history and updates
+- **[Deployment Guide](AGENTS-DEPLOY.md)** - Production deployment
+
+### Documentation Structure
+```
+docs/
+├── backend-enhancements/    # Backend API v2.0.0 docs
+│   ├── BACKEND_ENHANCEMENT_PLAN.md
+│   ├── BACKEND_ENHANCEMENT_IMPLEMENTATION.md
+│   └── DEPLOYMENT_CHECKLIST.md
+└── sessions/                # Development session notes
+```
+
+See [docs/README.md](docs/README.md) for complete documentation index.
+
+---
+
 ## Security
 
 - `account.txt` and token files are gitignored
@@ -362,6 +391,5 @@ This tool is for educational and personal use only. Always respect website Terms
 ---
 
 **Author:** apepsiii  
-**Version:** 3.1.0  
-**Last Updated:** 2026-08-27 12:19 WIB  
-**Version:** 3.0.0
+**Version:** 3.4.0 (Backend API v2.0.0)  
+**Last Updated:** 2026-08-31 16:27 WIB

@@ -1,428 +1,422 @@
-# 🚀 Quick Start Guide - V2Fun.ai Automation
+# 🚀 Quick Start - Enhanced Backend API
 
-**Last Updated:** 2026-08-31 16:58 WIB
-
----
-
-## 📋 Prerequisites
-
-### Required Software
-```bash
-✅ Python 3.10+
-✅ Git
-✅ Google Chrome/Chromium (untuk login automation)
-```
-
-### Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-**Main Dependencies:**
-- Flask (web framework)
-- Playwright (browser automation)
-- Requests (HTTP client)
-- SQLite3 (database)
-
----
-
-## 🎬 Quick Start (3 Steps)
-
-### 1️⃣ Setup Google Accounts
-
-**File:** `account.txt` (di root folder)
-
-**Format:**
-```
-email1@gmail.com|password1
-email2@gmail.com|password2
-email3@gmail.com|password3
-```
-
-**Example:**
-```bash
-# Copy template
-cp account.txt.example account.txt
-
-# Edit dengan text editor
-notepad account.txt
-```
-
----
-
-### 2️⃣ Login Accounts (One-time)
-
-Jalankan script login untuk authenticate semua akun:
+## Starting the Server
 
 ```bash
-python v2fun_scripts/v2fun_google_login.py
-```
-
-**Apa yang terjadi:**
-- Browser Chrome akan terbuka otomatis
-- Login ke Google satu per satu
-- Selesaikan OAuth flow
-- Token disimpan ke `v2fun_data/v2fun_session_*_latest.json`
-- Account disimpan ke database
-
-**Output:**
-```
-Processing account 1/3: email1@gmail.com
-✓ Login successful!
-✓ Token saved
-
-Processing account 2/3: email2@gmail.com
-✓ Login successful!
-✓ Token saved
-
-All accounts processed!
-```
-
----
-
-### 3️⃣ Start Web UI
-
-Jalankan web server:
-
-```bash
-python v2fun_scripts/v2fun_web_v2.py
-```
-
-**Output:**
-```
-V2Fun.ai Web UI V2 - Enhanced
-Starting server...
-Open browser: http://localhost:5000
-```
-
-**Atau pakai launcher:**
-```bash
-# Windows
-run_web.bat
-
-# Linux/Mac
-./run_web.sh
-```
-
----
-
-## 🌐 Akses Web Interface
-
-### Main Web UI
-```
-http://localhost:5000
-```
-
-**Features:**
-- Register/Login
-- Connect V2Fun accounts
-- Generate images dengan prompt
-- Upload reference images
-- Gallery hasil generate
-- Real-time progress monitoring
-
----
-
-## 🔧 Backend API (Optional - untuk Hermes Integration)
-
-### Start Backend API
-
-```bash
+cd C:\laragon\www\v2fun
 python v2fun_backend_api.py
 ```
 
-**Output:**
-```
-V2Fun Backend API for Hermes Agent
-Accounts available: 23
-Model priority: nano-banana-pro > gpt-image-2 > nano-banana-2 > nano-banana-2-lite > qwen-edit
-
-API Endpoints:
-  POST http://localhost:5001/api/generate
-  GET  http://localhost:5001/api/status/<job_id>
-  GET  http://localhost:5001/api/health
-  GET  http://localhost:5001/api/accounts
-
-Starting server...
-```
-
-### Access Backend Dashboard
-```
-http://localhost:5001/ui
-```
-
-**Production URL:**
-```
-https://image-gen-v2.gxa.my.id/ui
-```
+Server starts on: `http://localhost:5001`
 
 ---
 
-## 📱 Usage Examples
+## 📱 Web Dashboard
 
-### A. Via Web UI (Recommended)
+### Access Points
+- Main: `http://localhost:5001/`
+- Alternative: `http://localhost:5001/ui`
 
-1. **Buka browser:** http://localhost:5000
-2. **Register akun** atau **Login**
-3. **Connect V2Fun account** dari dropdown
-4. **Isi prompt:** "a cute cat on the moon"
-5. **Click Generate**
-6. **Wait** sampai progress 100%
-7. **Download** hasil dari gallery
-
----
-
-### B. Via CLI Tool
-
-```bash
-# Generate single image
-python v2fun_scripts/v2fun_cli.py generate --prompt "a red apple on table"
-
-# List saved sessions
-python v2fun_scripts/v2fun_cli.py list-sessions
-
-# Check credits
-python v2fun_scripts/v2fun_cli.py check-credits
-```
+### Pages
+1. **Dashboard** - Overview and stats
+2. **Generate** - Create new images (High quality default)
+3. **Jobs** - Track all generation jobs
+4. **Gallery** - View and manage completed images
+5. **Accounts** - V2Fun account pool status
+6. **API Docs** - Endpoint documentation
 
 ---
 
-### C. Via Backend API
+## 🔥 New Features Demo
 
-**Generate Image:**
+### 1. Generate with Auto Fallback
+
+**Via Web UI:**
+1. Go to Generate page
+2. Enter prompt
+3. Click "Generate Image"
+4. If quota exceeded, automatically tries next model
+5. View real-time progress in Jobs page
+
+**Via API:**
 ```bash
 curl -X POST http://localhost:5001/api/generate \
   -H "Content-Type: application/json" \
   -d '{
-    "prompt": "a beautiful sunset",
-    "model": "nano-banana-pro",
-    "quality": "high",
-    "ratio": "16:9"
+    "prompt": "a cat on the moon",
+    "model": "nano-banana-pro"
   }'
 ```
 
-**Check Status:**
-```bash
-curl http://localhost:5001/api/status/<job_id>
+Response:
+```json
+{
+  "success": true,
+  "job_id": "abc-123-def-456",
+  "status": "queued",
+  "account": "user@gmail.com",
+  "model": "nano-banana-pro",
+  "quality": "high"
+}
 ```
 
 ---
 
-## 🗂️ File Structure
+### 2. Check Job Status (with new fields)
 
-### Important Files
-
+```bash
+curl http://localhost:5001/api/status/abc-123-def-456
 ```
-v2fun/
-├── account.txt              # Google accounts (GITIGNORED)
-├── v2fun_data/
-│   ├── v2fun.db            # SQLite database
-│   ├── results/            # Downloaded images
-│   └── v2fun_session_*.json # Login tokens
-│
-├── v2fun_scripts/
-│   ├── v2fun_google_login.py    # Login automation
-│   ├── v2fun_web_v2.py          # Main web server
-│   └── v2fun_cli.py             # CLI tool
-│
-└── v2fun_backend_api.py    # Backend API for Hermes
+
+Response:
+```json
+{
+  "success": true,
+  "job": {
+    "id": "abc-123-def-456",
+    "prompt": "a cat on the moon",
+    "status": "completed",
+    "source": "api",
+    "progress": 100,
+    "local_path": "v2fun_data/results/gen_abc-123_20260831_a_cat_on_the_moon.jpg",
+    "work_url": "https://asset.v2fun.ai/...",
+    "fallback_attempts": [],
+    "model": "nano-banana-pro",
+    "quality": "high",
+    "created_at": "2026-08-31T09:00:00",
+    "completed_at": "2026-08-31T09:02:30"
+  }
+}
 ```
 
 ---
 
-## 🔐 Admin Operations
-
-### Create Admin Account
+### 3. View Gallery
 
 ```bash
-python create_admin.py
+curl http://localhost:5001/api/gallery
 ```
 
-**Follow prompts:**
-```
-Email: admin@example.com
-Password: ********
-✓ Admin account created!
+Response:
+```json
+{
+  "success": true,
+  "total": 15,
+  "images": [
+    {
+      "id": "abc-123",
+      "prompt": "a cat on the moon",
+      "status": "completed",
+      "work_url": "https://...",
+      "local_path": "v2fun_data/results/...",
+      "model": "nano-banana-pro",
+      "completed_at": "2026-08-31T09:02:30"
+    }
+  ]
+}
 ```
 
-### Manage Users
+---
+
+### 4. View Downloaded Image
+
+**In Browser:**
+```
+http://localhost:5001/api/image/abc-123-def-456
+```
+
+**Download via curl:**
+```bash
+curl http://localhost:5001/api/image/abc-123-def-456 -o image.jpg
+```
+
+---
+
+### 5. Real-time Progress (SSE)
+
+**JavaScript Example:**
+```javascript
+const eventSource = new EventSource('/api/stream/abc-123-def-456');
+
+eventSource.onmessage = function(e) {
+    const job = JSON.parse(e.data);
+    console.log('Status:', job.status);
+    console.log('Progress:', job.progress + '%');
+    
+    if (job.status === 'completed') {
+        console.log('Image URL:', job.work_url);
+        eventSource.close();
+    }
+};
+```
+
+**curl Example:**
+```bash
+curl -N http://localhost:5001/api/stream/abc-123-def-456
+```
+
+Output:
+```
+data: {"id":"abc-123","status":"processing","progress":30}
+
+data: {"id":"abc-123","status":"rendering","progress":60}
+
+data: {"id":"abc-123","status":"completed","progress":100,"work_url":"..."}
+```
+
+---
+
+### 6. List All Jobs
 
 ```bash
-# List all users
-python manage_users.py list
+# All jobs
+curl http://localhost:5001/api/jobs
 
-# Reset password
-python manage_users.py reset admin@example.com NewPassword123
+# Completed only
+curl http://localhost:5001/api/jobs?status=completed
+
+# Limit results
+curl http://localhost:5001/api/jobs?limit=10
+```
+
+---
+
+### 7. Delete from Gallery
+
+```bash
+curl -X DELETE http://localhost:5001/api/gallery/abc-123-def-456
+```
+
+Response:
+```json
+{
+  "success": true,
+  "message": "Job and image deleted"
+}
+```
+
+---
+
+## 🎯 Model Fallback Examples
+
+### Example 1: Successful Fallback
+```
+1. Start: nano-banana-pro
+   Status: Quota exceeded
+   
+2. Fallback: gpt-image-2
+   Status: Success!
+   
+3. Result: Image generated with gpt-image-2
+   Notification: "⚠️ Fallback used (original: nano-banana-pro)"
+```
+
+### Example 2: All Models Failed
+```
+1. nano-banana-pro → Quota exceeded
+2. gpt-image-2 → Quota exceeded
+3. nano-banana-2 → Quota exceeded
+4. nano-banana-2-lite → Quota exceeded
+5. qwen-edit → Quota exceeded
+
+Result: Failed with "All models failed (quota exhausted)"
+```
+
+---
+
+## 📊 Quality Settings
+
+| Quality | File Size | Speed | Use Case |
+|---------|-----------|-------|----------|
+| **high** | 2-5 MB | Slower | **Default** - Best results |
+| medium | 1-2 MB | Medium | Balanced |
+| low | 500KB-1MB | Fast | Quick previews |
+
+---
+
+## 🔔 Telegram Notifications
+
+Set environment variables:
+```bash
+export TELEGRAM_BOT_TOKEN="your_bot_token"
+export TELEGRAM_CHAT_ID="your_chat_id"
+```
+
+You'll receive:
+- 🚀 Generation started
+- ✅ Generation completed (with fallback info if used)
+- ❌ Generation failed
+- ⚠️ Timeout or errors
+
+---
+
+## 📁 File Structure
+
+```
+v2fun_data/
+├── results/
+│   ├── gen_abc123_20260831_123045_a_cat.jpg
+│   ├── gen_def456_20260831_123120_sunset.jpg
+│   └── ...
+└── v2fun.db
+```
+
+Filename format: `gen_{job_id}_{timestamp}_{prompt}.jpg`
+
+---
+
+## 🧪 Testing
+
+Run the test suite:
+```bash
+python test_backend_enhancements.py
+```
+
+Expected output:
+```
+============================================================
+Backend API Enhancement Tests
+============================================================
+
+[TEST 1] Health Check
+  Status: healthy
+  Accounts: 5
+  Active Jobs: 2
+  ✓ Health check passed
+
+[TEST 2] Generate Image (High Quality Default)
+  Job ID: abc-123-def-456
+  Model: nano-banana-pro
+  Quality: high
+  ✓ Generation started with high quality
+
+[TEST 3] Job Status for abc-123-def-456
+  Status: processing
+  Progress: 50%
+  Source: api
+  Fallback Attempts: 0
+  ✓ Job status retrieved
+
+...
+
+============================================================
+✓ All tests completed!
+============================================================
 ```
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Problem: Login fails
+### Issue: Image not found (404)
+**Cause:** Image not downloaded yet or download failed  
+**Solution:** Check job status, wait for completion
 
-**Solution:**
+### Issue: All models failed
+**Cause:** All accounts quota exhausted  
+**Solution:** Wait for quota reset or add more accounts
+
+### Issue: SSE stream not working
+**Cause:** Firewall or proxy blocking  
+**Solution:** Test with curl first, check server logs
+
+### Issue: Dashboard not loading
+**Cause:** Server not running or port conflict  
+**Solution:** Check `http://localhost:5001/api/health`
+
+---
+
+## 📈 Monitoring
+
+### Check Health
 ```bash
-# Check browser automation
-playwright install chromium
+curl http://localhost:5001/api/health
+```
 
-# Retry login
-python v2fun_scripts/v2fun_google_login.py
+### View Active Jobs
+```bash
+curl http://localhost:5001/api/jobs?status=processing
+```
+
+### View Failed Jobs
+```bash
+curl http://localhost:5001/api/jobs?status=failed
 ```
 
 ---
 
-### Problem: "No V2Fun token"
+## 💡 Pro Tips
 
-**Solution:**
-1. Login accounts first: `python v2fun_scripts/v2fun_google_login.py`
-2. Check database: `v2fun_data/v2fun.db`
-3. Verify token files exist: `v2fun_data/v2fun_session_*_latest.json`
-
----
-
-### Problem: Port 5000 already in use
-
-**Solution:**
-```bash
-# Change port di v2fun_web_v2.py line 1270
-app.run(host='0.0.0.0', port=5001, debug=True)
-```
+1. **Fallback Strategy:** Start with best model, system auto-downgrades
+2. **Quality:** Use "high" for final outputs, "low" for testing
+3. **Monitoring:** Use SSE for real-time updates instead of polling
+4. **Storage:** Clean up old images regularly (they accumulate fast)
+5. **Accounts:** Rotate multiple accounts for high volume work
 
 ---
 
-### Problem: Database error
+## 🔗 Integration Examples
 
-**Solution:**
-```bash
-# Recreate database
-python v2fun_scripts/database.py
-```
+### Node.js
+```javascript
+const axios = require('axios');
 
----
-
-## 📊 Monitoring
-
-### Check Account Status
-
-```bash
-# Via Python
-python -c "from v2fun_scripts.token_manager import get_all_tokens_status; print(get_all_tokens_status())"
-
-# Via Web UI
-# Go to: http://localhost:5000 → Dashboard → Usage Monitor
-```
-
-### Check Quota
-
-```bash
-# Via CLI
-python v2fun_scripts/v2fun_cli.py check-credits
-
-# Via Web UI
-# Dashboard page shows quota for all accounts
-```
-
----
-
-## 🔄 Token Refresh
-
-Tokens expire after 3 days. Auto-refresh via:
-
-```bash
-python v2fun_scripts/token_manager.py
-```
-
-**Auto-refresh happens:**
-- Before each generation
-- Via background scheduler
-- Manual trigger via web UI
-
----
-
-## 🚀 Production Deployment
-
-### VPS Setup
-
-1. **Clone repository:**
-```bash
-git clone https://github.com/apepsiii/Codebudy9router.git
-cd Codebudy9router
-```
-
-2. **Install dependencies:**
-```bash
-pip install -r requirements.txt
-playwright install chromium
-```
-
-3. **Setup accounts:**
-```bash
-nano account.txt
-# Add your accounts
-```
-
-4. **Login accounts:**
-```bash
-python v2fun_scripts/v2fun_google_login.py
-```
-
-5. **Start with systemd:**
-```bash
-# Create service file
-sudo nano /etc/systemd/system/v2fun-web.service
-
-[Unit]
-Description=V2Fun Web UI
-After=network.target
-
-[Service]
-Type=simple
-User=ubuntu
-WorkingDirectory=/home/ubuntu/Codebudy9router
-ExecStart=/usr/bin/python3 v2fun_scripts/v2fun_web_v2.py
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-
-# Enable and start
-sudo systemctl enable v2fun-web
-sudo systemctl start v2fun-web
-```
-
-6. **Setup Nginx reverse proxy:**
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-
-    location / {
-        proxy_pass http://localhost:5000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
+async function generateImage(prompt) {
+    const response = await axios.post('http://localhost:5001/api/generate', {
+        prompt: prompt,
+        model: 'nano-banana-pro'
+    });
+    
+    const jobId = response.data.job_id;
+    console.log('Job started:', jobId);
+    
+    // Poll for result
+    while (true) {
+        const status = await axios.get(`http://localhost:5001/api/status/${jobId}`);
+        const job = status.data.job;
+        
+        if (job.status === 'completed') {
+            console.log('Image URL:', job.work_url);
+            break;
+        }
+        
+        await new Promise(r => setTimeout(r, 5000));
     }
 }
 ```
 
+### Python
+```python
+import requests
+import time
+
+def generate_image(prompt):
+    # Start generation
+    response = requests.post('http://localhost:5001/api/generate', json={
+        'prompt': prompt,
+        'model': 'nano-banana-pro'
+    })
+    
+    job_id = response.json()['job_id']
+    print(f'Job started: {job_id}')
+    
+    # Wait for completion
+    while True:
+        status = requests.get(f'http://localhost:5001/api/status/{job_id}')
+        job = status.json()['job']
+        
+        if job['status'] == 'completed':
+            print(f"Image URL: {job['work_url']}")
+            print(f"Local path: {job['local_path']}")
+            if job['fallback_attempts']:
+                print(f"Used fallback: {len(job['fallback_attempts'])} attempts")
+            break
+        
+        time.sleep(5)
+```
+
 ---
 
-## 📚 Documentation
+**Ready to use!** 🎉
 
-- **User Guides:** `docs/guides/`
-- **API Docs:** `docs/api/`
-- **Technical:** `docs/technical/`
-- **Enhancement Plan:** `BACKEND_ENHANCEMENT_PLAN.md`
-
----
-
-## 🆘 Support
-
-**Issues:** https://github.com/apepsiii/Codebudy9router/issues  
-**Documentation:** Check `docs/` folder  
-
----
-
-**Version:** 3.3.0  
-**Status:** ✅ Production Ready  
-**Last Updated:** 2026-08-31
+Start the server and open `http://localhost:5001` to try the enhanced features.

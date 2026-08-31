@@ -20,7 +20,7 @@ API Endpoints:
     GET  /api/accounts - List available accounts
 """
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file, Response
 from flask_cors import CORS
 import json
 import os
@@ -37,6 +37,7 @@ import uuid
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from v2fun_scripts.database import get_db, init_db
 from v2fun_scripts.token_manager import is_token_valid, get_token_status
+from v2fun_scripts.image_downloader import download_image
 
 app = Flask(__name__)
 CORS(app)
@@ -307,7 +308,7 @@ def send_telegram_notification(message: str, telegram_token: str = None, chat_id
 
 def process_generation_job(job_id: str, prompt: str, account: Dict, 
                           model: str, quality: str, ratio: str):
-    """Background worker to process generation"""
+    """Background worker to process generation with model fallback"""
     try:
         # Update job status
         with jobs_lock:
@@ -319,79 +320,130 @@ def process_generation_job(job_id: str, prompt: str, account: Dict,
         # Create client
         client = V2FunClient(account['token'])
         
-        # Generate
-        result = client.generate_image(prompt, model, quality, ratio)
+        # Try models in priority order (fallback mechanism)
+        models_to_try = [model] + [m for m in MODEL_PRIORITY if m != model]
         
-        if result.get('success'):
-            task_uuid = result.get('result', {}).get('taskuuid')
+        for attempt_idx, attempt_model in enumerate(models_to_try):
+            print(f"[JOB {job_id}] Trying model: {attempt_model} (attempt {attempt_idx + 1}/{len(models_to_try)})")
             
-            # Update job with task_uuid
-            with jobs_lock:
-                jobs[job_id]['status'] = 'rendering'
-                jobs[job_id]['task_uuid'] = task_uuid
-                jobs[job_id]['result'] = result
+            # Generate
+            result = client.generate_image(prompt, attempt_model, quality, ratio)
             
-            print(f"[JOB {job_id}] Task submitted to V2Fun: {task_uuid}")
-            
-            # Poll for result (wait until image is ready)
-            poll_result = client.poll_result(task_uuid, max_attempts=60, interval=5)
-            
-            if poll_result.get('success'):
-                # Image generation completed!
-                work_url = poll_result.get('workUrl')
-                thumb = poll_result.get('thumb')
+            if result.get('success'):
+                task_uuid = result.get('result', {}).get('taskuuid')
                 
+                # Update job with task_uuid
                 with jobs_lock:
-                    jobs[job_id]['status'] = 'completed'
-                    jobs[job_id]['work_url'] = work_url
-                    jobs[job_id]['thumb'] = thumb
-                    jobs[job_id]['poll_attempts'] = poll_result.get('attempts')
-                    jobs[job_id]['completed_at'] = datetime.now().isoformat()
-                
-                print(f"[JOB {job_id}] Completed! URL: {work_url}")
-                
-                # Send Telegram notification
-                msg = f"✅ *Generation Completed*\n"
-                msg += f"Job ID: `{job_id}`\n"
-                msg += f"Prompt: {prompt[:50]}...\n"
-                msg += f"Model: {model}\n"
-                msg += f"Account: {account['email']}\n"
-                msg += f"Image URL: {work_url}"
-                send_telegram_notification(msg)
-            else:
-                # Polling failed or timeout
-                error_msg = poll_result.get('error', 'Polling failed')
-                
-                with jobs_lock:
-                    jobs[job_id]['status'] = 'timeout'
-                    jobs[job_id]['error'] = error_msg
+                    jobs[job_id]['status'] = 'rendering'
                     jobs[job_id]['task_uuid'] = task_uuid
-                    jobs[job_id]['completed_at'] = datetime.now().isoformat()
+                    jobs[job_id]['model'] = attempt_model  # Update to actual model used
+                    jobs[job_id]['result'] = result
                 
-                print(f"[JOB {job_id}] Polling failed: {error_msg}")
+                print(f"[JOB {job_id}] Task submitted to V2Fun: {task_uuid}")
                 
-                # Send Telegram notification
-                msg = f"⚠️ *Generation Timeout*\n"
-                msg += f"Job ID: `{job_id}`\n"
-                msg += f"Prompt: {prompt[:50]}...\n"
-                msg += f"Error: {error_msg}\n"
-                msg += f"Task UUID: {task_uuid} (check manually on V2Fun)"
-                send_telegram_notification(msg)
-        else:
-            error_msg = result.get('message') or result.get('error', 'Unknown error')
-            
-            with jobs_lock:
-                jobs[job_id]['status'] = 'failed'
-                jobs[job_id]['error'] = error_msg
-                jobs[job_id]['completed_at'] = datetime.now().isoformat()
-            
-            # Send Telegram notification
-            msg = f"❌ *Generation Failed*\n"
-            msg += f"Job ID: `{job_id}`\n"
-            msg += f"Prompt: {prompt[:50]}...\n"
-            msg += f"Error: {error_msg}\n"
-            msg += f"Account: {account['email']}"
-            send_telegram_notification(msg)
+                # Poll for result (wait until image is ready)
+                poll_result = client.poll_result(task_uuid, max_attempts=60, interval=5)
+                
+                if poll_result.get('success'):
+                    # Image generation completed!
+                    work_url = poll_result.get('workUrl')
+                    thumb = poll_result.get('thumb')
+                    
+                    # Download image to local storage
+                    print(f"[JOB {job_id}] Downloading image...")
+                    local_path = download_image(work_url, job_id, prompt)
+                    
+                    with jobs_lock:
+                        jobs[job_id]['status'] = 'completed'
+                        jobs[job_id]['work_url'] = work_url
+                        jobs[job_id]['thumb'] = thumb
+                        jobs[job_id]['local_path'] = local_path
+                        jobs[job_id]['poll_attempts'] = poll_result.get('attempts')
+                        jobs[job_id]['progress'] = 100
+                        jobs[job_id]['completed_at'] = datetime.now().isoformat()
+                    
+                    print(f"[JOB {job_id}] Completed! URL: {work_url}")
+                    
+                    # Send Telegram notification
+                    msg = f"✅ *Generation Completed*\n"
+                    msg += f"Job ID: `{job_id}`\n"
+                    msg += f"Prompt: {prompt[:50]}...\n"
+                    msg += f"Model: {attempt_model}\n"
+                    if attempt_idx > 0:
+                        msg += f"⚠️ Fallback used (original: {model})\n"
+                    msg += f"Account: {account['email']}\n"
+                    msg += f"Image URL: {work_url}"
+                    send_telegram_notification(msg)
+                    return  # Success!
+                else:
+                    # Polling failed or timeout
+                    error_msg = poll_result.get('error', 'Polling failed')
+                    
+                    with jobs_lock:
+                        jobs[job_id]['status'] = 'timeout'
+                        jobs[job_id]['error'] = error_msg
+                        jobs[job_id]['task_uuid'] = task_uuid
+                        jobs[job_id]['completed_at'] = datetime.now().isoformat()
+                    
+                    print(f"[JOB {job_id}] Polling failed: {error_msg}")
+                    
+                    # Send Telegram notification
+                    msg = f"⚠️ *Generation Timeout*\n"
+                    msg += f"Job ID: `{job_id}`\n"
+                    msg += f"Prompt: {prompt[:50]}...\n"
+                    msg += f"Error: {error_msg}\n"
+                    msg += f"Task UUID: {task_uuid} (check manually on V2Fun)"
+                    send_telegram_notification(msg)
+                    return
+            else:
+                # Generation API failed
+                error_msg = result.get('message') or result.get('error', 'Unknown error')
+                error_lower = error_msg.lower()
+                
+                # Check if error is quota/limit related
+                is_quota_error = any(keyword in error_lower for keyword in ['quota', 'limit', 'insufficient', 'exceeded', 'balance'])
+                
+                if is_quota_error and attempt_idx < len(models_to_try) - 1:
+                    # Quota error and we have more models to try
+                    print(f"[FALLBACK] Model {attempt_model} quota exceeded, trying next model...")
+                    
+                    with jobs_lock:
+                        jobs[job_id]['fallback_attempts'].append({
+                            'model': attempt_model,
+                            'error': error_msg,
+                            'timestamp': datetime.now().isoformat()
+                        })
+                    
+                    continue  # Try next model
+                else:
+                    # Non-quota error or last model failed
+                    with jobs_lock:
+                        jobs[job_id]['status'] = 'failed'
+                        jobs[job_id]['error'] = error_msg
+                        jobs[job_id]['completed_at'] = datetime.now().isoformat()
+                    
+                    # Send Telegram notification
+                    msg = f"❌ *Generation Failed*\n"
+                    msg += f"Job ID: `{job_id}`\n"
+                    msg += f"Prompt: {prompt[:50]}...\n"
+                    msg += f"Error: {error_msg}\n"
+                    msg += f"Account: {account['email']}"
+                    if len(jobs[job_id]['fallback_attempts']) > 0:
+                        msg += f"\n⚠️ Tried {len(jobs[job_id]['fallback_attempts'])} fallback model(s)"
+                    send_telegram_notification(msg)
+                    return
+        
+        # All models failed
+        with jobs_lock:
+            jobs[job_id]['status'] = 'failed'
+            jobs[job_id]['error'] = 'All models failed (quota exhausted)'
+            jobs[job_id]['completed_at'] = datetime.now().isoformat()
+        
+        msg = f"❌ *All Models Failed*\n"
+        msg += f"Job ID: `{job_id}`\n"
+        msg += f"Prompt: {prompt[:50]}...\n"
+        msg += f"Tried {len(models_to_try)} models, all quota exhausted"
+        send_telegram_notification(msg)
     
     except Exception as e:
         with jobs_lock:
@@ -473,7 +525,7 @@ def generate_image():
         
         prompt = data.get('prompt')
         model = data.get('model', MODEL_PRIORITY[0])  # Default to best model
-        quality = data.get('quality', 'medium')
+        quality = data.get('quality', 'high')  # Default to high quality
         ratio = data.get('ratio', '16:9')
         
         # Validate model
@@ -497,6 +549,7 @@ def generate_image():
                 "id": job_id,
                 "prompt": prompt,
                 "status": "queued",
+                "source": "api",  # "api" or "manual"
                 "account": account['email'],
                 "model": model,
                 "quality": quality,
@@ -504,6 +557,13 @@ def generate_image():
                 "created_at": datetime.now().isoformat(),
                 "started_at": None,
                 "completed_at": None,
+                "task_uuid": None,
+                "work_url": None,
+                "thumb": None,
+                "local_path": None,  # Downloaded image path
+                "progress": 0,  # 0-100%
+                "poll_attempts": 0,
+                "fallback_attempts": [],  # List of fallback attempts
                 "result": None,
                 "error": None
             }
@@ -592,6 +652,132 @@ def reload_accounts():
     return jsonify({
         "success": True,
         "accounts_available": len(account_pool.accounts)
+    })
+
+
+@app.route('/api/image/<job_id>', methods=['GET'])
+def serve_job_image(job_id):
+    """Serve downloaded image for a job"""
+    with jobs_lock:
+        job = jobs.get(job_id)
+    
+    if not job:
+        return jsonify({"error": "Job not found"}), 404
+    
+    if not job.get('local_path'):
+        return jsonify({"error": "Image not downloaded yet"}), 404
+    
+    try:
+        return send_file(job['local_path'], mimetype='image/jpeg')
+    except Exception as e:
+        return jsonify({"error": f"Failed to serve image: {str(e)}"}), 500
+
+
+@app.route('/api/stream/<job_id>')
+def stream_job_progress(job_id):
+    """SSE endpoint for real-time job updates"""
+    def event_stream():
+        last_status = None
+        last_progress = None
+        attempts = 0
+        max_attempts = 120  # 10 minutes with 5s interval
+        
+        while attempts < max_attempts:
+            with jobs_lock:
+                job = jobs.get(job_id)
+            
+            if not job:
+                yield f"data: {json.dumps({'error': 'Job not found'})}\n\n"
+                break
+            
+            # Send update if status or progress changed
+            if job['status'] != last_status or job.get('progress') != last_progress:
+                yield f"data: {json.dumps(job)}\n\n"
+                last_status = job['status']
+                last_progress = job.get('progress')
+            
+            # Stop streaming if job is in terminal state
+            if job['status'] in ['completed', 'failed', 'timeout', 'error']:
+                break
+            
+            time.sleep(5)  # Poll every 5 seconds
+            attempts += 1
+        
+        # Final update
+        with jobs_lock:
+            job = jobs.get(job_id)
+        if job:
+            yield f"data: {json.dumps(job)}\n\n"
+    
+    return Response(event_stream(), mimetype='text/event-stream')
+
+
+@app.route('/api/gallery', methods=['GET'])
+def get_gallery():
+    """Get all completed jobs with images"""
+    with jobs_lock:
+        completed = [j for j in jobs.values() 
+                     if j['status'] == 'completed' and j.get('work_url')]
+    
+    # Sort by completion time (newest first)
+    completed.sort(key=lambda x: x.get('completed_at', ''), reverse=True)
+    
+    return jsonify({
+        "success": True,
+        "total": len(completed),
+        "images": completed
+    })
+
+
+@app.route('/api/gallery/<job_id>', methods=['DELETE'])
+def delete_from_gallery(job_id):
+    """Delete job and its image"""
+    with jobs_lock:
+        job = jobs.get(job_id)
+    
+    if not job:
+        return jsonify({"error": "Job not found"}), 404
+    
+    # Delete local file if exists
+    if job.get('local_path'):
+        try:
+            local_path = Path(job['local_path'])
+            if local_path.exists():
+                local_path.unlink()
+                print(f"[GALLERY] Deleted local image: {local_path}")
+        except Exception as e:
+            print(f"[GALLERY] Failed to delete local image: {e}")
+    
+    # Remove from jobs dict
+    with jobs_lock:
+        del jobs[job_id]
+    
+    return jsonify({"success": True, "message": "Job and image deleted"})
+
+
+@app.route('/api/jobs', methods=['GET'])
+def list_all_jobs():
+    """List all jobs with optional filtering"""
+    status_filter = request.args.get('status')  # e.g., ?status=completed
+    limit = int(request.args.get('limit', 50))
+    
+    with jobs_lock:
+        job_list = list(jobs.values())
+    
+    # Apply status filter if provided
+    if status_filter:
+        job_list = [j for j in job_list if j['status'] == status_filter]
+    
+    # Sort by created_at (newest first)
+    job_list.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+    
+    # Apply limit
+    job_list = job_list[:limit]
+    
+    return jsonify({
+        "success": True,
+        "total": len(job_list),
+        "jobs": job_list
     })
 
 
@@ -725,10 +911,15 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             display: inline-flex; align-items: center; padding: 2px 8px;
             border-radius: 99px; font-size: 11px; font-weight: 600;
         }
+        .badge-queued { background: #FEF3C7; color: #92400E; }
         .badge-pending { background: #FEF3C7; color: #92400E; }
         .badge-processing { background: #E0E7FF; color: #3730A3; }
+        .badge-rendering { background: #DBEAFE; color: #1E40AF; }
+        .badge-completed { background: #D1FAE5; color: #065F46; }
         .badge-done { background: #D1FAE5; color: #065F46; }
         .badge-failed { background: #FEE2E2; color: #991B1B; }
+        .badge-timeout { background: #FEE2E2; color: #991B1B; }
+        .badge-error { background: #FEE2E2; color: #991B1B; }
         .spinner {
             border: 3px solid var(--color-muted);
             border-top: 3px solid var(--color-primary);
@@ -818,6 +1009,10 @@ DASHBOARD_HTML = """<!DOCTYPE html>
             <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
             Jobs
         </a>
+        <a class="nav-item" onclick="showPage('gallery', event)" href="#">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            Gallery
+        </a>
         <a class="nav-item" onclick="showPage('accounts', event)" href="#">
             <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-2a4 4 0 10-8 0 4 4 0 008 0zm6 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
             Accounts
@@ -892,6 +1087,14 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 <textarea id="prompt" placeholder="Describe the image you want to generate..." maxlength="5000" oninput="updateCharCount()"></textarea>
                 <div style="text-align:right;font-size:12px;color:#94a3b8;margin-top:4px" id="charCount">0 / 5000</div>
             </div>
+                    <label>Quality (Default: High)</label>
+                    <select id="quality">
+                        <option value="high" selected>High (Recommended)</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low (Fast)</option>
+                    </select>
+                </div>
+            </div>
             <div class="form-row">
                 <div class="form-group">
                     <label>Model</label>
@@ -907,7 +1110,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                     <label>Aspect Ratio</label>
                     <select id="aspect">
                         <option value="1:1">1:1 (Square)</option>
-                        <option value="16:9">16:9 (Wide)</option>
+                        <option value="16:9" selected>16:9 (Wide)</option>
                         <option value="9:16">9:16 (Portrait)</option>
                         <option value="4:3">4:3</option>
                         <option value="3:4">3:4</option>
@@ -938,6 +1141,22 @@ DASHBOARD_HTML = """<!DOCTYPE html>
                 <button class="btn btn-primary btn-sm" onclick="loadJobs()">Refresh</button>
             </div>
             <div id="jobsList"><p style="color:#94a3b8;text-align:center;padding:20px">Loading...</p></div>
+        </div>
+    </div>
+
+    <!-- Gallery Page -->
+    <div id="page-gallery" class="page">
+        <div class="page-header">
+            <h1>Gallery</h1>
+            <p>View and manage completed generations</p>
+        </div>
+        <div id="alert-gallery" class="alert"></div>
+        <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-4)">
+                <div class="card-title" style="margin:0">Completed Images</div>
+                <button class="btn btn-primary btn-sm" onclick="loadGallery()">Refresh</button>
+            </div>
+            <div id="galleryGrid" class="gallery-grid"><p style="color:#94a3b8;text-align:center;padding:20px">Loading...</p></div>
         </div>
     </div>
 
@@ -1020,6 +1239,7 @@ function showPage(name, event) {
     if (event && event.currentTarget) { event.currentTarget.classList.add('active'); }
     if (name === 'dashboard') loadDashboard();
     if (name === 'jobs') loadJobs();
+    if (name === 'gallery') loadGallery();
     if (name === 'accounts') loadAccounts();
 }
 
@@ -1114,50 +1334,142 @@ async function reloadAccounts() {
 }
 
 async function loadJobs() {
-    if (activeJobIds.length === 0) {
-        document.getElementById('jobsList').innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px">No jobs yet. Generate an image first!</p>';
-        return;
+    try {
+        const data = await apiGet('/api/jobs?limit=50');
+        const jobs = data.jobs || [];
+        
+        if (jobs.length === 0) {
+            document.getElementById('jobsList').innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px">No jobs yet. Generate an image first!</p>';
+            return;
+        }
+        
+        document.getElementById('jobsList').innerHTML = jobs.map(job => {
+            const statusBadge = `badge-${job.status}`;
+            const hasImage = job.status === 'completed' && job.local_path;
+            const hasFallback = job.fallback_attempts && job.fallback_attempts.length > 0;
+            
+            return `
+                <div class="job-card" id="job-card-${job.id}">
+                    <div class="job-card-header">
+                        <span class="job-id">${job.id}</span>
+                        <span class="badge ${statusBadge}">${job.status}</span>
+                    </div>
+                    <div class="job-prompt" style="margin:var(--space-3) 0;font-weight:500">${job.prompt}</div>
+                    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-2);font-size:12px;color:#64748b;margin-bottom:var(--space-3)">
+                        <div>Model: <strong>${job.model}</strong></div>
+                        <div>Quality: <strong>${job.quality}</strong></div>
+                        <div>Account: <strong>${job.account}</strong></div>
+                        <div>Source: <strong>${job.source || 'api'}</strong></div>
+                    </div>
+                    ${hasFallback ? `<div style="font-size:12px;color:#f59e0b;margin-bottom:var(--space-3)">⚠️ Fallback used: ${job.fallback_attempts.length} attempt(s)</div>` : ''}
+                    ${job.status === 'processing' || job.status === 'rendering' ? `
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width:${job.progress || 50}%"></div>
+                        </div>
+                        <p style="font-size:12px;color:#94a3b8;text-align:center">${job.status === 'rendering' ? 'Rendering...' : 'Processing...'}</p>
+                    ` : ''}
+                    ${hasImage ? `
+                        <img class="job-result-img" src="/api/image/${job.id}" alt="Result" style="max-height:400px;margin:var(--space-3) 0">
+                        <div style="display:flex;gap:var(--space-2)">
+                            <a href="${job.work_url}" target="_blank" class="btn btn-primary btn-sm">Open Full Size</a>
+                            <a href="${job.work_url}" download class="btn btn-outline btn-sm">Download</a>
+                        </div>
+                    ` : ''}
+                    ${job.status === 'failed' || job.status === 'error' || job.status === 'timeout' ? `
+                        <div style="background:#FEE2E2;color:#991B1B;padding:var(--space-3);border-radius:var(--radius-md);font-size:13px">
+                            <strong>Error:</strong> ${job.error || 'Unknown error'}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }).join('');
+    } catch (err) {
+        document.getElementById('jobsList').innerHTML = `<p style="color:#ef4444;text-align:center;padding:20px">Error: ${err.message}</p>`;
     }
-    document.getElementById('jobsList').innerHTML = activeJobIds.map(id => `
-        <div class="job-card" id="job-card-${id}">
-            <div class="job-card-header">
-                <span class="job-id">${id}</span>
-                <span id="job-status-${id}"><span class="badge badge-processing">Loading...</span></span>
+}
+
+async function loadGallery() {
+    try {
+        const data = await apiGet('/api/gallery');
+        const images = data.images || [];
+        
+        if (images.length === 0) {
+            document.getElementById('galleryGrid').innerHTML = '<p style="color:#94a3b8;text-align:center;padding:20px;grid-column:1/-1">No completed images yet</p>';
+            return;
+        }
+        
+        document.getElementById('galleryGrid').innerHTML = images.map(img => `
+            <div class="gallery-item">
+                <img src="/api/image/${img.id}" alt="${img.prompt}" loading="lazy" onclick="viewImage('${img.id}', '${img.work_url}')">
+                <div class="gallery-item-info">
+                    <div class="gallery-item-prompt" title="${img.prompt}">${img.prompt}</div>
+                    <div class="gallery-item-meta">${img.model} • ${new Date(img.completed_at).toLocaleDateString()}</div>
+                    <div style="display:flex;gap:4px;margin-top:var(--space-2)">
+                        <a href="${img.work_url}" target="_blank" class="btn btn-primary btn-sm" style="flex:1;font-size:11px;padding:4px 8px">View</a>
+                        <button onclick="deleteImage('${img.id}')" class="btn btn-outline btn-sm" style="font-size:11px;padding:4px 8px;color:#ef4444;border-color:#ef4444">Delete</button>
+                    </div>
+                </div>
             </div>
-            <div id="job-body-${id}"></div>
-        </div>
-    `).join('');
-    for (const id of activeJobIds) { pollJob(id, 'job-status-' + id, 'job-body-' + id); }
+        `).join('');
+    } catch (err) {
+        document.getElementById('galleryGrid').innerHTML = `<p style="color:#ef4444;text-align:center;padding:20px;grid-column:1/-1">Error: ${err.message}</p>`;
+    }
+}
+
+function viewImage(jobId, url) {
+    window.open(url, '_blank');
+}
+
+async function deleteImage(jobId) {
+    if (!confirm('Delete this image? This cannot be undone.')) return;
+    
+    try {
+        const response = await fetch(API + '/api/gallery/' + jobId, { method: 'DELETE' });
+        const data = await response.json();
+        
+        if (data.success) {
+            showAlert('alert-gallery', 'Image deleted successfully', 'success');
+            loadGallery();
+        } else {
+            showAlert('alert-gallery', 'Failed to delete: ' + (data.error || 'Unknown error'), 'error');
+        }
+    } catch (err) {
+        showAlert('alert-gallery', 'Error: ' + err.message, 'error');
+    }
 }
 
 async function pollJob(jobId, statusElId, bodyElId) {
     try {
         const data = await apiGet('/api/status/' + jobId);
+        if (!data.success || !data.job) return;
+        
+        const job = data.job;
         const statusEl = document.getElementById(statusElId);
         if (!statusEl) return;
-        const badge = data.status === 'done' ? 'badge-done' : data.status === 'failed' ? 'badge-failed' : 'badge-processing';
-        statusEl.innerHTML = `<span class="badge ${badge}">${data.status}</span>`;
+        
+        const badge = `badge-${job.status}`;
+        statusEl.innerHTML = `<span class="badge ${badge}">${job.status}</span>`;
 
         if (bodyElId) {
             const bodyEl = document.getElementById(bodyElId);
             if (bodyEl) {
-                if (data.status === 'processing' || data.status === 'pending') {
+                if (job.status === 'processing' || job.status === 'rendering' || job.status === 'queued') {
                     bodyEl.innerHTML = `
-                        <div class="job-prompt">${data.prompt || ''}</div>
-                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${data.progress || 0}%"></div></div>
-                        <p style="font-size:12px;color:#94a3b8">${data.message || 'Processing...'}</p>`;
-                } else if (data.status === 'done' && data.image_url) {
+                        <div class="job-prompt">${job.prompt || ''}</div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${job.progress || 50}%"></div></div>
+                        <p style="font-size:12px;color:#94a3b8">${job.status === 'rendering' ? 'Rendering...' : job.status === 'queued' ? 'Queued...' : 'Processing...'}</p>`;
+                } else if (job.status === 'completed' && job.local_path) {
                     bodyEl.innerHTML = `
-                        <div class="job-prompt">${data.prompt || ''}</div>
-                        <img class="job-result-img" src="${data.image_url}" alt="Result" style="max-height:300px">
+                        <div class="job-prompt">${job.prompt || ''}</div>
+                        <img class="job-result-img" src="/api/image/${job.id}" alt="Result" style="max-height:300px">
                         <div style="margin-top:10px;display:flex;gap:8px">
-                            <a href="${data.image_url}" target="_blank" class="btn btn-primary btn-sm">Open</a>
-                            <a href="${data.image_url}" download class="btn btn-outline btn-sm">Download</a>
+                            <a href="${job.work_url}" target="_blank" class="btn btn-primary btn-sm">Open</a>
+                            <a href="${job.work_url}" download class="btn btn-outline btn-sm">Download</a>
                         </div>`;
-                } else if (data.status === 'failed') {
-                    bodyEl.innerHTML = `<div class="job-prompt">${data.prompt || ''}</div><p style="color:#ef4444">${data.error || 'Generation failed'}</p>`;
+                } else if (job.status === 'failed' || job.status === 'error' || job.status === 'timeout') {
+                    bodyEl.innerHTML = `<div class="job-prompt">${job.prompt || ''}</div><p style="color:#ef4444">${job.error || 'Generation failed'}</p>`;
                 } else {
-                    bodyEl.innerHTML = `<div class="job-prompt">${data.prompt || ''}</div><pre style="font-size:12px;color:#64748b">${JSON.stringify(data, null, 2)}</pre>`;
+                    bodyEl.innerHTML = `<div class="job-prompt">${job.prompt || ''}</div><pre style="font-size:12px;color:#64748b">${JSON.stringify(job, null, 2)}</pre>`;
                 }
             }
         }
@@ -1176,7 +1488,27 @@ async function generateImage() {
     btn.disabled = true; btn.innerHTML = '<div class="spinner" style="width:18px;height:18px;border-width:2px"></div> Generating...';
 
     try {
-        const data = await apiPost('/api/generate', { prompt, model, aspect });
+        const data = await apiPost('/api/generate', { prompt, model, ratio: aspect, quality: 'high' });
+        if (data.success || data.job_id) {
+            const jobId = data.job_id;
+            activeJobIds.unshift(jobId);
+            showAlert('alert-gen', `Job created: ${jobId}`, 'success');
+            document.getElementById('genResult').style.display = 'block';
+            document.getElementById('genResultContent').innerHTML = `
+                <p style="font-size:14px;margin-bottom:12px"><strong>Job ID:</strong> <code>${jobId}</code></p>
+                <div id="gen-job-status"><span class="badge badge-processing">Processing...</span></div>
+                <div id="gen-job-body"></div>`;
+            startPolling(jobId);
+        } else {
+            showAlert('alert-gen', data.error || 'Generation failed', 'error');
+        }
+    } catch (err) {
+        showAlert('alert-gen', 'Error: ' + err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Generate Image';
+    }
+}
         if (data.success || data.job_id) {
             const jobId = data.job_id;
             activeJobIds.unshift(jobId);

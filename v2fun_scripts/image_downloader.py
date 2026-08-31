@@ -10,13 +10,13 @@ from datetime import datetime
 from typing import Optional
 
 
-def download_image(image_url: str, generation_id: int, prompt: str = "") -> Optional[str]:
+def download_image(image_url: str, generation_id, prompt: str = "") -> Optional[str]:
     """
     Download image from V2Fun CDN to local storage
     
     Args:
         image_url: Full URL to the generated image
-        generation_id: Database generation ID
+        generation_id: Database generation ID or job ID (int or str)
         prompt: Optional prompt text for filename
     
     Returns:
